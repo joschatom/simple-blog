@@ -27,7 +27,7 @@ Requirements:
 ## Directory Structure
 - [`docs/*`](docs) Documentation
 
-- [`frontend/*`](frontend) Forntend Code
+- [`frontend/*`](frontend) Frontend Code
 
 - [`backend/*`](backend) Backend Code
 
