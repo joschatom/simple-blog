@@ -1,34 +1,31 @@
-# A simple Blog
+# A Simple Blog
 
 ## About
-A simple blog that allows the user to sign into an account and view posts by other users and make posts themselves.
+This is a simple blog that allows users to sign in and view posts by other users, as well as create their own posts.
 
-This is a fullstack application that uses `ASP.NET` for the backend and `React.JS` (via `vite.js`) for the frontend.
-
+It is a full-stack application that uses `ASP.NET` for the back end and `React.JS` (via `vite.js`) for the front end.
 ## Links
 The documentation is located [here](docs/index.md).
 
-## Requirements
-- [ ] The user is able create an account with his name, e-mail, password.
-- [ ] The user is able to login with his name/e-email and password and afterwards redirect back to the homepage.
-- [ ] On the user both logged in and guest users can see posts created by users unless they have been set to `for registers users only` on the posts page.
-- [ ] When logged in a user can create a post with text and a caption. They can also use Markdown in their posts for styling.
-- [ ] The frontend is localized(or can be in the future)* and supports theming.
-- [ ] A user can also be an admin, and if they are they can delete posts from users and ban accounts/users.
-- [ ] In the feed you can Hide posts with cuases that posts to not be shown again.
-- [ ] Logged in user can also click "mute" on a post to no longer see ayn posts from that user.
-- [ ] Each users has a profile page where they see their posts and name.
-- [ ] There's a settings page that allows users to change their theme, delete their account, change their password, username and email. 
-- [ ] In the footer links are display to the GIthub and documenation and also version info(git).
-- [ ] There's an "about" page with contains some info about the project.
-- [ ] Errors are displayed ina stylized way that doesn#t look out of place.
-- [ ] Posts can also be viewed on a seperate page via an url (`/posts/<postid>`).
+Requirements:
+- [ ] The user can create an account using their name, email address and password.
+- [ ] The user can log in with their name/email address and password, and then be redirected back to the homepage.
+- [ ] Both logged-in and guest users can see posts created by users, unless they have been set to 'for registered users only' by the author.
+- [ ] When logged in, users can create posts containing text and captions. They can also use Markdown for styling their posts.
+- [ ] The front end is localised (or can be in the future) and supports theming.
+- [ ] A user can also be an admin. If they are, they can delete posts and ban accounts.
+- [ ] In the feed, you can hide posts so that they are not shown again.
+- [ ] Logged-in users can click 'Mute' on a post to stop seeing any posts from that user.
+- [ ] Each user has a profile page where they can see their posts and name.
+- [ ] There is a settings page that allows users to change their theme, delete their account, and change their password, username, and email address. 
+- [ ] In the footer, links are displayed to GitHub, documentation and version information (Git).
+- [ ] There is an 'About' page containing some information about the project.
+- [ ] Errors are displayed in a stylised way that doesn't look out of place.
+- [ ] Posts can also be viewed on a separate page via a URL (`/posts/<post_id>`).
 
 
 ## Directory Structure
 - [`docs/*`](docs) Documentation
-
-- [`docs/model`](docs/model) Application Models (development) [maybe?]
 
 - [`frontend/*`](frontend) Forntend Code
 
@@ -41,4 +38,4 @@ The documentation is located [here](docs/index.md).
 ## Development
 Current Stage: Wireframe
 
-Started: 15.11.2025 (DD-MM-YYYY)
+Started: 14.11.2025 (DD-MM-YYYY)
