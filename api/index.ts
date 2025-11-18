@@ -1,64 +1,14 @@
-import axios, { AxiosError, type Method } from "axios";
+import axios, {
+  Axios,
+  AxiosError,
+  type AxiosInstance,
+  type Method,
+} from "axios";
 
 export type PostData = {};
 export type UserData = {};
 export type UserID = string;
 export type PostID = string;
-
-function defineAPIActions<
-  T extends {
-    [_: string]: {
-      auth: boolean;
-      params: Record<string, unknown> | undefined;
-      body: unknown | undefined;
-      resp: void | unknown;
-    };
-  }
->(): T {
-  throw "unreachable";
-}
-export type APIActions = ReturnType<
-  typeof defineAPIActions<{
-    CreateUser: {
-      auth: true;
-      params: { abc: number };
-      body: {
-        username: string;
-        email: string;
-        password: string;
-      };
-      resp: string;
-    };
-    GetUserBy: {
-      auth: false;
-      params: {
-        id?: UserID;
-        name?: string;
-        post_id?: PostID;
-      };
-      body: undefined;
-      resp: UserData;
-    };
-    UpdateUser: {
-      auth: true;
-      params: {
-        id?: UserID;
-        name?: string;
-        post_id?: PostID;
-      };
-      body: undefined;
-      resp: void;
-    };
-    DeleteUser: {
-      auth: true;
-      params: {
-        id: UserID;
-      };
-      body: undefined;
-      resp: boolean;
-    };
-  }>
->;
 
 class User {
   #client: APIClient;
@@ -69,7 +19,7 @@ class User {
   }
 
   static async getByID(client: APIClient, id: string): Promise<User> {
-    const resp = await client.exec("GetUserBy", { id }, undefined);
+    const resp = await client.api.get(`/users/${id}`);
 
     if (resp.error != undefined) throw resp.error;
     else return new User(client, resp.success!);
@@ -85,11 +35,7 @@ interface APIClient {
   login(username: string, password: string): Promise<boolean>;
   logout(): Promise<boolean>;
 
-  exec(
-    action: keyof APIActions,
-    params?: APIActions[typeof action]["params"],
-    body?: APIActions[typeof action]["body"]
-  ): Promise<{ success?: APIActions[typeof action]["resp"]; error?: unknown }>;
+  api: AxiosInstance;
 }
 
 class WebAPIClient {
@@ -105,44 +51,43 @@ class WebAPIClient {
     const oldToken = this.#token;
     this.#token = token;
 
-    const isAuth = await this.#sendRequest<boolean>("GET", "/auth/validate");
+    const isAuth = (await this.api.get<boolean>("/auth/validate")).data;
 
     if (!isAuth) this.#token = oldToken; // restore old token.
 
     return isAuth;
   }
 
-  async #sendRequest<T>(
-    method: Method,
-    url: string,
-    data?: object
-  ): Promise<T> {
-    return (
-      await axios({
-        method: method,
-        baseURL: this.API_BASE,
-        headers: {
-          Authorization: this.#token ? `Bearer ${this.#token}` : null,
-        },
-        data,
-      })
-    ).data;
+  public get api() {
+    console.log("API!!!");
+
+    return axios.create({
+      baseURL: this.API_BASE,
+      headers: {
+        Authorization: this.#token ? `Bearer ${this.#token}` : null,
+      },
+    });
   }
 
   async login(username: string, password: string): Promise<boolean> {
-    const resp = await this.#sendRequest<{ token?: string }>(
-      "GET",
-      "/auth/login",
-      {
-        username,
-        password,
-      }
-    );
+    const resp = await this.api.post<{ token?: string }>("/auth/login", {
+      username,
+      password,
+    });
 
-    if (resp.token) this.#token = resp.token;
-    return resp.token != undefined;
+    if (resp.data.token) this.#token = resp.data.token;
+    return resp.data.token != undefined;
+  }
+
+  async logout(): Promise<boolean> {
+    if (!this.isAuthenticated()) return false;
+
+    this.#token = undefined;
+
+    await this.api.post("/auth/logout");
+
+    return true;
   }
 
   // ...
 }
-
