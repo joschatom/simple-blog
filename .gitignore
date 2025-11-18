@@ -2,3 +2,4 @@
 tmp/*
 *-local/*
 *.private
+node_modules
