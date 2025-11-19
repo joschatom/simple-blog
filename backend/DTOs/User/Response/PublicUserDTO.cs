@@ -4,5 +4,5 @@ public class PublicUserDTO
 {
     public required Guid Id { get; set; }
     public required string Username { get; set; }
-    public required DateTime CreatedAT { get; set; }
+    public required DateTime CreatedAt { get; set; }
 }

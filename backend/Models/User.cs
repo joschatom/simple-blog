@@ -10,5 +10,4 @@ public class User
     public required string PasswordHash { get; set; }
     public required DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
-
 }
