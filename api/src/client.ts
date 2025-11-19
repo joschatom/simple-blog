@@ -1,5 +1,5 @@
 import type { AxiosInstance } from "axios";
-import { handleAPIResponse } from "./error";
+import { handleAPIResponse } from "./error.ts";
 import axios from "axios";
 
 export interface APIClient {
@@ -40,12 +40,13 @@ export class WebAPIClient {
   }
 
   async authenticate(token: string): Promise<void> {
-    const oldToken = this.#token;
+    await handleAPIResponse(() =>
+      this.api.get<boolean>("/auth/validate", {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+    );
+
     this.#token = token;
-
-    await handleAPIResponse(() => this.api.get<boolean>("/auth/validate"));
-
-    this.#token = oldToken; // restore old token.
   }
 
   public get api() {

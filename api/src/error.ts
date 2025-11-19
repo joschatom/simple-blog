@@ -1,8 +1,9 @@
 import { AxiosError, type AxiosResponse } from "axios";
 import z, { ZodError } from "zod";
-import { ProblemDetailsError, ValidationErrors } from "./schemas/errors";
+import { ProblemDetailsError, ValidationErrors } from "./schemas/errors.ts";
 
 export type APIErrorKind = "validation" | "generic" | "axios";
+export declare const APIErrorKind: APIErrorKind;
 
 type APIErrorInner<T extends APIErrorKind> = T extends "validation"
   ? ValidationErrors
@@ -27,6 +28,15 @@ export class APIError {
     kind: T
   ): APIErrorInner<T> | undefined {
     if (this.kind === kind) return this.inner as APIErrorInner<typeof kind>;
+    else return undefined;
+  }
+
+  static asDowncast<T extends APIErrorKind>(
+    err: any,
+    kind: T
+  ): APIErrorInner<T> | undefined {
+    if (err instanceof APIError)
+      return err.downcast<T>(kind)
     else return undefined;
   }
 }
