@@ -8,7 +8,7 @@ export class User {
 
   constructor(client: APIClient, data: UserData) {
     this.#client = client;
-    this.data = data;
+    this.data = { ...data, createdAt: new Date(data.createdAt)};
   }
 
   static async getByID(client: APIClient, id: string): Promise<User> {

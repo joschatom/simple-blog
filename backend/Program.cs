@@ -1,4 +1,6 @@
+using backend;
 using backend.Data;
+using backend.Helpers;
 using backend.Interfaces;
 using backend.Profiles;
 using backend.Repositories;
@@ -13,6 +15,8 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Configuration.AddUserSecrets<IBlogBackendMarker>(false, true);
 
 ConfigurationManager _configuration = builder.Configuration;
 builder.Services.AddSingleton<IConfiguration>(_configuration);
@@ -61,6 +65,8 @@ builder.Services.AddDbContext<DataContext>(options => {
     options.UseSqlServer(builder.Configuration.GetConnectionString("Default"));
 
 });
+
+builder.Services.AddSingleton<JwtTokenGenerator>();
 
 builder.Services.AddHealthChecks();
 

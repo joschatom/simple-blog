@@ -1,33 +1,58 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { Client } from "../client";
-import { User } from "blog-api";
-import { useNavigate } from "react-router";
+import { APIError } from "blog-api";
+import { NavLink } from "react-router";
+import { ErrorDisplay } from "../components/Error";
 
 export function Homepage() {
   const client = useContext(Client);
+  const [error, setError] = useState<APIError>();
 
-  const navigate = useNavigate();
+  const login = async (data: FormData) => {
+    try {
+      await client.login(
+        data.get("username")!.toString(),
+        data.get("password")!.toString()
+      );
+    } catch (e) {
+      if (e instanceof APIError) setError(e);
+    }
+  };
 
   return (
     <>
-      <form
-        action={async (data) => {
-          await client.login(
-            data.get("username")!.toString(),
-            data.get("password")!.toString()
-          );
-          alert(JSON.stringify(await User.currentUser(client), null, 2));
-          navigate("/users/me");
-        }}
-      >
-        <label htmlFor="username">Username: </label>
-        <input id="username" name="username" />
-        <br />
-        <label htmlFor="password">Password: </label>
-        <input id="password" name="password" type="password" />
-        <br />
-        <button type="submit">Login</button>
-      </form>
+      {error && <ErrorDisplay error={error} />}
+
+      {!client.isAuthenticated() ? (
+        <form action={login}>
+          <label htmlFor="username">Username: </label>
+          <input id="username" name="username" required />
+          <br />
+          <label htmlFor="password">Password: </label>
+          <input
+            id="password"
+            name="password"
+            type="password"
+            required
+            minLength={6}
+          />
+          <br />
+          <button type="submit">Login</button>
+        </form>
+      ) : (
+        <>
+          <h1>
+            Logged in as <NavLink to="/users/me">User</NavLink>
+          </h1>{" "}
+          <button
+            onClick={async () => {
+              client.logout();
+            }}
+          >
+            Logout
+          </button>
+        </>
+      )}
     </>
   );
 }

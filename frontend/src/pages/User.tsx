@@ -2,6 +2,7 @@ import { APIError, User } from "blog-api";
 import { useContext, useEffect, useState } from "react";
 import { NavLink, useParams } from "react-router";
 import { Client } from "../client";
+import { ErrorDisplay } from "../components/Error";
 
 export function UserPage() {
   const { id } = useParams();
@@ -20,27 +21,48 @@ export function UserPage() {
         else if (id?.startsWith(":"))
           setUser(await User.getByID(client, id.slice(1)));
         else setUser(await User.getByName(client, id));
-
-        await client.login("admin", "abc12345");
-
       } catch (e) {
         if (e instanceof APIError) setError(e);
       }
     };
 
     load();
-
   }, [id, client]);
+
+  console.log(user?.data);
 
   return (
     <div style={{ fontSize: 24 }}>
-      {error && <h1>{error.inner.title}</h1>}
-      {user && <div>
-          Username: {user.data.username}<br/>
-          ID: {user.data.id}<br/>
+      {error && <ErrorDisplay error={error} marker={id} />}
 
+      {user && (
+        <div>
+          Username: {user.data.username}
+          <br />
+          Joined: {user.data.createdAt.toLocaleString()}
+          <br />
+          {user.data.email && (
+            <>
+              Email: <code>{user.data.email}</code>
+              <br />
+            </>
+          )}
+          ID: <code>{user.data.id}</code>
+          <br />
           <NavLink to="/users/me">Me</NavLink>
-        </div>}
+        </div>
+      )}
+
+      {client.isAuthenticated() && (
+        <button
+          onClick={async () => {
+            setUser(undefined);
+            client.logout();
+          }}
+        >
+          Logout
+        </button>
+      )}
     </div>
   );
 }

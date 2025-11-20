@@ -1,4 +1,4 @@
-import { AxiosError, type AxiosResponse } from "axios";
+import { AxiosError, AxiosHeaders, type AxiosResponse } from "axios";
 import z, { ZodError } from "zod";
 import { ProblemDetailsError, ValidationErrors } from "./schemas/errors.ts";
 
@@ -52,16 +52,20 @@ function handleAPIErrorThrowing(err: AxiosError) {
     });
 
   try {
-    throw new APIError("validation", z.parse(ValidationErrors, err));
+    const error = z.parse(ValidationErrors, resp.data);
+    throw new APIError("validation", error);
+  } catch (e) {
+    if (!(e instanceof ZodError)) throw e;
+    console.log(e);
+  }
+
+  try {
+    throw new APIError("generic", z.parse(ProblemDetailsError, resp.data));
   } catch (e) {
     if (!(e instanceof ZodError)) throw e;
   }
 
-  try {
-    throw new APIError("generic", z.parse(ProblemDetailsError, err));
-  } catch (e) {
-    if (!(e instanceof ZodError)) throw e;
-  }
+  const authError = resp.headers["WWW-Authenticate"];
 
   throw new APIError("generic", {
     status: resp.status,
@@ -70,7 +74,7 @@ function handleAPIErrorThrowing(err: AxiosError) {
     detail:
       typeof resp.data == "object"
         ? JSON.stringify(resp.data)
-        : resp.data?.toString() || "null",
+        : resp.data?.toString(),
   });
 }
 

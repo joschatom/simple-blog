@@ -1,6 +1,7 @@
 import type { AxiosInstance } from "axios";
 import { handleAPIResponse } from "./error.ts";
 import axios from "axios";
+import z from "zod";
 
 export interface APIClient {
   VERSION: string;
@@ -22,21 +23,30 @@ export class WebAPIClient {
   }
 
   #host: string;
-  #token?: string | undefined;
+  token?: string | undefined;
+  onTokenChanged?: (tok: string) => void;
 
   /**
    *
    */
-  constructor(host: string) {
+
+  constructor(
+    host: string,
+    token?: string,
+    onTokenChanged?: (tok: string) => void
+  ) {
     this.#host = host;
+      this.token = token;
+    this.onTokenChanged = onTokenChanged;
   }
 
   isAuthenticated(): boolean {
-    return this.#token !== undefined;
+    return this.token !== undefined && this.token.length > 32
   }
 
   authenticateUnchecked(token: string): void {
-    this.#token = token;
+    this.token = token;
+    if (this.onTokenChanged) this.onTokenChanged(token);
   }
 
   async authenticate(token: string): Promise<void> {
@@ -46,7 +56,8 @@ export class WebAPIClient {
       })
     );
 
-    this.#token = token;
+    this.token = token;
+    if (this.onTokenChanged) this.onTokenChanged(token);
   }
 
   public get api() {
@@ -57,7 +68,7 @@ export class WebAPIClient {
     const instance = axios.create({
       baseURL: this.API_BASE,
       headers: {
-        Authorization: this.#token ? `Bearer ${this.#token}` : null,
+        Authorization: this.token ? `Bearer ${this.token}` : null,
       },
     });
 
@@ -78,13 +89,15 @@ export class WebAPIClient {
       })
     );
 
-    this.#token = token;
+    this.token = token;
+    if (this.onTokenChanged) this.onTokenChanged(token);
   }
 
   async logout(_track?: boolean): Promise<boolean> {
     if (!this.isAuthenticated()) return false;
 
-    this.#token = undefined;
+    this.token = undefined;
+    if (this.onTokenChanged) this.onTokenChanged(undefined);
 
     // await this.api.post("/auth/logout");
 

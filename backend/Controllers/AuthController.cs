@@ -14,7 +14,11 @@ namespace backend.Controllers;
 [Authorize]
 [ApiController]
 [Route("/api/auth")]
-public class AuthController(IUserRepository repository, IMapper mapper) : ControllerBase
+public class AuthController(
+    IUserRepository repository,
+    IMapper mapper,
+    JwtTokenGenerator jwtToken
+    ) : ControllerBase
 {
     [EndpointDescription("Validates the JWT token.")]
     [HttpGet("validate")]
@@ -42,7 +46,7 @@ public class AuthController(IUserRepository repository, IMapper mapper) : Contro
         }
 
         AuthUserDTO loginResponseDTO = mapper.Map<AuthUserDTO>(userFromDB);
-        loginResponseDTO.Token = JwtTokens.GenerateToken(userFromDB.Id);
+        loginResponseDTO.Token = jwtToken.GenerateToken(userFromDB.Id);
         return Ok(loginResponseDTO);
     }
 
@@ -86,7 +90,7 @@ public class AuthController(IUserRepository repository, IMapper mapper) : Contro
         User? responseAddUser = await repository.CreateAsync(userToAddToDB);
         if (responseAddUser != null && (await repository.SaveChangesAsync()))
         {
-            string token = JwtTokens.GenerateToken(responseAddUser.Id);
+            string token = jwtToken.GenerateToken(responseAddUser.Id);
             AuthUserDTO userToReturn = mapper.Map<AuthUserDTO>(responseAddUser);
             userToReturn.Token = token;
             return Ok(userToReturn);
