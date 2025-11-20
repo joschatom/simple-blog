@@ -2,7 +2,6 @@ import { useContext } from "react";
 import { Client } from "../client";
 import { User } from "blog-api";
 import { useNavigate } from "react-router";
-import { Button } from "../components/Button";
 
 export function Homepage() {
   const client = useContext(Client);
