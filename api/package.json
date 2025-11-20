@@ -17,7 +17,9 @@
   "author": "Joscha Egloff",
   "type": "module",
   "main": "src/index.js",
-  "files": ["src"],
+  "files": [
+    "src"
+  ],
   "scripts": {
     "test": "node --test ./src/*.test.ts",
     "types:check": "tsc --noEmit"
