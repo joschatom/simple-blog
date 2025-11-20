@@ -1,10 +1,19 @@
 import { beforeEach, describe, test } from "node:test";
 import assert from "node:assert";
 import { WebAPIClient, type APIClient } from "./client.ts";
+import { getBackendSecrets } from "./secrets.ts"
+
 var client: APIClient;
 
+var secrets: {
+  AdminPassword: string
+};
+
 describe("WebAPI client", () => {
-  beforeEach(async () => (client = new WebAPIClient("http://localhost:5233")));
+  beforeEach(async () => {
+    client = new WebAPIClient("http://localhost:5233");
+    secrets = await getBackendSecrets() as typeof secrets; // TODO: validate
+  });
 
   describe("logged out", () => {
     test("not authenticated", () => {
@@ -15,7 +24,7 @@ describe("WebAPI client", () => {
     });
 
     test("login with valid username and password", async () => {
-      await assert.doesNotReject(client.login("admin", "abc12345"));
+      await assert.doesNotReject(client.login("admin", secrets.AdminPassword));
       assert.strictEqual(client.isAuthenticated(), true);
     });
 
