@@ -12,9 +12,6 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  --primary: rgb(0 0 0 / 0.8);
-  --text: white;
-  --accent: #646cff;
 }
 
 a {
@@ -52,4 +49,14 @@ h1 {
   button {
     background-color: #f9f9f9;
   }
+}
+
+
+label {
+  margin-right: 10px;
+  margin-bottom: 10px;
+}
+
+.form-field {
+  margin-bottom: 10px;
 }
