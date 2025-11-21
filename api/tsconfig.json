@@ -12,5 +12,5 @@
   },
   // These may be different for your repo:
   "include": ["./src"],
-  "exclude": ["**/*/*.test.*", "**/*.fixture.*"]
+  "exclude": ["**/*.fixture.*"]
 }

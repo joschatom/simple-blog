@@ -6,8 +6,12 @@ using backend.Interfaces;
 using backend.Models;
 using backend.Repositories;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Mvc.Formatters;
+using System.ComponentModel;
 
 namespace backend.Controllers;
 
@@ -17,7 +21,7 @@ namespace backend.Controllers;
 public class AuthController(
     IUserRepository repository,
     IMapper mapper,
-    JwtTokenGenerator jwtToken
+    JwtTokenGenerator jwtTokenGenerator
     ) : ControllerBase
 {
     [EndpointDescription("Validates the JWT token.")]
@@ -36,17 +40,22 @@ public class AuthController(
 
         User? userFromDB = await repository.GetByNameAsync(login.Username);
 
-        if (userFromDB == null)
-        {
-            return Unauthorized("Invalid username or password");
-        }
+        if (userFromDB == null) return Unauthorized("Invalid username or password");
+        else if (userFromDB.Token != null)
+            Console.WriteLine("[WARN] User already logged in. Existing token will be replaced.");
+
         if (!PasswordHasher.CompareHashAndPassword(userFromDB.PasswordHash, login.Password))
         {
             return Unauthorized("Invalid username or password");
         }
 
         AuthUserDTO loginResponseDTO = mapper.Map<AuthUserDTO>(userFromDB);
-        loginResponseDTO.Token = jwtToken.GenerateToken(userFromDB.Id);
+        loginResponseDTO.Token = jwtTokenGenerator.GenerateToken(userFromDB);
+
+        userFromDB.LastLogin = DateTime.UtcNow;
+        userFromDB.Token = loginResponseDTO.Token;
+        await repository.UpdateAsync(userFromDB.Id, userFromDB);
+
         return Ok(loginResponseDTO);
     }
 
@@ -90,7 +99,7 @@ public class AuthController(
         User? responseAddUser = await repository.CreateAsync(userToAddToDB);
         if (responseAddUser != null && (await repository.SaveChangesAsync()))
         {
-            string token = jwtToken.GenerateToken(responseAddUser.Id);
+            string token = jwtTokenGenerator.GenerateToken(responseAddUser);
             AuthUserDTO userToReturn = mapper.Map<AuthUserDTO>(responseAddUser);
             userToReturn.Token = token;
             return Ok(userToReturn);
@@ -107,11 +116,24 @@ public class AuthController(
         }
     }
 
-
     [EndpointDescription("Changes the password for the authenticated user.")]
     [HttpPost, Route("change-password")]
     public async Task<ActionResult> ChangePassword()
     {
         throw new NotImplementedException();
     }
+
+    [EndpointDescription("Logout current user.")]
+    [HttpPost, Route("logout")]
+    public async Task<ActionResult> Logout(
+         User CurrentUser
+        )
+    {
+        _ = CurrentUser ?? throw new ArgumentNullException(nameof(CurrentUser));
+
+        return Ok();
+    }
+
+    
 }
+

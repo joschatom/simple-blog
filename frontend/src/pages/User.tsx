@@ -19,8 +19,8 @@ export function UserPage() {
         }
         if (id === "me") setUser(await User.currentUser(client));
         else if (id?.startsWith(":"))
-          setUser(await User.getByID(client, id.slice(1)));
-        else setUser(await User.getByName(client, id));
+          setUser(await User.fetchByID(client, id.slice(1)));
+        else setUser(await User.fetchByName(client, id));
       } catch (e) {
         if (e instanceof APIError) setError(e);
       }

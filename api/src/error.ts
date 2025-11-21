@@ -52,20 +52,18 @@ function handleAPIErrorThrowing(err: AxiosError) {
     });
 
   try {
-    const error = z.parse(ValidationErrors, resp.data);
+    const error = z.parse(ValidationErrors, JSON.parse(resp.data as string));
     throw new APIError("validation", error);
   } catch (e) {
-    if (!(e instanceof ZodError)) throw e;
     console.log(e);
+    if (!(e instanceof ZodError)) throw e;
   }
 
   try {
-    throw new APIError("generic", z.parse(ProblemDetailsError, resp.data));
+    throw new APIError("generic", z.parse(ProblemDetailsError, JSON.parse(resp.data as string)));
   } catch (e) {
     if (!(e instanceof ZodError)) throw e;
   }
-
-  const authError = resp.headers["WWW-Authenticate"];
 
   throw new APIError("generic", {
     status: resp.status,

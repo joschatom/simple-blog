@@ -8,3 +8,8 @@ import { env } from "node:process";
 export { type APIClient, WebAPIClient, APIError, User };
 
 
+const schema = z.object({
+    a: z.number(),
+    dt: z.date(),
+    tok: z.jwt()
+});

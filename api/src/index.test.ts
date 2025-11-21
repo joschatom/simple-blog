@@ -1,18 +1,17 @@
-import { beforeEach, describe, test } from "node:test";
+import { after, beforeEach, describe, test } from "node:test";
 import assert from "node:assert";
 import { WebAPIClient, type APIClient } from "./client.ts";
-import { getBackendSecrets } from "./secrets.ts"
+import { getBackendSecrets } from "./secrets.ts";
 
 var client: APIClient;
-
 var secrets: {
-  AdminPassword: string
+  AdminPassword: string;
 };
 
 describe("WebAPI client", () => {
   beforeEach(async () => {
     client = new WebAPIClient("http://localhost:5233");
-    secrets = await getBackendSecrets() as typeof secrets; // TODO: validate
+    secrets = (await getBackendSecrets()) as typeof secrets; // TODO: validate
   });
 
   describe("logged out", () => {
@@ -32,16 +31,12 @@ describe("WebAPI client", () => {
       await assert.rejects(client.login("invalid", "invalidpassword123"));
       assert.strictEqual(client.isAuthenticated(), false);
     });
-
-    test("set token directly (unchecked)", () => {
-      client.authenticateUnchecked("my token");
-      assert.strictEqual(client.isAuthenticated(), true);
+  });
+  describe("logged in", () => {
+    beforeEach(async () => {
+      await client.login("admin", secrets.AdminPassword);
     });
 
-    test("logout (untracked)", async () => {
-      client.authenticateUnchecked("my token");
-      await assert.doesNotReject(client.logout(false));
-      assert.strictEqual(client.isAuthenticated(), false);
-    });
+    test("logout", () => assert.doesNotReject(client.logout()));
   });
 });

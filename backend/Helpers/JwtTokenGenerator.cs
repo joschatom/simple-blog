@@ -1,4 +1,5 @@
 ﻿
+using backend.Models;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using System.IdentityModel.Tokens.Jwt;
@@ -27,19 +28,23 @@ public class JwtTokenGenerator
         _Issuer = tempIssuerHolder;
     }
 
-    public string GenerateToken(Guid userId, int daysToExpire = 5) // default 5 days can be changed
+    public string GenerateToken(User user, int daysToExpire = 5) // default 5 days can be changed
     {
         var key = Encoding.UTF8.GetBytes(_TokenSecret);
-        var userData = JsonConvert.SerializeObject(userId);
+        var userData = JsonConvert.SerializeObject(user.Id);
         var tokenDescriptor = new SecurityTokenDescriptor
         {
-            Subject = new ClaimsIdentity(new[] { new Claim(ClaimTypes.UserData, userData), }),
+            Subject = new ClaimsIdentity(new[] { 
+                new Claim(ClaimTypes.UserData, userData),
+                new Claim(ClaimTypes.Name, user.Username)
+            }),
             Expires = DateTime.UtcNow.AddDays(daysToExpire),
             Issuer = _Issuer,
             Audience = _Audience,
             SigningCredentials = new SigningCredentials
             (new SymmetricSecurityKey(key),
-            SecurityAlgorithms.HmacSha512Signature)
+            SecurityAlgorithms.HmacSha512Signature),
+            IssuedAt = DateTime.Now
         };
         var tokenHandler = new JwtSecurityTokenHandler();
         var token = tokenHandler.CreateToken(tokenDescriptor);

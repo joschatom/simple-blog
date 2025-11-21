@@ -8,17 +8,17 @@ export class User {
 
   constructor(client: APIClient, data: UserData) {
     this.#client = client;
-    this.data = { ...data, createdAt: new Date(data.createdAt)};
+    this.data = data;
   }
 
-  static async getByID(client: APIClient, id: string): Promise<User> {
+  static async fetchByID(client: APIClient, id: string): Promise<User> {
     return new User(
       client,
       await handleAPIResponse(() => client.api.get<UserData>(`/users/${id}`))
     );
   }
 
-  static async getByName(client: APIClient, id: string): Promise<User> {
+  static async fetchByName(client: APIClient, id: string): Promise<User> {
     return new User(
       client,
       await handleAPIResponse(() =>
@@ -27,7 +27,7 @@ export class User {
     );
   }
 
-  static async currentUser(client: APIClient): Promise<User> {
+  static async fetchCurrentUser(client: APIClient): Promise<User> {
     return new User(
       client,
       await handleAPIResponse(() =>
