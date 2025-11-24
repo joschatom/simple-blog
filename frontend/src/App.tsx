@@ -5,6 +5,7 @@ import "./App.css";
 import { WebAPIClient } from "blog-api";
 import { useState } from "react";
 import { Client } from "./client";
+import { LoginPage } from "./pages/Login";
 
 function App() {
   const [apiToken, setAPIToken] = useState<string | null>(
@@ -14,6 +15,7 @@ function App() {
   const client = new WebAPIClient(
     "http://localhost:5233",
     apiToken ? apiToken : undefined,
+    undefined,
     (v) => {
       console.log(v);
       localStorage.setItem("token", v);
@@ -27,6 +29,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Homepage />} />
           <Route path="/users/:id" element={<UserPage />} />
+          <Route path="/login" element={<LoginPage />} />
         </Routes>
       </Client.Provider>
     </>

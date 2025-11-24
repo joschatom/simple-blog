@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
+using System.Text.RegularExpressions;
 
 namespace backend.Models;
 
@@ -9,8 +10,7 @@ namespace backend.Models;
 /// Represents a user on the blogging platform.
 /// </summary>
 [DebuggerDisplay("User: {Username} (ID {Id})")]
-[ModelBinder(BinderType = typeof(CurrentUserValueProvider))]
-public class User: TimedModel
+public partial class User: TimedModel
 {
     // === Primary Key ===
     public Guid Id { get; set; }
@@ -29,4 +29,8 @@ public class User: TimedModel
     // === Navigation Properties ===
     public virtual ICollection<Post> Posts { get; set; } = [];
     public virtual ICollection<MuteUser> MutedUsers { get; set; } = [];
+
+
+    [GeneratedRegex(@"^[a-zA-Z0-9-]+$")]
+    public static partial Regex ValidUsername();
 }

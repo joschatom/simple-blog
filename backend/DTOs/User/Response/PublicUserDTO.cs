@@ -1,4 +1,6 @@
-﻿namespace backend.DTOs.User.Response;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace backend.DTOs.User.Response;
 
 public class PublicUserDTO
 {

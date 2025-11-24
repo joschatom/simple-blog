@@ -88,3 +88,19 @@ export async function handleAPIResponse<T>(
 
   throw "unreachable";
 }
+
+export async function parseAPIResponse<T extends z.ZodType>(
+  schema: T,
+  req: () => Promise<AxiosResponse<z.infer<T>>>
+): Promise<z.infer<T>> {
+  try {
+    const data = (await req()).data;
+    
+    return z.parse(schema, data);
+  } catch (e) {
+    if (e instanceof AxiosError) handleAPIErrorThrowing(e);
+    else throw e;
+  }
+
+  throw "unreachable";
+}

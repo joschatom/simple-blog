@@ -1,12 +1,19 @@
 import z from "zod";
 
+const isoDatetimeToDate = z.codec(z.string(), z.date(), {
+  decode: (isoString) => new Date(isoString),
+  encode: (date) => date.toISOString(),
+});
+ 
+
 export const UserData = z.object({
   id: z.guid(),
   username: z.string(),
-  createdAt: z.date(),
+  createdAt: isoDatetimeToDate,
   email: z.email().optional(),
-  lastLogin: z.date().optional(),
-  updatedAt: z.date().optional(),
+  lastLogin: isoDatetimeToDate.optional(),
+  updatedAt: isoDatetimeToDate.optional(),
 });
 
 export type UserData = z.infer<typeof UserData>;
+

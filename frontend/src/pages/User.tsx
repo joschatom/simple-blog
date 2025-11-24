@@ -3,6 +3,7 @@ import { useContext, useEffect, useState } from "react";
 import { NavLink, useParams } from "react-router";
 import { Client } from "../client";
 import { ErrorDisplay } from "../components/Error";
+import { Header } from "../components/Header";
 
 export function UserPage() {
   const { id } = useParams();
@@ -13,16 +14,18 @@ export function UserPage() {
   useEffect(() => {
     const load = async () => {
       try {
+        console.log(await User.fetchByName(client, "admin"));
         if (!id) {
           alert("id not given");
           return;
         }
-        if (id === "me") setUser(await User.currentUser(client));
+        if (id === "me") setUser(await User.fetchCurrentUser(client));
         else if (id?.startsWith(":"))
           setUser(await User.fetchByID(client, id.slice(1)));
         else setUser(await User.fetchByName(client, id));
       } catch (e) {
         if (e instanceof APIError) setError(e);
+        console.log(e);
       }
     };
 
@@ -33,13 +36,17 @@ export function UserPage() {
 
   return (
     <div style={{ fontSize: 24 }}>
+
+      <Header/>
+    
+
       {error && <ErrorDisplay error={error} marker={id} />}
 
       {user && (
         <div>
           Username: {user.data.username}
           <br />
-          Joined: {user.data.createdAt.toLocaleString()}
+          Joined: {user.data.createdAt.toLocaleString("de-ch")}
           <br />
           {user.data.email && (
             <>

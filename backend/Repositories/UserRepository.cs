@@ -2,6 +2,7 @@
 using backend.Helpers;
 using backend.Interfaces;
 using backend.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection.Metadata.Ecma335;
 
@@ -75,4 +76,16 @@ public class UserRepository: BaseRepository<User>, IUserRepository
             .Where(u => u.Email == email)
             .FirstOrDefaultAsync();
     }
+
+    public async Task MuteUser(Guid muter, Guid mutee)
+    {
+        await context.UserMutes.AddAsync(
+            new Models.MuteUser
+        {
+            UserId = muter,
+            MutedUserId = mutee
+        });
+    }
 }
+
+

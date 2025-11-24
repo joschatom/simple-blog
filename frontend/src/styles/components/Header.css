@@ -1,0 +1,49 @@
+
+
+.blog-header {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+
+    display: flex;
+    justify-content: space-between;
+
+    width: 100%;
+
+    border-bottom: solid;
+}
+
+.blog-header > * {
+    margin: 10px;
+}
+
+.blog-header:nth-child(1){
+    align-self: flex-start;
+}
+
+.blog-header {
+    line-height: 60px;
+    font-size: 60px;
+}
+
+.header-placeholder {
+    height: 120px;
+}
+
+.profile-image{
+    height: 64px;
+    top: 0px;
+    left: 0px;
+
+    outline-offset: -2px;
+    outline-color: red;
+    outline-width: 0px;
+    outline-style: solid;
+    border-radius: 50%;
+
+    transition: outline-width 1s;
+}
+
+.profile-image:hover {
+    outline-width: 2px;
+}

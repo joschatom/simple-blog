@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using System.ComponentModel;
+using System.Security.Claims;
 
 namespace backend.Controllers;
 
@@ -55,6 +56,9 @@ public class AuthController(
         userFromDB.LastLogin = DateTime.UtcNow;
         userFromDB.Token = loginResponseDTO.Token;
         await repository.UpdateAsync(userFromDB.Id, userFromDB);
+
+        await repository.SaveChangesAsync();
+
 
         return Ok(loginResponseDTO);
     }
@@ -125,15 +129,19 @@ public class AuthController(
 
     [EndpointDescription("Logout current user.")]
     [HttpPost, Route("logout")]
-    public async Task<ActionResult> Logout(
-         User CurrentUser
-        )
+    public async Task<ActionResult> Logout()
     {
-        _ = CurrentUser ?? throw new ArgumentNullException(nameof(CurrentUser));
+        var user = await this.CurrentUser();
+
+        if (ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        user!.Token = null;
+
+        await repository.UpdateAsync(user.Id, user);
+        await repository.SaveChangesAsync();
 
         return Ok();
     }
-
-    
 }
 

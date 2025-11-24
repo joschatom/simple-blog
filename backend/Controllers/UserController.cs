@@ -5,8 +5,10 @@ using backend.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Newtonsoft.Json;
 using System.Security.Claims;
+using System.Text.RegularExpressions;
 
 namespace backend.Controllers;
 
@@ -21,20 +23,10 @@ public class UserController(IUserRepository repository, IMapper mapper)
     public async Task<IEnumerable<PublicUserDTO>> GetAllUsers()
         => mapper.Map<IEnumerable<PublicUserDTO>>(await repository.GetAllAsync());
 
-    [NonAction]
-    public async Task<User> CurrentUser() {
-        var userData = User.FindFirstValue(ClaimTypes.UserData)
-            ?? throw new Exception("Invalid Token");
-
-        var id = JsonConvert.DeserializeObject<Guid>(userData!);
-
-        return await repository.GetByIdAsync(id)
-            ?? throw new KeyNotFoundException($"User with ID {id} cannot be found.");
-    }
 
     [HttpGet("me")]
     public async Task<ActionResult<UserDTO>> GetCurrentUser()
-        => mapper.Map<UserDTO>(await CurrentUser());
+        => mapper.Map<UserDTO>(await this.CurrentUser());
 
     [AllowAnonymous]
     [HttpGet("{id}")]
@@ -62,7 +54,7 @@ public class UserController(IUserRepository repository, IMapper mapper)
         if (!await repository.ExistsAsync(id))
             return NotFound($"User with ID {id} cannot be found.");
 
-        if ((await CurrentUser()).Id != id) // TODO: Admins
+        if ((await this.CurrentUser())!.Id != id) // TODO: Admins
             return Unauthorized($"Cannot delete someone else's account.");
 
         await repository.DeleteAsync(id);
@@ -70,5 +62,24 @@ public class UserController(IUserRepository repository, IMapper mapper)
 
         return SignOut();
     }
+
+
+    [HttpDelete("{id}/mute")]
+    public async Task<ActionResult> MuteUser(Guid id)
+    {
+        if (!await repository.ExistsAsync(id))
+            return NotFound($"User with ID {id} cannot be found.");
+
+        var currentUser = await this.CurrentUser();
+
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        await repository.MuteUser(currentUser!.Id, id);
+        await repository.SaveChangesAsync();
+
+        return Ok();
+    }
 }
+
 
