@@ -71,3 +71,19 @@ form > * {
 form button {
   width: 100%;
 }
+
+.loading{
+  animation: hr-loading-anim 1s linear infinite;
+  padding: 1px;
+  background: #2679d1;
+  border-width: 0px;
+}
+
+@keyframes hr-loading-anim {
+  0% {
+    width: 10%;
+  }
+  100% {
+    width: 100%;
+  }
+}

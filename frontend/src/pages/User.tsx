@@ -14,7 +14,6 @@ export function UserPage() {
   useEffect(() => {
     const load = async () => {
       try {
-        console.log(await User.fetchByName(client, "admin"));
         if (!id) {
           alert("id not given");
           return;

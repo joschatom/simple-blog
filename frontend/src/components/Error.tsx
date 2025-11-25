@@ -6,7 +6,7 @@ export function ErrorDisplay({ error }: { error: unknown; marker?: string }) {
     if ((err = APIError.asDowncast(error, "axios")))
       return (
         <>
-          <h3>{err.title}</h3>
+          <h2>Failed to call API</h2>
           <p>{err.detail}</p>
           <code>Type: {err.type}</code>
         </>
@@ -14,9 +14,9 @@ export function ErrorDisplay({ error }: { error: unknown; marker?: string }) {
     else if ((err = APIError.asDowncast(error, "generic")))
       return (
         <>
-          <h3>
-            [Status {err.status}] {err.title}
-          </h3>
+          <h2>
+            {err.status && <>[Status {err.status}]</>}  {err.title}
+          </h2>
           <p>{err.detail}</p>
           <code>Type: {err.type}</code>
         </>
@@ -24,9 +24,9 @@ export function ErrorDisplay({ error }: { error: unknown; marker?: string }) {
     else if ((err = APIError.asDowncast(error, "validation")))
       return (
         <>
-          <h3>
-            [Status {err.status}] {err.title}
-          </h3>
+          <h2>
+            {err.status && <>[Status {err.status}]</>} {err.title}
+          </h2>
           <div>
             {Object.entries(err.errors).map(([field, err]) => (
               <span>

@@ -35,8 +35,7 @@ export class APIError {
     err: any,
     kind: T
   ): APIErrorInner<T> | undefined {
-    if (err instanceof APIError)
-      return err.downcast<T>(kind)
+    if (err instanceof APIError) return err.downcast<T>(kind);
     else return undefined;
   }
 }
@@ -47,8 +46,7 @@ function handleAPIErrorThrowing(err: AxiosError) {
   if (!resp)
     throw new APIError("axios", {
       type: err.message,
-      title: err.name,
-      detail: JSON.stringify(err.toJSON()),
+      title: err.name
     });
 
   try {
@@ -60,7 +58,10 @@ function handleAPIErrorThrowing(err: AxiosError) {
   }
 
   try {
-    throw new APIError("generic", z.parse(ProblemDetailsError, JSON.parse(resp.data as string)));
+    throw new APIError(
+      "generic",
+      z.parse(ProblemDetailsError, JSON.parse(resp.data as string))
+    );
   } catch (e) {
     if (!(e instanceof ZodError)) throw e;
   }
@@ -95,7 +96,7 @@ export async function parseAPIResponse<T extends z.ZodType>(
 ): Promise<z.infer<T>> {
   try {
     const data = (await req()).data;
-    
+
     return z.parse(schema, data);
   } catch (e) {
     if (e instanceof AxiosError) handleAPIErrorThrowing(e);
