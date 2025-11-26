@@ -23,9 +23,11 @@ builder.Services.AddSingleton<IConfiguration>(_configuration);
 
 // Add services to the container.
 builder.Services.AddControllers();
+
+builder.Services.AddBackendServices(_configuration);
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 builder.Services.AddSwaggerGen(options =>
 {
@@ -38,35 +40,14 @@ builder.Services.AddSwaggerGen(options =>
     options.AddSecurityRequirement(new OpenApiSecurityRequirement { { new OpenApiSecurityScheme { Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" } }, Array.Empty<string>() } });
     options.SwaggerDoc("v1", new OpenApiInfo { Title = "Blog API", Version = "v1" });
 });
-// Add JWT Authentication
-builder.Services.AddAuthentication(o =>
+
+if (builder.Environment.EnvironmentName != "Testing")
 {
-    o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    o.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-    o.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-}).AddJwtBearer(config =>
-{
-    string? _TokenSecret = builder.Configuration.GetValue<string>("JWT:TokenSecret") ?? throw new NullReferenceException("missing token secret!");
-    var key = Encoding.UTF8.GetBytes(_TokenSecret);
-    config.SaveToken = true;
-    config.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidIssuer = builder.Configuration.GetValue<string>("JWT:Issuer"),
-        ValidAudience = builder.Configuration.GetValue<string>("JWT:Audience"),
-        IssuerSigningKey = new SymmetricSecurityKey(key),
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateIssuerSigningKey = true,
-    };
-});
-
-builder.Services.AddAutoMapper(o => o.AddProfile<UserProfile>());
-builder.Services.AddDbContext<DataContext>(options => {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("Default"));
-
-});
-
-builder.Services.AddSingleton<JwtTokenGenerator>();
+    builder.Services.AddDbContext<DataContext>(options => {
+        options.UseSqlServer(builder.Configuration.GetConnectionString("Default"));
+    });
+}
+    
 
 builder.Services.AddHealthChecks();
 
@@ -94,3 +75,4 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+

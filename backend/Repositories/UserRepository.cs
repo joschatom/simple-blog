@@ -43,7 +43,7 @@ public class UserRepository: BaseRepository<User>, IUserRepository
                 };
 
                 await CreateAsync(user);
-                await context.SaveChangesAsync();
+                await SaveChangesAsync();
             }
             else
             {

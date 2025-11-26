@@ -1,9 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics;
+using AutoBogus;
 
 namespace backend.Models;
 
 [DebuggerDisplay("Post: {Caption} (Id: {Id})")]
+
 public class Post: TimedModel
 {
     // === Primary Key ===
@@ -17,5 +20,10 @@ public class Post: TimedModel
     public required Guid UserId { get; set; }
     public virtual User User { get; set; } = null!;
     public bool RegistredUsersOnly { get; set; } = false;
+
+    public TType Generate<TType>(Action<IAutoGenerateConfigBuilder> configure = null)
+    {
+        throw new NotImplementedException();
+    }
 
 }
