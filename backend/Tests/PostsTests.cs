@@ -1,5 +1,9 @@
-﻿using backend.Data;
+﻿using AutoMapper;
+using backend.Controllers;
+using backend.Data;
+using backend.DTOs.Post.Request;
 using backend.DTOs.Post.Response;
+using backend.DTOs.Shared.Response;
 using backend.Helpers;
 using backend.Interfaces;
 using backend.Models;
@@ -20,137 +24,74 @@ using System.Collections;
 using System.ComponentModel.Design;
 using System.Data.Common;
 using System.Net.Http.Headers;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace backend.Tests;
+namespace backend.Tests.Posts;
 
-
-internal class BackendTests
+[TestFixture]
+[TestOf(nameof(PostsController.Put))]
+class Update : BackendTests
 {
-    protected TestWebApplicationFactory<Program>
-      _factory; 
-
-    [SetUp]
-    public void BaseSetUp()
+    [Test]
+    public async Task UpdatePost()
     {
-        _factory = new TestWebApplicationFactory<Program>();
-        _factory.Services.GetRequiredService<DataContext>().Database.EnsureCreated();
-    }
+        var user = UserFaker.Generate();
+        var post = PostFaker(null, f => f.RuleFor(p => p.UserId, user.Id))
+            .Take(1).First();
+        DataContext.SaveChanges();
 
-    [TearDown]
-    public void BaseTearDown()
-    {
-        _factory.Dispose();
-    }
-
-    public TRepository Service<TRepository>()
-    {
-        var postRepo = _factory.Services.GetService<TRepository>();
-        Assert.That(postRepo, Is.Not.Null);
-        return postRepo;
-    }
-
-    public IUserRepository UserRepository => _factory.Services.GetRequiredService<IUserRepository>();
-    public IPostRepository PostRepository => _factory.Services.GetRequiredService<IPostRepository>();
-    public DataContext DataContext => _factory.Services.GetRequiredService<DataContext>();
-
-
-
-    public HttpClient Authenticated(HttpClient client, User user)
-    {
-        var token = Service<JwtTokenGenerator>().GenerateToken(user);
-        client.DefaultRequestHeaders.Authorization =
-            new AuthenticationHeaderValue("Bearer", token);
-        return client;
-    }
-
-    public TDto ToDTO<TDto, TModel>(TModel model)
-    {
-        var mapper = _factory.Services.GetRequiredService<AutoMapper.IMapper>();
-        return mapper.Map<TDto>(model);
-    }
-
-    public Faker<User> UserFaker => new Faker<User>()
-        .RuleFor(u => u.Username, f => f.Internet.UserName())
-        .RuleFor(u => u.Email, f => f.Internet.Email())
-        .RuleFor(u => u.PasswordHash, f => PasswordHasher.HashPassword(f.Internet.Password()))
-        .RuleFor(u => u.CreatedAt, f => f.Date.Past())
-        .FinishWith((f, u) =>
+        var client = _factory.CreateClient();
+        client = Authenticated(client, user);
+        var updateData = new UpdatePostDTO
         {
-            if (DataContext.Users.Any(existing => existing.Username == u.Username))
-            {
-                u.Username += f.UniqueIndex;
-            }
+            Caption = "Updated Caption",
+            Content = "Updated Content"
+        };
 
-            u = DataContext.Add(u).Entity;
-            DataContext.SaveChanges();
+        var resp = await client.PutAsJsonAsync($"/api/posts/{post.Id}", updateData);
+        Assert.That(resp.IsSuccessStatusCode, Is.True);
+
+        var updated = await resp.Content.ReadFromJsonAsync<UpdatedDTO>();
+
+        DataContext.Entry(post).Reload();
+
+        var updatedPost = DataContext.Posts.Find(post.Id);
+        Assert.Multiple(() =>
+        {
+            Assert.That(updatedPost, Is.Not.Null);
+            Assert.That(updatedPost!.Caption, Is.EqualTo(updateData.Caption));
+            Assert.That(updatedPost!.Content, Is.EqualTo(updateData.Content));
         });
+    }
 
-    public IEnumerable<Post> PostFaker(int? count = 1, Func<Faker<Post>, Faker<Post>>? cb = null)
+
+
+    [Test]
+    public async Task UpdatePost_Unauthorized_Fails()
     {
-        var faker = new Faker<Post>()
-            .RuleFor(p => p.UserId, f => f.PickRandom(DataContext.Users.AsEnumerable()).Id)
-            .RuleFor(p => p.Caption, f => f.Lorem.Sentence())
-            .RuleFor(p => p.Content, f => f.Lorem.Paragraphs(1, 4))
-            .RuleFor(p => p.CreatedAt, f => f.Date.Past());
-            
-        faker = cb is null ? faker : cb(faker);
-
-        var posts = count.HasValue
-            ? faker.Generate(count.Value)
-            : faker.GenerateForever();
-
-        return posts.Select(p => DataContext.Add(p).Entity);
+        var user = UserFaker.Generate();
+        var otherUser = UserFaker.Generate();
+        var post = PostFaker(1, f => f.RuleFor(p => p.UserId, user.Id)).First();
+        DataContext.SaveChanges();
+        var client = _factory.CreateClient();
+        client = Authenticated(client, otherUser);
+        var updateData = new
+        {
+            Caption = "Updated Caption",
+            Content = "Updated Content"
+        };
+        var resp = await client.PutAsJsonAsync($"/api/posts/{post.Id}", updateData);
+        Assert.That(resp.StatusCode, Is.EqualTo(System.Net.HttpStatusCode.Forbidden));
     }
 }
 
-
-
-class PostsTests: BackendTests
+[TestFixture]
+[TestOf(nameof(PostsController.Post))]
+class Create : BackendTests
 {
-  
-
-    [Test]
-    public async Task GetPosts()
-    {
-        var users = UserFaker.Generate(3);
-
-        DataContext.SaveChanges();
-
-        var expected = PostFaker(null, null)
-            .Take(5)
-            .ToArray();
-
-        DataContext.SaveChanges();
-
-
-        var client = _factory.CreateClient();
-        
-        var resp = await client.GetAsync("/api/posts");
-        var posts = await resp.Content.ReadFromJsonAsync<PostDTO[]>();
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(resp.IsSuccessStatusCode, Is.True);
-            Assert.That(posts, Is.Not.Null);
-        });
-        
-        foreach (var post in expected)
-        {
-           var got = posts!.SingleOrDefault(p => p.Id == post.Id);
-
-            Assert.Multiple(() =>
-            {
-                Assert.That(got, Is.Not.Null);
-                Assert.That(got!.Caption, Is.EqualTo(post.Caption));
-                Assert.That(got!.Content, Is.EqualTo(post.Content));
-                Assert.That(got!.UserId, Is.EqualTo(post.UserId));
-                Assert.That(got!.CreatedAt, Is.EqualTo(post.CreatedAt).Within(1).Seconds);
-            });
-        }
-    }
 
     [Test]
     public async Task CreatePost_Unauthenticated_Fails()
@@ -170,6 +111,7 @@ class PostsTests: BackendTests
     {
         var user = UserFaker.Generate();
         DataContext.SaveChanges();
+
         var client = _factory.CreateClient();
         Authenticated(client, user);
         var newPost = new
@@ -229,7 +171,7 @@ class PostsTests: BackendTests
         DataContext.SaveChanges();
         var client = _factory.CreateClient();
         Authenticated(client, user);
-        var longContent = new string('a', 10001); 
+        var longContent = new string('a', 10001);
         var newPost = new
         {
             Caption = "Test Caption",
@@ -237,6 +179,50 @@ class PostsTests: BackendTests
         };
         var resp = await client.PostAsJsonAsync("/api/posts", newPost);
         Assert.That(resp.StatusCode, Is.EqualTo(System.Net.HttpStatusCode.BadRequest));
+    }
+}
+
+[TestFixture]
+class Get : BackendTests<PostsController>
+{
+    [Test]
+    public async Task GetPosts()
+    {
+        var users = UserFaker.Generate(3);
+
+        DataContext.SaveChanges();
+
+        var expected = PostFaker(null, null)
+            .Take(5)
+            .ToArray();
+
+        DataContext.SaveChanges();
+
+
+        var client = _factory.CreateClient();
+        
+        var resp = await client.GetAsync("/api/posts");
+        var posts = await resp.Content.ReadFromJsonAsync<PostDTO[]>();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(resp.IsSuccessStatusCode, Is.True);
+            Assert.That(posts, Is.Not.Null);
+        });
+        
+        foreach (var post in expected)
+        {
+           var got = posts!.SingleOrDefault(p => p.Id == post.Id);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(got, Is.Not.Null);
+                Assert.That(got!.Caption, Is.EqualTo(post.Caption));
+                Assert.That(got!.Content, Is.EqualTo(post.Content));
+                Assert.That(got!.UserId, Is.EqualTo(post.UserId));
+                Assert.That(got!.CreatedAt, Is.EqualTo(post.CreatedAt).Within(1).Seconds);
+            });
+        }
     }
 
     [Test]
@@ -321,6 +307,9 @@ class PostsTests: BackendTests
             .RuleFor(p => p.RegistredUsersOnly, true))
             .First();
         DataContext.SaveChanges();
+
+        Assert.That(post.RegistredUsersOnly, Is.True);
+
         var client = _factory.CreateClient();
         var resp = await client.GetAsync($"/api/posts/{post.Id}");
         Assert.That(resp.StatusCode, Is.EqualTo(System.Net.HttpStatusCode.Forbidden));
@@ -348,54 +337,19 @@ class PostsTests: BackendTests
             Assert.That(got!.Content, Is.EqualTo(post.Content));
             Assert.That(got!.UserId, Is.EqualTo(post.UserId));
             Assert.That(got!.CreatedAt, Is.EqualTo(post.CreatedAt).Within(1).Seconds);
+            Assert.That(got!.RegistredUsersOnly, Is.True);
         });
     }
 
-    [Test]
-    public async Task UpdatePost()
-    {
-        var user = UserFaker.Generate();
-        var post = PostFaker(1, f => f.RuleFor(p => p.UserId, user.Id)).First();
-        DataContext.SaveChanges();
 
-        var client = _factory.CreateClient();
-        client = Authenticated(client, user);
-        var updateData = new
-        {
-            Caption = "Updated Caption",
-            Content = "Updated Content"
-        };
 
-        var resp = await client.PutAsJsonAsync($"/api/posts/{post.Id}", updateData);
-        Assert.That(resp.IsSuccessStatusCode, Is.True);
 
-        var updatedPost = DataContext.Posts.Find(post.Id);
-        Assert.Multiple(() =>
-        {
-            Assert.That(updatedPost, Is.Not.Null);
-            Assert.That(updatedPost!.Caption, Is.EqualTo(updateData.Caption));
-            Assert.That(updatedPost!.Content, Is.EqualTo(updateData.Content));
-        });
-    }
+}
 
-    [Test]
-    public async Task UpdatePost_Unauthorized_Fails()
-    {
-        var user = UserFaker.Generate();
-        var otherUser = UserFaker.Generate();
-        var post = PostFaker(1, f => f.RuleFor(p => p.UserId, user.Id)).First();
-        DataContext.SaveChanges();
-        var client = _factory.CreateClient();
-        client = Authenticated(client, otherUser);
-        var updateData = new
-        {
-            Caption = "Updated Caption",
-            Content = "Updated Content"
-        };
-        var resp = await client.PutAsJsonAsync($"/api/posts/{post.Id}", updateData);
-        Assert.That(resp.StatusCode, Is.EqualTo(System.Net.HttpStatusCode.Forbidden));
-    }
-
+[TestFixture]
+[TestOf(nameof(PostsController.Delete))]
+class Delete : BackendTests
+{
     [Test]
     public async Task DeletePost()
     {
@@ -408,66 +362,30 @@ class PostsTests: BackendTests
 
         var resp = await client.DeleteAsync($"/api/posts/{post.Id}");
 
+
+
         Assert.That(resp.IsSuccessStatusCode, Is.True);
-        var deletedPost = DataContext.Posts.Find(post.Id);
-        Assert.That(deletedPost, Is.Null);
+        var updatedPosts = DataContext.Posts.ToList();
+        Assert.That(updatedPosts, Does.Not.Contain(post));
     }
-}
 
-public class TestWebApplicationFactory<TProgram>
-    : WebApplicationFactory<TProgram> where TProgram : class
-{
-    
-
-
-    protected override void ConfigureWebHost(IWebHostBuilder builder)
+    [Test]
+    public async Task DeletePost_Unauthorized_Fails()
     {
-        builder.UseConfiguration(
-            new ConfigurationBuilder()
-                .AddJsonFile("appsettings.tests.json")
-                .Build());
+        var user = UserFaker.Generate();
+        var otherUser = UserFaker.Generate();
 
-        builder.UseTestServer();
-        
-        builder.ConfigureServices(services =>
-        {
-            var config = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.tests.json")
-                .Build();
+        var post = PostFaker(1, f => f.RuleFor(p => p.UserId, user.Id)).First();
+        DataContext.SaveChanges();
 
-            services.AddSingleton<IConfiguration>(config);
+        var client = _factory.CreateClient();
+        client = Authenticated(client, otherUser);
 
-            var dbContextDescriptor = services.SingleOrDefault(
-                d => d.ServiceType ==
-                    typeof(DataContext));
+        var resp = await client.DeleteAsync($"/api/posts/{post.Id}");
+        Assert.That(resp.StatusCode, Is.EqualTo(System.Net.HttpStatusCode.Forbidden));
 
-            services.Remove(dbContextDescriptor);
-
-            var dbConnectionDescriptor = services.SingleOrDefault(
-                d => d.ServiceType ==
-                    typeof(DbConnection));
-
-            services.Remove(dbConnectionDescriptor);
-
-            // Create open SqliteConnection so EF won't automatically close it.
-            services.AddSingleton<DbConnection>(container =>
-            {
-                var connection = new SqliteConnection("DataSource=:memory:");
-                connection.Open();
-
-                return connection;
-            });
-
-            services.AddDbContext<DataContext>(( container, options) =>
-            {
-                var connection = container.GetRequiredService<DbConnection>();
-                options.UseSqlite(connection);
-               
-                
-            });
-
-        });
-
-        builder.UseEnvironment("Testing");
+        var updatedPosts = DataContext.Posts.ToList();
+        Assert.That(updatedPosts, Does.Contain(post));
     }
 }
+

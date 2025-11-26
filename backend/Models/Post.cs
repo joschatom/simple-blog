@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics;
-using AutoBogus;
 
 namespace backend.Models;
 
@@ -21,9 +20,9 @@ public class Post: TimedModel
     public virtual User User { get; set; } = null!;
     public bool RegistredUsersOnly { get; set; } = false;
 
-    public TType Generate<TType>(Action<IAutoGenerateConfigBuilder> configure = null)
+    public override string ToString()
     {
-        throw new NotImplementedException();
+        return $"Post titled \"{Caption}\" (ID {Id})";
     }
 
 }

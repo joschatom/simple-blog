@@ -9,31 +9,6 @@ using System.Security.Claims;
 
 namespace backend.Controllers;
 
-public class ControllerExt: ControllerBase
-{
-
-}
-
-public class CurrentUserValueProvider(IUserRepository repository) : IModelBinder, IModelBinderProvider
-{
-    public IModelBinder? GetBinder(ModelBinderProviderContext context)
-    {
-        if (context.Metadata.ModelType == typeof(User) 
-            )
-        {
-            _ = context.Metadata.ModelType;
-
-            return new CurrentUserValueProvider(context.Services.GetService<IUserRepository>()!);
-        }
-        return null;
-    }
-    public async Task BindModelAsync(ModelBindingContext bindingContext)
-    {
-
-
-
-    }
-}
 public static class ControllerExtensions
 {
     public static Guid GetCurrentUserId(this ControllerBase controller)

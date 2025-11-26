@@ -21,11 +21,8 @@ public class UserRepository: BaseRepository<User>, IUserRepository
             if (!env.IsDevelopment())
                 return;
 
-            var adminPassword = config.GetValue<string>("AdminPassword");
-            if (adminPassword is null)
-            {
-                throw new Exception("Admin password not set in configuration.");
-            }
+            var adminPassword = config.GetValue<string>("AdminPassword")
+                ?? throw new Exception("Admin password not set in configuration.");
 
             var hashedPassword = PasswordHasher.HashPassword(adminPassword);
 

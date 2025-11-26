@@ -1,6 +1,7 @@
 ﻿using backend.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.Diagnostics;
 
 namespace backend.Data;
 
@@ -13,6 +14,7 @@ public class DataContext(
 
     public override int SaveChanges()
     {
+        
         UpdateTimestamps();
         return base.SaveChanges();
     }
