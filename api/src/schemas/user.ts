@@ -1,10 +1,6 @@
-import z from "zod";
-
-const isoDatetimeToDate = z.codec(z.string(), z.date(), {
-  decode: (isoString) => new Date(isoString),
-  encode: (date) => date.toISOString(),
-});
- 
+import z, { email } from "zod";
+import { isoDatetimeToDate } from "./codecs.ts";
+import { zs } from "./shared.ts";
 
 export const UserData = z.object({
   id: z.guid(),
@@ -17,3 +13,11 @@ export const UserData = z.object({
 
 export type UserData = z.infer<typeof UserData>;
 
+export const UpdateUserDTO = z.object({
+  username: zs.username().optional(),
+  email: z.email().max(255).optional()
+})
+
+export type UpdateUserDTO = z.infer<typeof UpdateUserDTO>;
+export const updated = zs.updated(UpdateUserDTO);
+export type UpdatedUserDTO = z.infer<typeof updated>

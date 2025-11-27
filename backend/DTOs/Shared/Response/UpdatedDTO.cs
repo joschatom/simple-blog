@@ -1,4 +1,6 @@
-﻿namespace backend.DTOs.Shared.Response;
+﻿using System.Runtime.InteropServices.JavaScript;
+
+namespace backend.DTOs.Shared.Response;
 
 public class UpdatedDTO
 {

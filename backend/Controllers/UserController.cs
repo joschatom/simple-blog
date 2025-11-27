@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using backend.DTOs.Shared.Response;
+using backend.DTOs.User.Request;
 using backend.DTOs.User.Response;
 using backend.Interfaces;
 using backend.Models;
@@ -8,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Newtonsoft.Json;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 
 namespace backend.Controllers;
@@ -63,8 +66,44 @@ public class UserController(IUserRepository repository, IMapper mapper)
         return SignOut();
     }
 
+    [HttpPut("{id}")]
+    public async Task<ActionResult<UpdatedDTO>> UpdateUser(Guid id, UpdateUserDTO update)
+    {
+        if ((await this.CurrentUser())!.Id != id) // TODO: Admins
+            return Unauthorized($"Cannot update someone else's account yet.");
 
-    [HttpDelete("{id}/mute")]
+        var user = await repository.GetByIdAsync(id);
+
+        if (user is null)
+            return NotFound($"User with ID {id} cannot be found.");
+
+        UpdatedDTOBuilder<UpdateUserDTO> builder = new();
+
+        if (update.Username is not null)
+        {
+            if (repository.GetByNameAsync(update.Username) is not null)
+                return Problem(
+                    title: "Username already taken",
+                    detail: $"Cannot update username to {update.Username} as it is already taken.",
+                    statusCode: StatusCodes.Status400BadRequest
+                );
+
+            builder.AddFields(nameof(UpdateUserDTO.Username));
+            user.Username = update.Username;
+        }
+        if (update.Email is not null)
+        {
+            builder.AddFields(nameof(UpdateUserDTO.Username));
+            user.Email = update.Email;
+        }
+
+        await repository.UpdateAsync(id, user);
+        await repository.SaveChangesAsync();
+
+        return Ok(builder.Build());
+    }
+
+    [HttpPost("{id}/mute")]
     public async Task<ActionResult> MuteUser(Guid id)
     {
         if (!await repository.ExistsAsync(id))

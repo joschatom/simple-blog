@@ -62,6 +62,8 @@ export function UserPage() {
       {client.isAuthenticated() && (
         <button
           onClick={async () => {
+            await user?.update({ email: "sdas@234.com"});
+
             setUser(undefined);
             client.logout();
           }}

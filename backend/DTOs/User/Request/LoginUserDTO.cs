@@ -1,11 +1,13 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using backend.Models;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Runtime.InteropServices;
 
 namespace backend.DTOs.User.Request;
 
 public class LoginUserDTO
 {
-    [MinLength(1), MaxLength(255)]
+    [Username]
     public required string Username { get; set; }
 
     [MinLength(6), MaxLength(255)]

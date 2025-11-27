@@ -3,15 +3,12 @@ using System.ComponentModel.DataAnnotations;
 
 namespace backend.DTOs.User.Request;
 
-public class QueryUserDTO
+
+public class UpdateUserDTO
 {
-    
-    public Guid? Id { get; set; }
+    [Username]
+    public string? Username { get; set; }
 
     [EmailAddress]
     public string? Email { get; set; }
-
-    [Username]
-    public string? Username { get; set; }
-    public Guid? PostId { get; set; }
 }

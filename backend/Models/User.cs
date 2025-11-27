@@ -1,6 +1,7 @@
 ﻿using backend.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 
@@ -33,4 +34,24 @@ public partial class User: TimedModel
 
     [GeneratedRegex(@"^[a-zA-Z0-9-]+$")]
     public static partial Regex ValidUsername();
+    public const string ValidUsernameRegex = @"^[a-zA-Z0-9-]+$";
+}
+
+// Valid Username.
+public class UsernameAttribute : DataTypeAttribute
+{
+    public UsernameAttribute() : base(DataType.Text) { }
+
+    public override bool IsValid(object? value)
+    {
+        if (value == null) return true;
+
+        if (value is not string username) return false;
+
+        if (!User.ValidUsername().IsMatch(username)) return false;
+
+        if (username.Length == 0 && username.Length > 255) return false;
+
+        return true;
+    }
 }
