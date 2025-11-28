@@ -1,9 +1,12 @@
 ﻿using AutoMapper;
+using backend.DTOs.Post.Response;
 using backend.DTOs.Shared.Response;
 using backend.DTOs.User.Request;
 using backend.DTOs.User.Response;
 using backend.Interfaces;
 using backend.Models;
+using backend.Repositories;
+using backend.Tests.Posts;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -118,6 +121,20 @@ public class UserController(IUserRepository repository, IMapper mapper)
         await repository.SaveChangesAsync();
 
         return Ok();
+    }
+
+    [AllowAnonymous]
+    [HttpGet("{id}/posts")]
+    public async Task<ActionResult<PostDTO>> GetPosts(Guid id)
+    {
+        if (!await repository.ExistsAsync(id))
+            return NotFound($"Post with {id} not found.");
+
+        var users = (await repository.GetPosts(id))
+            .Where(p => this.CurrentUser() is not null || !p.RegistredUsersOnly)
+            .ToList();
+
+        return Ok(mapper.Map<IEnumerable<PostDTO>>(users));
     }
 }
 

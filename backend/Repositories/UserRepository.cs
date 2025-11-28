@@ -83,6 +83,20 @@ public class UserRepository: BaseRepository<User>, IUserRepository
             MutedUserId = mutee
         });
     }
+
+    public async Task<IEnumerable<Post>> GetPosts(Guid id)
+    {
+        var user = await GetByIdAsync(id)
+            ?? throw new KeyNotFoundException(id.ToString());
+
+        var posts = context.Entry(user)
+            .Collection(p => p.Posts)
+            .Query();
+
+        await posts.LoadAsync();
+
+        return posts;
+    }
 }
 
 

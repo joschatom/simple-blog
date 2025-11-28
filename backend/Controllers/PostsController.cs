@@ -5,6 +5,7 @@ using backend.DTOs.Shared.Response;
 using backend.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NUnit.Framework.Constraints;
 using System.Diagnostics;
 
 
@@ -71,6 +72,7 @@ public class PostsController(IPostRepository repository, IMapper mapper) : Contr
         var builder = new UpdatedDTOBuilder<UpdatePostDTO>();
 
         var existingPost = await repository.GetByIdAsync(id);
+
 
         if (existingPost is null)
             return NotFound($"Post with ID {id} cannot be found.");

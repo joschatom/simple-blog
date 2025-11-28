@@ -39,8 +39,8 @@ class Update : BackendTests
     public async Task UpdatePost()
     {
         var user = UserFaker.Generate();
-        var post = PostFaker(null, f => f.RuleFor(p => p.UserId, user.Id))
-            .Take(1).First();
+        var post = PostFaker(1, f => f.RuleFor(p => p.UserId, user.Id))
+            .First();
         DataContext.SaveChanges();
 
         var client = _factory.CreateClient();
@@ -192,8 +192,7 @@ class Get : BackendTests<PostsController>
 
         DataContext.SaveChanges();
 
-        var expected = PostFaker(null, null)
-            .Take(5)
+        var expected = PostFaker(5)
             .ToArray();
 
         DataContext.SaveChanges();

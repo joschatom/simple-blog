@@ -147,7 +147,9 @@ internal class BackendTests<T>
             DataContext.SaveChanges();
         });
 
-    protected IEnumerable<Post> PostFaker(int? count = 1, Func<Faker<Post>, Faker<Post>>? cb = null)
+    protected IEnumerable<Post> PostFaker(
+        int count,
+        Func<Faker<Post>, Faker<Post>>? cb = null)
     {
         var faker = new Faker<Post>()
             .RuleFor(p => p.UserId, f => f.PickRandom(DataContext.Users.AsEnumerable()).Id)
@@ -157,10 +159,7 @@ internal class BackendTests<T>
 
         faker = cb is null ? faker : cb(faker);
 
-        var posts = count.HasValue
-            ? faker.Generate(count.Value)
-            : faker.GenerateForever();
-
+        var posts = faker.Generate(count);
         return posts.Select(p => DataContext.Add(p).Entity);
     }
 

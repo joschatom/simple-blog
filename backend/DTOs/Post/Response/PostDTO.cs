@@ -21,10 +21,16 @@ public class PostDTO
 
     public override string ToString()
     {
-        return $"PostDTO {{ Id = {Id}, Caption = {Caption}" 
-            + $", Content = {Content}, CreatedAt = {CreatedAt}"
-            + $", UpdatedAt = {UpdatedAt}, UserId = {UserId}, "
-            + $"RegistredUsersOnly = {RegistredUsersOnly} }}";
+        return
+           $"""
+            PostDTO {"{"}
+                Id = {Id}, Caption = {Caption}
+                Content = {Content.Split("\n").First()}
+                CreatedAt = {CreatedAt}"
+                UpdatedAt = {UpdatedAt}, UserId = {UserId}, 
+                RegistredUsersOnly = {RegistredUsersOnly}
+            {"}"}
+            """;
 
     }
 }
