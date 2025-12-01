@@ -1,11 +1,10 @@
 import z from "zod";
 import type { APIClient } from "./client.ts";
 import { handleAPIResponse, parseAPIResponse } from "./error.ts";
-import { UpdatedUserDTO, UpdateUserDTO, UserData } from "./schemas/user.js";
+import { UpdateUserDTO, UserData } from "./schemas/user.ts";
 import { zs } from "./schemas/shared.ts";
 import { CreatePost, PostData } from "./schemas/post.ts";
 import { Post } from "./post.ts";
-import { da } from "zod/locales";
 
 export class User {
   #client: APIClient;
@@ -67,15 +66,6 @@ export class User {
   async delete() {
     await handleAPIResponse(() => this.#client.api.delete(`/users/${this.data.id}`));
   }
-
-  async createPost(post: CreatePost): Promise<Post>{
-    post = await z.parseAsync(CreatePost, post)
-    
-    const resp = await parseAPIResponse(PostData, () => this.#client.api.post("/api/posts"))
-
-    return new Post(this.#client, resp) 
-  }
-
   async posts(): Promise<Post[]> { 
     return await parseAPIResponse(z.array(PostData), () => this.#client.api.get(`/api/users/${this.data.id}/posts`))
       .then(r => r.map(p => new Post(this.#client, p)))

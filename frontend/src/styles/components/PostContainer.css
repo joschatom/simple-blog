@@ -1,0 +1,86 @@
+
+.post-container {
+    background-color: darkgray;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    border-radius: 12px;
+    min-width: 460px;
+    min-height: 250px;
+    margin: 20px;
+    padding: 10px;
+    text-align: start;
+
+}
+
+.post-container-header {
+    width: 50vw;
+    display: flex;
+    background-color: darkgray;
+    height: max-content;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.post-container-content {
+    height: 10rem;
+    font-size: 18px;
+    padding: 0px;
+    min-height: inherit;
+    min-width: inherit;
+    padding:  5px;
+}
+
+.post-caption {
+    border-radius: 0px;
+    border: none;
+    outline: 0px;
+    width: 100%;
+    background-color: darkgray;
+    color: rgb(39, 37, 37);
+    border-bottom: 2px solid transparent;
+}
+
+.post-caption:is(input):focus {
+
+    border-bottom: 2px solid purple;
+}
+
+.post-locked-icon {
+    height: 46px;
+    align-self: center;
+}
+
+.post-locked {
+    align-self: flex-end;
+}
+
+form {
+    background-color: darkgray;
+    outline-color: blueviolet;
+    border-radius: 12px;
+    
+}
+
+fieldset {
+    border-color: groove;
+    margin: 0px;
+}
+
+.post-container-footer {
+    display: flex;
+    flex-direction: column;
+
+}
+
+.create-post-submit{
+    align-self: flex-end;
+    width: fit-content;
+    padding: 12px;
+}
+
+.post-container-content {
+    background-color: darkgray;
+    border: groove;
+}
+

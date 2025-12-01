@@ -1,4 +1,4 @@
-import { AxiosError, AxiosHeaders, type AxiosResponse } from "axios";
+import { AxiosError, type AxiosResponse } from "axios";
 import z, { ZodError } from "zod";
 import { ProblemDetailsError, ValidationErrors } from "./schemas/errors.ts";
 
@@ -46,8 +46,21 @@ function handleAPIErrorThrowing(err: AxiosError) {
   if (!resp)
     throw new APIError("axios", {
       type: err.message,
-      title: err.name
+      title: err.name,
     });
+
+  var object;
+
+  try {
+    object = JSON.parse(resp.data as string);
+  } catch (e) {
+    throw new APIError("generic", {
+      status: resp.status,
+      type: "Generic API Error",
+      title: resp.statusText,
+      detail: resp.data?.toString(),
+    });
+  }
 
   try {
     const error = z.parse(ValidationErrors, JSON.parse(resp.data as string));
@@ -88,6 +101,50 @@ export async function handleAPIResponse<T>(
   }
 
   throw "unreachable";
+}
+
+export async function parseAPIResponseRaw<T extends z.ZodType>(
+  schema: T,
+  req: () => Promise<Response>
+): Promise<z.infer<T>> {
+  try {
+    const resp = await req();
+    if (resp.ok) return z.parse(schema, await resp.json());
+
+    const err = await resp.json();
+
+    try {
+      const error = z.parse(ValidationErrors, err);
+      throw new APIError("validation", error);
+    } catch (e) {
+      console.log(e);
+      if (!(e instanceof ZodError)) throw e;
+    }
+
+    try {
+      throw new APIError(
+        "generic",
+        z.parse(ProblemDetailsError, err)
+      );
+    } catch (e) {
+      if (!(e instanceof ZodError)) throw e;
+    }
+
+    throw new APIError("generic", {
+      status: resp.status,
+      type: "Generic API Error",
+      title: resp.statusText,
+      detail:
+        typeof err == "object"
+          ? JSON.stringify(err)
+          : err.toString(),
+    });
+  } catch (e) {
+    throw new APIError("axios", {
+        type: e.message,
+        title: "Failed to fetch API Resource",
+      });
+  }
 }
 
 export async function parseAPIResponse<T extends z.ZodType>(

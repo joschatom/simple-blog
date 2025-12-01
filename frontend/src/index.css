@@ -11,6 +11,10 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  padding: 0px 0px 0px 0px !important;
+  margin-right: 0px 0px 0px 0px !important;
+  position: static;
+  top: 0px;
 }
 
 a {
@@ -23,11 +27,7 @@ a:hover {
 }
 
 body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
+  margin: 0px;
 }
 
 h1 {
@@ -86,4 +86,8 @@ form button {
   100% {
     width: 100%;
   }
+}
+
+main {
+  padding: 10px;
 }

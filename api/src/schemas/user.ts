@@ -1,4 +1,4 @@
-import z, { email } from "zod";
+import z from "zod";
 import { isoDatetimeToDate } from "./codecs.ts";
 import { zs } from "./shared.ts";
 

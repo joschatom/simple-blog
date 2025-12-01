@@ -11,7 +11,6 @@ export function Header() {
   const navigate = useNavigate();
 
   return (
-    <>
       <header className="blog-header">
         <img src="logo.png" alt="simple blog" />
 
@@ -21,7 +20,5 @@ export function Header() {
           <img src={account} className="profile-image" onClick={() => navigate("/users/me")}/>
         )}
       </header>
-      <div className="header-placeholder"/>
-    </>
   );
 }

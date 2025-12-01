@@ -13,14 +13,14 @@ export function Homepage() {
   useEffect(() => {
     const load = async () => {
       try {
-        setUsers(await User.fetchAll(client));
+       setUsers(await User.fetchAll(client));
       } catch (e) {
         setError(e)
       }
     };
 
     load();
-  });
+  }, [client]);
 
   return (
     <>

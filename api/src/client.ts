@@ -1,9 +1,10 @@
-import type { AxiosInstance } from "axios";
-import { APIError, handleAPIResponse } from "./error.ts";
+import type { AxiosInstance, Method } from "axios";
+import { handleAPIResponse, parseAPIResponseRaw } from "./error.ts";
 import axios from "axios";
-import z from "zod";
 import { User } from "./user.ts";
 import { UserData } from "./schemas/user.ts";
+import { ZodSchema } from "zod/v3";
+import z, { ZodType } from "zod";
 
 export interface APIClient {
   VERSION: string;
@@ -15,16 +16,24 @@ export interface APIClient {
   register(username: string, password: string, email: string): Promise<void>;
   logout(track?: boolean): Promise<boolean>;
 
+  sendRequest<T, R extends ZodType>(
+    method: Method,
+    url: string,
+    body: T,
+    recv: R
+  ): Promise<z.infer<typeof recv>>;
+
   api: AxiosInstance;
   currentUser?: User;
 }
 
-export type onTokenChangedHandler = (token: string, newUser: User) => void;
+export type onTokenChangedHandler = (token?: string, newUser?: User) => void;
+
 
 export class WebAPIClient {
   VERSION = "v0.1-web";
   get API_BASE() {
-    return `${this.#host}/api/`;
+    return `${this.#host}/`;
   }
 
   #host: string;
@@ -36,25 +45,52 @@ export class WebAPIClient {
     host: string,
     token?: string,
     currentUser?: UserData,
-    onTokenChanged?: (tok: string) => void
+    onTokenChanged?: onTokenChangedHandler
   ) {
     this.#host = host;
     this.token = token;
     this.onTokenChanged = onTokenChanged;
-    this.currentUser = new User(this, currentUser);
+    if (currentUser != undefined)
+      this.currentUser = new User(this, currentUser);
+  }
+
+  sendRequest<T, R extends ZodType>(
+    method: Method,
+    url: string,
+    body: T,
+    recv: R
+  ): Promise<z.infer<typeof recv>> {
+    return parseAPIResponseRaw(recv, async () =>
+      await fetch(this.API_BASE + url, {
+        body: JSON.stringify(body),
+        method: method,
+        headers: {
+          Authorization: this.token ? `Bearer ${this.token}` : undefined,
+          "Content-Type": "application/json",
+        },
+        credentials: "omit",
+        cache: "no-cache"
+      })
+    );
   }
 
   isAuthenticated(): boolean {
     return this.token !== undefined;
   }
 
-  async register(username: string, password: string, email: string): Promise<void>{
-   const { token,...userData } = await handleAPIResponse<{ token: string } & UserData>(() =>
+  async register(
+    username: string,
+    password: string,
+    email: string
+  ): Promise<void> {
+    const { token, ...userData } = await handleAPIResponse<
+      { token: string } & UserData
+    >(() =>
       //  throws on error
       this.api.post("/auth/login", {
         username,
         password,
-        email
+        email,
       })
     );
 
@@ -64,9 +100,9 @@ export class WebAPIClient {
   }
 
   /**
-   * 
+   *
    * @param token New token
-   * 
+   *
    * @throws API error if preset.
    * @abstract Replaces token and tries to (re)fetch user data.
    */
@@ -87,6 +123,7 @@ export class WebAPIClient {
       headers: {
         Authorization: this.token ? `Bearer ${this.token}` : null,
       },
+      httpVersion: 1,
     });
 
     instance.interceptors.request.use((req) => {
@@ -98,7 +135,9 @@ export class WebAPIClient {
   }
 
   async login(username: string, password: string): Promise<void> {
-    const { token, ...userData} = await handleAPIResponse<{ token: string } & UserData>(() =>
+    const { token, ...userData } = await handleAPIResponse<
+      { token: string } & UserData
+    >(() =>
       //  throws on error
       this.api.post("/auth/login", {
         username,

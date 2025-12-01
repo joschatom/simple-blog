@@ -34,43 +34,43 @@ export function UserPage() {
   console.log(user?.data);
 
   return (
-    <div style={{ fontSize: 24 }}>
+    <>
+      <Header />
 
-      <Header/>
-    
+      <main>
+        {error && <ErrorDisplay error={error} marker={id} />}
 
-      {error && <ErrorDisplay error={error} marker={id} />}
+        {user && (
+          <div>
+            Username: {user.data.username}
+            <br />
+            Joined: {user.data.createdAt.toLocaleString("de-ch")}
+            <br />
+            {user.data.email && (
+              <>
+                Email: <code>{user.data.email}</code>
+                <br />
+              </>
+            )}
+            ID: <code>{user.data.id}</code>
+            <br />
+            <NavLink to="/users/me">Me</NavLink>
+          </div>
+        )}
 
-      {user && (
-        <div>
-          Username: {user.data.username}
-          <br />
-          Joined: {user.data.createdAt.toLocaleString("de-ch")}
-          <br />
-          {user.data.email && (
-            <>
-              Email: <code>{user.data.email}</code>
-              <br />
-            </>
-          )}
-          ID: <code>{user.data.id}</code>
-          <br />
-          <NavLink to="/users/me">Me</NavLink>
-        </div>
-      )}
+        {client.isAuthenticated() && (
+          <button
+            onClick={async () => {
+              await user?.update({ email: "sdas@234.com" });
 
-      {client.isAuthenticated() && (
-        <button
-          onClick={async () => {
-            await user?.update({ email: "sdas@234.com"});
-
-            setUser(undefined);
-            client.logout();
-          }}
-        >
-          Logout
-        </button>
-      )}
-    </div>
+              setUser(undefined);
+              client.logout();
+            }}
+          >
+            Logout
+          </button>
+        )}
+      </main>
+    </>
   );
 }

@@ -30,7 +30,9 @@ public class JwtTokenGenerator
 
     public string GenerateToken(User user, int daysToExpire = 5) // default 5 days can be changed
     {
+        Console.WriteLine($"Token Secret: {_TokenSecret}");
         var key = Encoding.UTF8.GetBytes(_TokenSecret);
+
         var userData = JsonConvert.SerializeObject(user.Id);
         var tokenDescriptor = new SecurityTokenDescriptor
         {

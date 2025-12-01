@@ -1,6 +1,8 @@
 import { APIError } from "blog-api";
 
 export function ErrorDisplay({ error }: { error: unknown; marker?: string }) {
+  if (error == undefined) return <></>
+
   const formatInner = () => {
     let err;
     if ((err = APIError.asDowncast(error, "axios")))
