@@ -63,11 +63,12 @@ export class User {
     return updated.updatedFields as unknown as keyof UpdateUserDTO[];
   }
 
+
   async delete() {
-    await handleAPIResponse(() => this.#client.api.delete(`/users/${this.data.id}`));
+    await handleAPIResponse(() => this.#client.api.delete(`users/${this.data.id}`));
   }
   async posts(): Promise<Post[]> { 
-    return await parseAPIResponse(z.array(PostData), () => this.#client.api.get(`/api/users/${this.data.id}/posts`))
+    return await parseAPIResponse(z.array(PostData), () => this.#client.api.get(`users/${this.data.id}/posts`))
       .then(r => r.map(p => new Post(this.#client, p)))
   }
 }

@@ -17,7 +17,6 @@
   "author": "Joscha Egloff",
   "type": "module",
   "main": "src/index.js",
-
   "scripts": {
     "test": "node --test ./src/*.test.ts",
     "types:check": "tsc --noEmit"
@@ -29,7 +28,7 @@
   "dependencies": {
     "@types/node": "^24.10.1",
     "axios": "^1.13.2",
+    "jwt-decode": "^4.0.0",
     "zod": "^4.1.12"
   }
-  
 }

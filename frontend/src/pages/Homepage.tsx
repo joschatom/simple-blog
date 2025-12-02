@@ -3,6 +3,7 @@ import { Client } from "../client";
 import { User } from "blog-api";
 import { NavLink } from "react-router";
 import { ErrorDisplay } from "../components/Error";
+import { Header } from "../components/Header";
 
 export function Homepage() {
   const client = useContext(Client);
@@ -24,17 +25,22 @@ export function Homepage() {
 
   return (
     <>
-      {error && <ErrorDisplay error={error}/>}
+      <Header/>
 
-      {users &&
-        users.map((u) => (
-          <>
-            <NavLink to={`/users/${u.data.username}`}>
-              {u.data.username}
-            </NavLink>
-            <br />
-          </>
-        ))}
+      <main>
+        {error !== undefined && <ErrorDisplay error={error}/>}
+
+        {users &&
+          users.map((u) => (
+            <>
+              <NavLink to={`/users/${u.data.username}`}>
+                {u.data.username}
+              </NavLink>
+              <br />
+            </>
+          ))}
+
+      </main>
     </>
   );
 }

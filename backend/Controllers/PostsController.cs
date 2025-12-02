@@ -1,11 +1,14 @@
 ﻿using AutoMapper;
+using backend.Data;
 using backend.DTOs.Post.Request;
 using backend.DTOs.Post.Response;
 using backend.DTOs.Shared.Response;
+using backend.DTOs.User.Response;
 using backend.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NUnit.Framework.Constraints;
+using System.ComponentModel;
 using System.Diagnostics;
 
 
@@ -14,18 +17,23 @@ namespace backend.Controllers;
 [Route("api/posts")]
 [Authorize]
 [ApiController]
-public class PostsController(IPostRepository repository, IMapper mapper) : ControllerBase
+public class PostsController(DataContext context, IPostRepository repository, IUserRepository userRepository, IMapper mapper) : ControllerBase
 {
     // GET: api/posts
     [HttpGet]
     [AllowAnonymous]
-    public async Task<IEnumerable<PostDTO>> GetAll()
+    public async Task<IEnumerable<PostDTO>> GetAll([FromQuery, DefaultValue(false)] bool expand_user = false)
     {
         var currentUser = await this.CurrentUser();
 
         return mapper.Map<IEnumerable<PostDTO>>(
             (await repository.GetAllAsync())
             .Where((post) => (currentUser is not null || !post.RegistredUsersOnly))
+            .Select(u =>
+            {
+               // if (expand_user) u.User = userRepository.GetByIdAsync(u.UserI)
+                return u;
+            })
         );
     }
 
@@ -42,7 +50,11 @@ public class PostsController(IPostRepository repository, IMapper mapper) : Contr
         if (post.RegistredUsersOnly && (await this.CurrentUser()) is null)
             return Forbid(); // maybe Unauthorized() or just NotFound() is better?
 
-        return mapper.Map<PostDTO>(post);
+        var map = mapper.Map<PostDTO>(post);
+
+        map.User = mapper.Map<PublicUserDTO>(post.User);
+        
+        return map;
     }
 
     // POST api/posts

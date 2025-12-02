@@ -5,7 +5,7 @@ import { zs } from "./shared.ts";
 export const UserData = z.object({
   id: z.guid(),
   username: z.string(),
-  createdAt: isoDatetimeToDate,
+  createdAt: isoDatetimeToDate.optional(),
   email: z.email().optional(),
   lastLogin: isoDatetimeToDate.optional(),
   updatedAt: isoDatetimeToDate.optional(),

@@ -44,7 +44,6 @@ button {
   font-family: inherit;
   cursor: pointer;
   transition: border-color 0.25s;
-
 }
 
 input {
@@ -55,10 +54,9 @@ input {
   font-weight: 500;
   font-family: inherit;
   transition: outline-color 0.25s;
-
 }
 input:hover {
-  outline-color: #646cff
+  outline-color: #646cff;
 }
 input:invalid {
   outline: 1px solid red !important;
@@ -72,7 +70,7 @@ form button {
   width: 100%;
 }
 
-.loading{
+.loading {
   animation: hr-loading-anim 1s linear infinite;
   padding: 1px;
   background: #2679d1;
@@ -90,4 +88,35 @@ form button {
 
 main {
   padding: 10px;
+    text-align: center;
+
+}
+
+
+
+/* Tooltip text */
+.tooltip {
+  position: relative;
+  visibility: hidden; /* Hidden by default */
+  width: fit-content;
+  top: 100%;
+  left: 50%;
+  margin-left: -65px; 
+  text-align: center;
+
+  padding: 5px;
+  filter: invert(100%);
+  backdrop-filter: blur(20px);
+  font-size: small;
+  background-color: rgba(128, 128, 128, 0.466);
+  user-select: all;
+  stroke: aqua;
+  border-radius: 2px;
+  
+  z-index: 2; /* Ensure tooltip is displayed above content */
+}
+
+/* Show the tooltip text on hover */
+*:hover > .tooltip {
+  visibility: visible;
 }

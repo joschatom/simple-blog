@@ -1,7 +1,7 @@
 import { APIError } from "blog-api";
 
 export function ErrorDisplay({ error }: { error: unknown; marker?: string }) {
-  if (error == undefined) return <></>
+  if (error == undefined) return <></>;
 
   const formatInner = () => {
     let err;
@@ -17,7 +17,7 @@ export function ErrorDisplay({ error }: { error: unknown; marker?: string }) {
       return (
         <>
           <h2>
-            {err.status && <>[Status {err.status}]</>}  {err.title}
+            {err.status && <>[Status {err.status}]</>} {err.title}
           </h2>
           <p>{err.detail}</p>
           <code>Type: {err.type}</code>
@@ -44,11 +44,13 @@ export function ErrorDisplay({ error }: { error: unknown; marker?: string }) {
       );
     else
       return (
-        <h3>
-          UNKNOWN ERROR:
-          <br />
-          {JSON.stringify(error, null, 2)}
-        </h3>
+        <>
+          <h2>
+            UNKNOWN ERROR
+            <br />
+          </h2>
+          <h4>{JSON.stringify(error, null, 2)}</h4>
+        </>
       );
   };
 

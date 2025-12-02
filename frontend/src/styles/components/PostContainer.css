@@ -5,29 +5,33 @@
     flex-direction: column;
     gap: 5px;
     border-radius: 12px;
-    min-width: 460px;
-    min-height: 250px;
+
+    width: fit-content;
+    height: min-content;
     margin: 20px;
     padding: 10px;
     text-align: start;
-
 }
 
 .post-container-header {
-    width: 50vw;
+    width: 65vw;
     display: flex;
     background-color: darkgray;
     height: max-content;
     justify-content: space-between;
     width: 100%;
 }
+.post-container-header > div {
+    display: flex;
+}
 
 .post-container-content {
-    height: 10rem;
+    border: none !important;
+    border-top: 2px solid grey !important;
+    border-bottom: 2px solid grey !important;
     font-size: 18px;
     padding: 0px;
-    min-height: inherit;
-    min-width: inherit;
+    resize: vertical;
     padding:  5px;
 }
 
@@ -35,7 +39,7 @@
     border-radius: 0px;
     border: none;
     outline: 0px;
-    width: 100%;
+    width: max-content;
     background-color: darkgray;
     color: rgb(39, 37, 37);
     border-bottom: 2px solid transparent;
@@ -69,8 +73,12 @@ fieldset {
 
 .post-container-footer {
     display: flex;
-    flex-direction: column;
+    flex-direction: row-reverse;
+    gap: 20px
+}
 
+button {
+    padding: 5px;
 }
 
 .create-post-submit{
@@ -84,3 +92,18 @@ fieldset {
     border: groove;
 }
 
+.delete-post-button {
+    background-color: red;
+    color: white;
+}
+
+textarea:disabled {
+    color: inherit;
+    resize: none;
+}
+
+.deleted-post {
+    width: 0px;
+    height: 0px;
+    display: none;
+}

@@ -13,7 +13,6 @@ function App() {
   const client = useMemo(() => new WebAPIClient(
     "http://localhost:5233/api",
     apiToken ? apiToken : undefined,
-    undefined,
     (v) => {
       console.log(v);
       if (v !== undefined) {

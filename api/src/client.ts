@@ -4,7 +4,9 @@ import axios from "axios";
 import { User } from "./user.ts";
 import { UserData } from "./schemas/user.ts";
 import { ZodSchema } from "zod/v3";
-import z, { ZodType } from "zod";
+import z, { string, ZodType } from "zod";
+import { jwtDecode } from "jwt-decode";
+import { decodeToken } from "./token.ts";
 
 export interface APIClient {
   VERSION: string;
@@ -41,18 +43,29 @@ export class WebAPIClient {
   onTokenChanged?: onTokenChangedHandler;
   currentUser?: User;
 
+  
+
+
   constructor(
     host: string,
-    token?: string,
-    currentUser?: UserData,
+    token?: string, 
     onTokenChanged?: onTokenChangedHandler
   ) {
     this.#host = host;
     this.token = token;
+    try { if (token !== undefined) {
+      const data = decodeToken(token);
+      this.currentUser = new User(this, {
+        id: data.userId,
+        username: data.username,
+      })
+    }} catch (e) {
+      console.error(`failed to decode token: ${e}`);
+      this.currentUser = null;
+    }
     this.onTokenChanged = onTokenChanged;
-    if (currentUser != undefined)
-      this.currentUser = new User(this, currentUser);
   }
+  
 
   sendRequest<T, R extends ZodType>(
     method: Method,
@@ -73,6 +86,8 @@ export class WebAPIClient {
       })
     );
   }
+
+
 
   isAuthenticated(): boolean {
     return this.token !== undefined;

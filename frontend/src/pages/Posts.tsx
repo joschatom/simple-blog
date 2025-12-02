@@ -1,8 +1,10 @@
-import { use, useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Client } from "../client";
 import { Header } from "../components/Header";
 import { Post } from "blog-api/src/post";
 import { PostContainer } from "../components/Post";
+
+import "../styles/pages/Posts.css"
 
 export function PostsPage() {
   const client = useContext(Client);
@@ -16,10 +18,11 @@ export function PostsPage() {
   return (
     <>
       <Header />
-
-      {posts.map((p) => (
-        <PostContainer post={p} />
-      ))}
+      <main>
+        {posts.map((p) => (
+          <PostContainer post={p} />
+        ))}
+      </main>
     </>
   );
 }

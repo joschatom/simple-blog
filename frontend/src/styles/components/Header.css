@@ -1,52 +1,97 @@
-
-
 .blog-header {
-    position: sticky;
-    top: 0px;
+  position: sticky;
+  top: 0px;
 
-    display: flex;
-    justify-content: space-between;
+  display: flex;
+  flex-direction: row;
 
-    min-width: 100%;
-    width: 100vw;
+  min-width: 100%;
+  width: 100vw;
 
-    border-bottom: solid;
+  border-bottom: solid;
+  justify-content: space-between;
 
-    background-color: rgba(196, 194, 194, 0.5);
-    backdrop-filter: blur(20px);
+  background-color: rgba(196, 194, 194, 0.5);
+  backdrop-filter: blur(20px);
 }
 
 .blog-header > * {
-    margin: 10px;
+  margin: 10px;
 }
 
-.blog-header:nth-child(1){
-    align-self: flex-start;
+.blog-header:nth-child(1) {
+  align-self: flex-start;
 }
 
 .blog-header {
-    line-height: 60px;
-    font-size: 60px;
+  line-height: 60px;
+  font-size: 60px;
 }
 
 .header-placeholder {
-    height: 0px;
+  height: 0px;
 }
 
-.profile-image{
-    height: 64px;
-    top: 0px;
-    left: 0px;
+.header-profile-image {
+  align-self: flex-end;
+  height: 64px;
+  top: 0px;
+  left: 0px;
 
-    outline-offset: -2px;
-    outline-color: red;
-    outline-width: 0px;
-    outline-style: solid;
-    border-radius: 50%;
+  outline-offset: -2px;
+  outline-color: red;
+  outline-width: 0px;
+  outline-style: solid;
+  border-radius: 50%;
 
-    transition: outline-width 1s;
+  transition: outline-width 1s;
 }
 
-.profile-image:hover {
-    outline-width: 2px;
+.header-profile-image:hover {
+  outline-width: 2px;
+}
+
+.header-posts {
+  align-self: flex-start;
+  font-size: 42px;
+  margin-left: 26px;
+}
+
+.header-links-container {
+  display: flex;
+}
+
+.profile-navigation {
+  position: absolute;
+  z-index: 5;
+  top: 60px;
+  right: 1rem;
+  background-color: rgba(0, 0, 0, 0.8);
+  user-select: none;
+  color: white;
+  backdrop-filter: blur(20px);
+  width: fit-content;
+  font-size: 24px;
+  visibility: hidden;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.profile-navigation > button {
+  border-radius: 0px;
+}
+
+.profile-navigation >:last-child {
+    background-color: black;
+    color: white;
+}
+
+.profile-navigation >:last-child:hover {
+    background-color: rgb(41, 41, 41);
+    color: white;
+}
+
+.profile-image-container:hover > .profile-navigation {
+  visibility: visible;
 }

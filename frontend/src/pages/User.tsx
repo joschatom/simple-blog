@@ -1,15 +1,23 @@
 import { APIError, User } from "blog-api";
-import { useContext, useEffect, useState } from "react";
-import { NavLink, useParams } from "react-router";
+import { useContext, useEffect, useState, useTransition } from "react";
+import { useNavigate, useParams } from "react-router";
 import { Client } from "../client";
 import { ErrorDisplay } from "../components/Error";
 import { Header } from "../components/Header";
+import profileImage from "../assets/account.png";
+import dayjs from "dayjs";
+import { Post } from "blog-api/src/post";
+import { PostContainer } from "../components/Post";
+
+import "../styles/pages/Profile.css";
 
 export function UserPage() {
   const { id } = useParams();
   const client = useContext(Client);
   const [user, setUser] = useState<User>();
   const [error, setError] = useState<APIError>();
+  const [posts, setPosts] = useState<Post[]>();
+  const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
     const load = async () => {
@@ -31,7 +39,19 @@ export function UserPage() {
     load();
   }, [id, client]);
 
+  useEffect(
+    () =>
+      user !== undefined
+        ? startTransition(async () => {
+            setPosts(await user.posts());
+          })
+        : undefined,
+    [user]
+  );
+
   console.log(user?.data);
+
+  const navigate = useNavigate();
 
   return (
     <>
@@ -41,34 +61,32 @@ export function UserPage() {
         {error && <ErrorDisplay error={error} marker={id} />}
 
         {user && (
-          <div>
-            Username: {user.data.username}
-            <br />
-            Joined: {user.data.createdAt.toLocaleString("de-ch")}
-            <br />
-            {user.data.email && (
-              <>
-                Email: <code>{user.data.email}</code>
-                <br />
-              </>
-            )}
-            ID: <code>{user.data.id}</code>
-            <br />
-            <NavLink to="/users/me">Me</NavLink>
-          </div>
-        )}
-
-        {client.isAuthenticated() && (
-          <button
-            onClick={async () => {
-              await user?.update({ email: "sdas@234.com" });
-
-              setUser(undefined);
-              client.logout();
-            }}
-          >
-            Logout
-          </button>
+          <>
+            <div className="profile-header">
+              <img className="profile-image" src={profileImage} />
+              <p className="profile-name">{user.data.username}'s Profile</p>
+              <p className="profile-joined-at">
+                Joined {dayjs(user.data.createdAt).format("MMMM YYYY")}
+                <div className="tooltip">{user.data.createdAt?.toLocaleString(undefined, { dateStyle: "full", timeStyle: "full" })}</div>
+              </p>
+              <p className="profile-post-count">
+                {posts?.length == undefined ? <i>Loading</i> : posts.length}{" "}
+                Posts
+              </p>
+            </div>
+            <div>
+              {user.data.id === client.currentUser?.data.id && (
+                <button onClick={() => navigate("/create-post")}>Create Post</button>
+              )}
+            </div>
+            <div
+              className={`profile-posts-container ${
+                isPending ? "profile-posts-loading" : ""
+              }`}
+            >
+              {posts && posts.map((p) => <PostContainer post={p} />)}
+            </div>
+          </>
         )}
       </main>
     </>

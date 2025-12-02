@@ -17,7 +17,7 @@ public class Post: TimedModel
 
     // === Metadata ===
     public required Guid UserId { get; set; }
-    public virtual User User { get; set; } = null!;
+    public virtual User? User { get; set; } = null!;
     public bool RegistredUsersOnly { get; set; } = false;
 
     public override string ToString()

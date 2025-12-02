@@ -1,35 +1,12 @@
-import { useContext, useState } from "react";
-import { Client } from "../client";
-import lockOpen from "../assets/lock-open.svg";
 
 import "../styles/components/PostContainer.css";
-import { CreatePost, PostData } from "blog-api/src/schemas/post";
-import { Post } from "blog-api/src/post";
-import { ErrorDisplay } from "../components/Error";
+
+import { PostContainer } from "../components/Post";
 
 export function CreatePostPage() {
-  const client = useContext(Client);
-  const [caption, setCaption] = useState<string>("");
-  const [content, setContent] = useState<string>("");
-  const [locked, setLocked] = useState<boolean>(false);
-  const [error, setError] = useState<unknown>();
 
 
-  const createPost = async () => {
-    const post: CreatePost = {
-      caption: caption!,
-      content: content!,
-      registeredUsersOnly: locked,
-    };
-
-    try {
-      await Post.createPost(client, post);
-    } catch (e) {
-      setError(e);
-    }
-  };
-
-  return (
+/*  return (
     <>
       <ErrorDisplay error={error} />
 
@@ -60,5 +37,13 @@ export function CreatePostPage() {
           </div>
         </fieldset>
     </>
-  );
+  );*/
+
+  return <>
+    <h1>
+      Create Post
+    </h1>
+
+    <PostContainer post={undefined}/>
+  </>
 }

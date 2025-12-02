@@ -1,5 +1,6 @@
 import z from "zod";
 import { isoDatetimeToDate } from "./codecs.ts";
+import { UserData } from "./user.ts";
 
 
 export const PostData = z.object({
@@ -9,6 +10,7 @@ export const PostData = z.object({
     updatedAt: isoDatetimeToDate,
     userId: z.guid(),
     registredUsersOnly: z.boolean(),
+    user: UserData
 });
 
 export type PostData = z.infer<typeof PostData>;

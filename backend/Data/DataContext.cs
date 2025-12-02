@@ -41,9 +41,19 @@ public class DataContext(
         }
     }
 
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.UseLazyLoadingProxies(true);
+
+        base.OnConfiguring(optionsBuilder);
+    }
+
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+
+        
 
         // === Constraints ===
 

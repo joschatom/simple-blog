@@ -130,10 +130,12 @@ public class UserController(IUserRepository repository, IMapper mapper)
         if (!await repository.ExistsAsync(id))
             return NotFound($"Post with {id} not found.");
 
-        var users = (await repository.GetPosts(id))
-            .Where(p => this.CurrentUser() is not null || !p.RegistredUsersOnly)
-            .ToList();
+        bool loggedIn = await this.CurrentUser() is not null;
 
+        var users = (await repository.GetPosts(id))
+            .Where(p => loggedIn || !p.RegistredUsersOnly)
+            .ToList();
+        
         return Ok(mapper.Map<IEnumerable<PostDTO>>(users));
     }
 }
