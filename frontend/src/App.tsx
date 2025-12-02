@@ -8,6 +8,7 @@ import { LoginPage } from "./pages/Login";
 import { CreatePostPage } from "./pages/CreatePost";
 import { PostsPage } from "./pages/Posts";
 import { PageNotFound } from "./pages/NotFound";
+import { RegisterPage } from "./pages/Register";
 
 function App() {
   const [apiToken, setAPIToken] = useState<string | null>(
@@ -39,6 +40,7 @@ function App() {
           <Route path="/" element={<Homepage />} />
           <Route path="/users/:id" element={<UserPage />} />
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage/>} />
           <Route path="/posts" element={<PostsPage />} />
           <Route path="/create-post" element={<CreatePostPage />} />
           <Route path="*" element={<PageNotFound />} />

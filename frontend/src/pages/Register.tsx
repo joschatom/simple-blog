@@ -1,11 +1,4 @@
-import {
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-  useTransition,
-  type ComponentRef,
-} from "react";
+import { useContext, useEffect, useRef, useState, useTransition, type ComponentRef } from "react";
 import { Client } from "../client";
 import { APIError } from "blog-api";
 import { NavLink, useNavigate } from "react-router";
@@ -14,18 +7,19 @@ import { Header } from "../components/Header";
 
 import "../styles/pages/Auth.css";
 
-export function LoginPage() {
+export function RegisterPage() {
   const client = useContext(Client);
   const [error, setError] = useState<APIError>();
   const navigate = useNavigate();
   const [isPending, startTransition] = useTransition();
 
-  const login = (data: FormData) =>
+  const register = (data: FormData) =>
     startTransition(async () => {
       try {
-        await client.login(
+        await client.register(
           data.get("username")!.toString(),
-          data.get("password")!.toString()
+          data.get("password")!.toString(),
+          data.get("email")!.toString()
         );
         await navigate("/users/me");
       } catch (e) {
@@ -40,7 +34,6 @@ export function LoginPage() {
           );
       }
     });
-
   const errorDiag = useRef<ComponentRef<"dialog">>(null);
 
   useEffect(() => {
@@ -63,16 +56,19 @@ export function LoginPage() {
             Okay
           </button>
         </dialog>
-
-        <form action={login} className="auth-form">
+        <form action={register} className="auth-form">
           <div>
-            Login to continue sharing your own posts. <br />
-            Don't have a account yet? <NavLink to="/register">Sign Up</NavLink>
+            Register to share your own posts with others,
+            <br />
+            already have an account? <NavLink to="/login">Login</NavLink>
           </div>
-
           <div>
             <label htmlFor="username">Username </label>
-            <input id="username" name="username" required />
+            <input id="username" max={255} name="username" required />
+          </div>
+          <div>
+            <label htmlFor="email">Email </label>
+            <input id="email" max={255} name="email" type="email" required />
           </div>
           <div>
             <label htmlFor="password">Password </label>
@@ -85,8 +81,8 @@ export function LoginPage() {
             />
           </div>
           <hr className={isPending ? "loading" : ""} />
-          <button type="submit" id="login-button">
-            Login
+          <button type="submit" id="register-button">
+            Register
           </button>
         </form>
       </main>

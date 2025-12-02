@@ -102,7 +102,7 @@ export class WebAPIClient {
       { token: string } & UserData
     >(() =>
       //  throws on error
-      this.api.post("/auth/login", {
+      this.api.post("/auth/register", {
         username,
         password,
         email,

@@ -26,13 +26,17 @@ public class PostsController(DataContext context, IPostRepository repository, IU
     {
         var currentUser = await this.CurrentUser();
 
-        return mapper.Map<IEnumerable<PostDTO>>(
+        return (
             (await repository.GetAllAsync())
             .Where((post) => (currentUser is not null || !post.RegistredUsersOnly))
             .Select(u =>
             {
-               // if (expand_user) u.User = userRepository.GetByIdAsync(u.UserI)
-                return u;
+                // if (expand_user) u.User = userRepository.GetByIdAsync(u.UserI)
+                var mapped = mapper.Map<PostDTO>(u);
+
+                mapped.User = mapper.Map<PublicUserDTO>(u.User);
+
+                return mapped;
             })
         );
     }

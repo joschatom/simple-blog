@@ -1,4 +1,7 @@
-﻿namespace backend.Profiles;
+﻿using AutoMapper.Internal;
+using backend.DTOs.User.Response;
+
+namespace backend.Profiles;
 
 public class PostProfile: AutoMapper.Profile
 {

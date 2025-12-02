@@ -7,7 +7,7 @@ export const PostData = z.object({
     id: z.guid(),
     caption: z.string(),
     content: z.string(),
-    updatedAt: isoDatetimeToDate,
+    updatedAt: isoDatetimeToDate.nullable(),
     userId: z.guid(),
     registredUsersOnly: z.boolean(),
     user: UserData

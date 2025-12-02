@@ -6,9 +6,9 @@ export const UserData = z.object({
   id: z.guid(),
   username: z.string(),
   createdAt: isoDatetimeToDate.optional(),
-  email: z.email().optional(),
+  email: z.string().includes("@"),
   lastLogin: isoDatetimeToDate.optional(),
-  updatedAt: isoDatetimeToDate.optional(),
+  updatedAt: isoDatetimeToDate.optional().nullable(),
 });
 
 export type UserData = z.infer<typeof UserData>;

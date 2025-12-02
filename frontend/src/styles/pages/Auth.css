@@ -1,0 +1,15 @@
+main {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    width: 100vw;
+}
+
+
+.auth-form {
+    background-color: inherit;
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 25%;
+}
