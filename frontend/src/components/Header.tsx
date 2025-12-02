@@ -21,14 +21,17 @@ export function Header() {
       </div>
 
       {!client.isAuthenticated() ? (
-        <button>Login</button>
+        <button className="header-login-button" onClick={() => navigate("/login")}>Login</button>
       ) : (
         <div className="profile-image-container">
           <img src={account} className="header-profile-image" />
           <div className="profile-navigation">
-            <button>Profile</button>
-            <button>Settings</button>
-            <button>Log Out</button>
+            <button onClick={() => navigate("/users/me")}>Profile</button>
+            <button onClick={() => navigate("/settings")}>Settings</button>
+            <button onClick={async () =>  {
+              await client.logout();
+              navigate("/");
+            }}>Log Out</button>
           </div>
         </div>
       )}

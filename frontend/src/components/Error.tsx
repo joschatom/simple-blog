@@ -46,10 +46,10 @@ export function ErrorDisplay({ error }: { error: unknown; marker?: string }) {
       return (
         <>
           <h2>
-            UNKNOWN ERROR
+            Error
             <br />
           </h2>
-          <h4>{JSON.stringify(error, null, 2)}</h4>
+          <h4>{typeof(error) === "object" ?  JSON.stringify(error, null, 2) : error.toString()}</h4>
         </>
       );
   };

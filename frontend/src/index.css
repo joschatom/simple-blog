@@ -96,7 +96,7 @@ main {
 
 /* Tooltip text */
 .tooltip {
-  position: relative;
+  position: absolute;
   visibility: hidden; /* Hidden by default */
   width: fit-content;
   top: 100%;
@@ -113,7 +113,7 @@ main {
   stroke: aqua;
   border-radius: 2px;
   
-  z-index: 2; /* Ensure tooltip is displayed above content */
+  z-index: 1; /* Ensure tooltip is displayed above content */
 }
 
 /* Show the tooltip text on hover */

@@ -10,6 +10,7 @@ import { Post } from "blog-api/src/post";
 import { PostContainer } from "../components/Post";
 
 import "../styles/pages/Profile.css";
+import { NotLoggedIn, PageNotFound } from "./NotFound";
 
 export function UserPage() {
   const { id } = useParams();
@@ -53,6 +54,12 @@ export function UserPage() {
 
   const navigate = useNavigate();
 
+  if (id === "me" && client.currentUser == undefined)
+    return <NotLoggedIn/>
+
+  if (error?.inner.title == "Not Found")
+    return <PageNotFound />
+
   return (
     <>
       <Header />
@@ -67,7 +74,7 @@ export function UserPage() {
               <p className="profile-name">{user.data.username}'s Profile</p>
               <p className="profile-joined-at">
                 Joined {dayjs(user.data.createdAt).format("MMMM YYYY")}
-                <div className="tooltip">{user.data.createdAt?.toLocaleString(undefined, { dateStyle: "full", timeStyle: "full" })}</div>
+                <span className="tooltip">{user.data.createdAt?.toLocaleString(undefined, { dateStyle: "full", timeStyle: "full" })}</span>
               </p>
               <p className="profile-post-count">
                 {posts?.length == undefined ? <i>Loading</i> : posts.length}{" "}

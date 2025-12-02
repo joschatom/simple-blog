@@ -2,7 +2,7 @@ import { Post } from "blog-api/src/post";
 
 import lockOpen from "../assets/lock-open.svg";
 import { NavLink, useNavigate } from "react-router";
-import { ComponentRef, useContext, useEffect, useRef, useState } from "react";
+import { type ComponentRef, useContext, useEffect, useRef, useState } from "react";
 import { Client } from "../client";
 import { ErrorDisplay } from "./Error";
 import type { CreatePost } from "blog-api/src/schemas/post";
@@ -150,16 +150,34 @@ export function PostContainer({ post }: { post?: Post }) {
         />
         <div className="post-container-footer">
           {!isOwner ? (
-            <>
-              <button className="mute-button">Mute</button>
-              <button className="hide-post-button">Hide Post</button>
-            </>
+            client.currentUser ? (
+              <>
+                <button className="mute-button">Mute</button>
+                <button className="hide-post-button">Hide Post</button>
+              </>
+            ) : (
+              <>
+                <NavLink
+                  to="/login"
+                  aria-description="Redircts to login page inorder to access POST actions."
+                >
+                  <em>Post actions are only available for logged in users.</em>
+                </NavLink>
+              </>
+            )
           ) : editMode ? (
             <>
               <button className="post-cancel-button" onClick={cancel}>
                 Cancel
               </button>
-              <button className="post-save-button">
+              <button
+                className="post-save-button"
+                onClick={
+                  post
+                    ? () => setError("not yet implemented")
+                    : createNew
+                }
+              >
                 {!post ? "Create Post" : "Save"}
               </button>
             </>
