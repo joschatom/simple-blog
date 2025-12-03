@@ -59,7 +59,6 @@ export function UserPage() {
 
   if (error?.inner.title == "Not Found")
     return <PageNotFound />
-
   
   return (
     <>

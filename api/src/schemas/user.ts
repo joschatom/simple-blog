@@ -6,7 +6,7 @@ export const UserData = z.object({
   id: z.guid(),
   username: z.string(),
   createdAt: isoDatetimeToDate.optional(),
-  email: z.string().includes("@"),
+  email: z.string().includes("@").optional(),
   lastLogin: isoDatetimeToDate.optional(),
   updatedAt: isoDatetimeToDate.optional().nullable(),
 });

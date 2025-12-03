@@ -10,7 +10,7 @@ export const PostData = z.object({
     updatedAt: isoDatetimeToDate.nullable(),
     userId: z.guid(),
     registredUsersOnly: z.boolean(),
-    user: UserData
+    user: UserData.optional()
 });
 
 export type PostData = z.infer<typeof PostData>;

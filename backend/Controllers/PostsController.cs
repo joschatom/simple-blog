@@ -20,9 +20,14 @@ namespace backend.Controllers;
 public class PostsController(DataContext context, IPostRepository repository, IUserRepository userRepository, IMapper mapper) : ControllerBase
 {
     // GET: api/posts
+    /// <summary>
+    /// Get a list of all posts or
+    /// posts where <see cref="Models.Post.RegistredUsersOnly"/> is set to <see langword="false"/> if logged out.
+    /// </summary>
+    /// <returns>A list of all posts as json</returns> 
     [HttpGet]
     [AllowAnonymous]
-    public async Task<IEnumerable<PostDTO>> GetAll([FromQuery, DefaultValue(false)] bool expand_user = false)
+    public async Task<IEnumerable<PostDTO>> GetAll()
     {
         var currentUser = await this.CurrentUser();
 
@@ -34,7 +39,7 @@ public class PostsController(DataContext context, IPostRepository repository, IU
                 // if (expand_user) u.User = userRepository.GetByIdAsync(u.UserI)
                 var mapped = mapper.Map<PostDTO>(u);
 
-                mapped.User = mapper.Map<PublicUserDTO>(u.User);
+               // mapped.User = mapper.Map<PublicUserDTO>(u.User);
 
                 return mapped;
             })

@@ -133,7 +133,7 @@ public class AuthController(
     {
         var user = await this.CurrentUser();
 
-        if (ModelState.IsValid)
+        if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
         user!.Token = null;

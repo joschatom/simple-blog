@@ -12,6 +12,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System;
 using System.IdentityModel.Tokens.Jwt;
+using System.Reflection;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -37,6 +38,11 @@ builder.Services.AddSwaggerGen(options =>
         Type = SecuritySchemeType.Http,
         Scheme = "bearer"
     });
+    
+    var currentAssembly = Assembly.GetAssembly(typeof(IBlogBackendMarker));
+    var xmlDoc = Path.ChangeExtension(currentAssembly!.Location, "xml");
+    options.IncludeXmlComments(xmlDoc, true);
+
     options.AddSecurityRequirement(new OpenApiSecurityRequirement { { new OpenApiSecurityScheme { Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" } }, Array.Empty<string>() } });
     options.SwaggerDoc("v1", new OpenApiInfo { Title = "Blog API", Version = "v1" });
 });

@@ -12,6 +12,7 @@ public class UpdatedDTO
     /// <summary>
     /// The field names that were updated. Or null if unspecified.
     /// </summary>
+    /// <example>Username, Email</example>
     public string[]? UpdatedFields { get; set; }
 }
 
