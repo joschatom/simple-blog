@@ -23,5 +23,5 @@ public class UpdatePostDTO
     /// <summary>
     /// New value for if this post is only for logged in users.
     /// </summary>
-    public bool? RegistredUsersOnly { get; set; }
+    public bool? RegisteredUsersOnly { get; set; }
 }

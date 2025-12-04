@@ -1,6 +1,6 @@
 import { APIError, User } from "blog-api";
 import { useContext, useEffect, useState, useTransition } from "react";
-import { useNavigate, useParams } from "react-router";
+import { useNavigate, useNavigation, useParams } from "react-router";
 import { Client } from "../client";
 import { ErrorDisplay } from "../components/Error";
 import { Header } from "../components/Header";
@@ -59,7 +59,10 @@ export function UserPage() {
 
   if (error?.inner.title == "Not Found")
     return <PageNotFound />
+
   
+  
+
   return (
     <>
       <Header />

@@ -97,6 +97,32 @@ public class UserRepository: BaseRepository<User>, IUserRepository
 
         return posts;
     }
+
+    /// <inheritdoc/>
+    public async Task<IEnumerable<MuteUser>> GetMutedUsers(Guid id)
+    {
+        var user = await GetByIdAsync(id)
+            ?? throw new KeyNotFoundException(id.ToString());
+
+        var posts = context.Entry(user)
+            .Collection(p => p.MutedUsers)
+            .Query();
+
+        await posts.LoadAsync();
+
+        return posts;
+    }
+
+    public async Task<bool> UnmuteUser(Guid muter, Guid mutee)
+    {
+        var record = await context.UserMutes.FindAsync(muter, mutee);
+        
+        if (record == null) return false;
+
+        context.UserMutes.Remove(record);
+
+        return true;
+    }
 }
 
 

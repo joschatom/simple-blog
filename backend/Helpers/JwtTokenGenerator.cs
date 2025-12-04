@@ -43,13 +43,17 @@ public class JwtTokenGenerator
             Expires = DateTime.UtcNow.AddDays(daysToExpire),
             Issuer = _Issuer,
             Audience = _Audience,
+            IncludeKeyIdInHeader = true,
             SigningCredentials = new SigningCredentials
             (new SymmetricSecurityKey(key),
             SecurityAlgorithms.HmacSha512Signature),
-            IssuedAt = DateTime.Now
+            IssuedAt = DateTime.Now,
+            
+            
         };
         var tokenHandler = new JwtSecurityTokenHandler();
-        var token = tokenHandler.CreateToken(tokenDescriptor);
+      
+        var token = tokenHandler.CreateJwtSecurityToken(tokenDescriptor);
         var stringToken = tokenHandler.WriteToken(token);
         return stringToken;
     }

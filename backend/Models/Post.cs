@@ -22,7 +22,7 @@ public class Post: TimedModel
 
     public override string ToString()
     {
-        return $"Post titled \"{Caption}\" (ID {Id})";
+        return $"<Post titled \"{Caption}\" (ID {Id})>";
     }
 
 }

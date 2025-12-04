@@ -105,11 +105,14 @@ export async function handleAPIResponse<T>(
 
 export async function parseAPIResponseRaw<T extends z.ZodType>(
   schema: T,
-  req: () => Promise<Response>
+  req: () => Promise<Response>,
+  transformer?: (val: unknown) => unknown
 ): Promise<z.infer<T>> {
   try {
     const resp = await req();
-    if (resp.ok) return z.parse(schema, await resp.json());
+    var data = await resp.json();
+
+    if (resp.ok) return z.parse(schema, transformer !== undefined ? transformer(data) : data);
 
     const err = await resp.json();
 
@@ -122,10 +125,7 @@ export async function parseAPIResponseRaw<T extends z.ZodType>(
     }
 
     try {
-      throw new APIError(
-        "generic",
-        z.parse(ProblemDetailsError, err)
-      );
+      throw new APIError("generic", z.parse(ProblemDetailsError, err));
     } catch (e) {
       if (!(e instanceof ZodError)) throw e;
     }
@@ -134,16 +134,13 @@ export async function parseAPIResponseRaw<T extends z.ZodType>(
       status: resp.status,
       type: "Generic API Error",
       title: resp.statusText,
-      detail:
-        typeof err == "object"
-          ? JSON.stringify(err)
-          : err.toString(),
+      detail: typeof err == "object" ? JSON.stringify(err) : err.toString(),
     });
   } catch (e) {
     throw new APIError("axios", {
-        type: e.message,
-        title: "Failed to fetch API Resource",
-      });
+      type: e.message,
+      title: "Failed to fetch API Resource",
+    });
   }
 }
 

@@ -13,19 +13,21 @@ using Microsoft.OpenApi.Models;
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Reflection;
+using System.Security.Cryptography.Xml;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Configuration.AddUserSecrets<IBlogBackendMarker>(false, true);
+if (builder.Environment.EnvironmentName != "Testing")
+    builder.Configuration.AddUserSecrets<IBlogBackendMarker>(false, true);
 
 ConfigurationManager _configuration = builder.Configuration;
-builder.Services.AddSingleton<IConfiguration>(_configuration);
 
 // Add services to the container.
 builder.Services.AddControllers();
 
 builder.Services.AddBackendServices(_configuration);
+
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

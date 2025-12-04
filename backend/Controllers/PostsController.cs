@@ -31,19 +31,12 @@ public class PostsController(DataContext context, IPostRepository repository, IU
     {
         var currentUser = await this.CurrentUser();
 
-        return (
+        return mapper.Map<IEnumerable<PostDTO>>(
             (await repository.GetAllAsync())
             .Where((post) => (currentUser is not null || !post.RegistredUsersOnly))
-            .Select(u =>
-            {
-                // if (expand_user) u.User = userRepository.GetByIdAsync(u.UserI)
-                var mapped = mapper.Map<PostDTO>(u);
-
-               // mapped.User = mapper.Map<PublicUserDTO>(u.User);
-
-                return mapped;
-            })
-        );
+            .OrderBy(k => k.CreatedAt)
+         );
+            
     }
 
     // GET api/posts/1A577ADE-B695-406A-83ED-FA161EDD02A9
@@ -75,7 +68,8 @@ public class PostsController(DataContext context, IPostRepository repository, IU
 
         var postEntity = mapper.Map<backend.Models.Post>(createPost);
         postEntity.UserId = this.GetCurrentUserId(); // <-- this was missing...
-
+        postEntity.User = await this.CurrentUser();
+        
         var createdPost = await repository.CreateAsync(postEntity);
         await repository.SaveChangesAsync();
 
@@ -110,10 +104,10 @@ public class PostsController(DataContext context, IPostRepository repository, IU
             existingPost.Content = update.Content;
             builder.AddFields(nameof(update.Content));
         }
-        if (update.RegistredUsersOnly is not null)
+        if (update.RegisteredUsersOnly is not null)
         {
-            existingPost.RegistredUsersOnly = update.RegistredUsersOnly.Value;
-            builder.AddFields(nameof(update.RegistredUsersOnly));
+            existingPost.RegistredUsersOnly = update.RegisteredUsersOnly.Value;
+            builder.AddFields(nameof(update.RegisteredUsersOnly));
         }
 
         Console.WriteLine(existingPost.ToString());

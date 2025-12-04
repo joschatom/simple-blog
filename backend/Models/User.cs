@@ -35,6 +35,9 @@ public partial class User: TimedModel
     [GeneratedRegex(@"^[a-zA-Z0-9-]+$")]
     public static partial Regex ValidUsername();
     public const string ValidUsernameRegex = @"^[a-zA-Z0-9-]+$";
+
+    public override string ToString()
+        => $"<User named \"{Username}\" (ID {Id})>";
 }
 
 // Valid Username.

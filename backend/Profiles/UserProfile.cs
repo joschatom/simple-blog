@@ -1,4 +1,7 @@
-﻿namespace backend.Profiles;
+﻿using AutoMapper.Internal;
+using backend.DTOs.User.Response;
+
+namespace backend.Profiles;
 
 public class UserProfile: AutoMapper.Profile
 {
@@ -11,5 +14,23 @@ public class UserProfile: AutoMapper.Profile
         CreateMap<backend.Models.User, backend.DTOs.User.Response.AuthUserDTO>()
             .ReverseMap();
         CreateMap<backend.Models.User, backend.DTOs.User.Response.PublicUserDTO>();
+
+        CreateMap<Models.MuteUser, MutedUserDTO>()
+            .BeforeMap((src, dest, ctx) =>
+            {
+                var mapped = ctx.Mapper.Map<PublicUserDTO>(src.MutedUser);
+
+                foreach (var property in typeof(PublicUserDTO).GetProperties())
+                {
+                    var value = property.GetValue(mapped);
+                    var destProperty = typeof(MutedUserDTO).GetInheritedProperty(property.Name);
+                    destProperty.SetValue(dest, value); 
+                }
+            })
+            .ForAllMembers(c =>
+            {
+                if (c.DestinationMember.DeclaringType == typeof(PublicUserDTO))
+                    c.Ignore();
+            });
     }
 }

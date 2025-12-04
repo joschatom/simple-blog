@@ -22,7 +22,8 @@ export interface APIClient {
     method: Method,
     url: string,
     body: T,
-    recv: R
+    recv: R,
+    transformer?: (v: unknown) => undefined
   ): Promise<z.infer<typeof recv>>;
 
   api: AxiosInstance;
@@ -30,7 +31,6 @@ export interface APIClient {
 }
 
 export type onTokenChangedHandler = (token?: string, newUser?: User) => void;
-
 
 export class WebAPIClient {
   VERSION = "v0.1-web";
@@ -43,51 +43,51 @@ export class WebAPIClient {
   onTokenChanged?: onTokenChangedHandler;
   currentUser?: User;
 
-  
-
-
   constructor(
     host: string,
-    token?: string, 
+    token?: string,
     onTokenChanged?: onTokenChangedHandler
   ) {
     this.#host = host;
     this.token = token;
-    try { if (token !== undefined) {
-      const data = decodeToken(token);
-      this.currentUser = new User(this, {
-        id: data.userId,
-        username: data.username,
-      })
-    }} catch (e) {
+    try {
+      if (token !== undefined) {
+        const data = decodeToken(token);
+        this.currentUser = new User(this, {
+          id: data.userId,
+          username: data.username,
+        });
+      }
+    } catch (e) {
       console.error(`failed to decode token: ${e}`);
       this.currentUser = null;
     }
     this.onTokenChanged = onTokenChanged;
   }
-  
 
   sendRequest<T, R extends ZodType>(
     method: Method,
     url: string,
     body: T,
-    recv: R
+    recv: R,
+    transformer?: (v: unknown) => unknown
   ): Promise<z.infer<typeof recv>> {
-    return parseAPIResponseRaw(recv, async () =>
-      await fetch(this.API_BASE + url, {
-        body: JSON.stringify(body),
-        method: method,
-        headers: {
-          Authorization: this.token ? `Bearer ${this.token}` : undefined,
-          "Content-Type": "application/json",
-        },
-        credentials: "omit",
-        cache: "no-cache"
-      })
+    return parseAPIResponseRaw(
+      recv,
+      async () =>
+        await fetch(this.API_BASE + url, {
+          body: JSON.stringify(body),
+          method: method,
+          headers: {
+            Authorization: this.token ? `Bearer ${this.token}` : undefined,
+            "Content-Type": "application/json",
+          },
+          credentials: "omit",
+          cache: "no-cache",
+        }),
+      transformer
     );
   }
-
-
 
   isAuthenticated(): boolean {
     return this.token !== undefined;

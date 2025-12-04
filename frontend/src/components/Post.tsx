@@ -1,13 +1,91 @@
 import { Post } from "blog-api/src/post";
 
-import lockOpen from "../assets/lock-open.svg";
-import { NavLink, useNavigate } from "react-router";
-import { type ComponentRef, useContext, useEffect, useRef, useState } from "react";
+import { NavLink, useFetcher, useLocation, useNavigate } from "react-router";
+import {
+  type ComponentRef,
+  type ComponentProps,
+  useContext,
+  useEffect,
+  useEffectEvent,
+  useMemo,
+  useRef,
+  useState,
+  useCallback,
+} from "react";
 import { Client } from "../client";
 import { ErrorDisplay } from "./Error";
 import type { CreatePost } from "blog-api/src/schemas/post";
+import { useRefresh } from "../helpers/useRefresh";
+
+import lockOpen from "../assets/lock-open.svg";
+import lockClosed from "../assets/lock-closed.svg";
+import moment from "moment";
+import dayjs from "dayjs";
+
+function DurationSince({
+  date,
+  ...props
+}: { date: Date } & ComponentProps<"span">) {
+  const [dur, setDur] = useState<moment.Duration>(
+    moment.duration({
+      from: date,
+      to: Date.now()
+    })
+  );
+
+  const timeoutMin = (dur2: moment.Duration) => {
+  
+    if (dur2.asSeconds() < 60) return 1000;
+    
+    return 60 * 1000;
+  };
+
+  const tick = useCallback(() => {
+    const dur = moment.duration({
+      from: date,
+      to: moment.utc()
+    });
+    console.info("tick", timeoutMin(dur));
+    setDur(dur);
+
+    setTimeout(tick, timeoutMin(dur));
+  }, [date]);
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => tick(), []);
+
+  const formatElem = (ident: string, val: number, cond: boolean) => {
+    if (cond) return undefined;
+    let res = "";
+    if (val >= 1) res = `${val.toFixed(0)} ${ident}`;
+    else return undefined;
+    if (val >= 2) res += "s";
+
+    return res;
+  };
+
+  const parts = [
+    formatElem("month", dur.months(), false),
+    formatElem("day", dur.days(), false),
+    formatElem("hour", dur.hours(), dur.asMonths() >= 1),
+    formatElem("minute", dur.minutes(), dur.asDays() >= 1),
+    formatElem("second", dur.seconds(), dur.asMinutes() >= 10),
+  ].filter((v) => v != undefined).join(", ");
+
+  const last = parts.lastIndexOf(",");
+  
+
+
+  return (
+    <span {...props}>
+      Posted {parts.substring(0, last)}{last && " and"}{parts.substring(last+1)} ago
+    </span>
+  );
+}
 
 export function PostContainer({ post }: { post?: Post }) {
+  const refresh = useRefresh();
+
   const client = useContext(Client);
   let isOwner = client.currentUser
     ? client.currentUser.data.id === post?.data.userId
@@ -86,6 +164,36 @@ export function PostContainer({ post }: { post?: Post }) {
     }
   };
 
+  const update = async () => {
+    console.assert(post !== undefined);
+
+    const updateReq: CreatePost = {
+      caption: caption!,
+      content: content!,
+      registeredUsersOnly: locked,
+    };
+
+    try {
+      await post?.update(updateReq);
+    } catch (e) {
+      setError(e);
+    }
+
+    setEditMode(false);
+  };
+
+  const mute = async () => {
+    console.assert(client.currentUser !== undefined);
+    console.assert(post !== undefined);
+
+    if (!confirm(`Mute the user with the name ${post!.data.user!.username}?`))
+      return;
+
+    // await client.currentUser?.mute(post!.data.userId);
+    // TODO: Uncomment. ^
+    location.reload();
+  };
+
   useEffect(() => {
     if (error != undefined) errorDiag.current?.showModal();
   }, [error]);
@@ -130,12 +238,16 @@ export function PostContainer({ post }: { post?: Post }) {
           <div>
             {post && (
               <div>
-                <NavLink to={`/users/${post.data.user.username}`}>
-                  {post.data.user.username + (isOwner ? " (You)" : "")}
+                <NavLink to={`/users/${post.data.user!.username}`}>
+                  {post.data.user!.username + (isOwner ? " (You)" : "")}
                 </NavLink>
               </div>
             )}
-            <img src={lockOpen} className="post-locked-icon" />
+            <img
+              src={locked ? lockClosed : lockOpen}
+              className="post-locked-icon"
+              onClick={editMode ? () => setLocked((v) => !v) : () => {}}
+            />
           </div>
         </div>
         <textarea
@@ -149,48 +261,53 @@ export function PostContainer({ post }: { post?: Post }) {
           }
         />
         <div className="post-container-footer">
-          {!isOwner ? (
-            client.currentUser ? (
+          <div className="start-actions">
+            {post && !editMode && <DurationSince date={post.data.createdAt} />}
+          </div>
+          <div className="end-actions">
+            {!isOwner ? (
+              client.currentUser ? (
+                <>
+                  <button className="mute-button" onClick={mute}>
+                    Mute
+                  </button>
+                  <button className="hide-post-button">Hide Post</button>
+                </>
+              ) : (
+                <>
+                  <NavLink
+                    to="/login"
+                    aria-description="Redircts to login page inorder to access POST actions."
+                  >
+                    <em>
+                      Post actions are only available for logged in users.
+                    </em>
+                  </NavLink>
+                </>
+              )
+            ) : editMode ? (
               <>
-                <button className="mute-button">Mute</button>
-                <button className="hide-post-button">Hide Post</button>
+                <button
+                  className="post-save-button"
+                  onClick={post ? update : createNew}
+                >
+                  {!post ? "Create Post" : "Save"}
+                </button>
+                <button className="post-cancel-button" onClick={cancel}>
+                  Cancel
+                </button>
               </>
             ) : (
               <>
-                <NavLink
-                  to="/login"
-                  aria-description="Redircts to login page inorder to access POST actions."
-                >
-                  <em>Post actions are only available for logged in users.</em>
-                </NavLink>
+                <button className="delete-post-button" onClick={delete_}>
+                  Delete
+                </button>
+                <button className="edit-post-button" onClick={edit}>
+                  Edit
+                </button>
               </>
-            )
-          ) : editMode ? (
-            <>
-              <button className="post-cancel-button" onClick={cancel}>
-                Cancel
-              </button>
-              <button
-                className="post-save-button"
-                onClick={
-                  post
-                    ? () => setError("not yet implemented")
-                    : createNew
-                }
-              >
-                {!post ? "Create Post" : "Save"}
-              </button>
-            </>
-          ) : (
-            <>
-              <button className="edit-post-button" onClick={edit}>
-                Edit
-              </button>
-              <button className="delete-post-button" onClick={delete_}>
-                Delete
-              </button>
-            </>
-          )}
+            )}
+          </div>
         </div>
       </div>
     );

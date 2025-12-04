@@ -8,6 +8,7 @@ export const PostData = z.object({
     caption: z.string(),
     content: z.string(),
     updatedAt: isoDatetimeToDate.nullable(),
+    createdAt: isoDatetimeToDate,
     userId: z.guid(),
     registredUsersOnly: z.boolean(),
     user: UserData.optional()
@@ -22,3 +23,12 @@ export const CreatePost = z.object({
 });
 
 export type CreatePost = z.infer<typeof CreatePost>;
+
+export const UpdatePost = z.object({
+    caption: z.string().min(1).max(255).optional(),
+    content: z.string().min(1).max(10000).optional(),
+    registeredUsersOnly: z.boolean().default(false).optional()
+});
+
+export type  UpdatePost = z.infer<typeof UpdatePost>;
+

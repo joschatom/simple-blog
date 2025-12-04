@@ -8,7 +8,7 @@ export const zs = {
         .max(255),
     updated: (update: z.ZodObject) => z.object({
         updated: z.boolean(),
-        updatedFields: z.array(z.keyof(update))
+        updatedFields: z.array(z.string())
     })
 }
 

@@ -10,6 +10,7 @@ import { PostsPage } from "./pages/Posts";
 import { PageNotFound } from "./pages/NotFound";
 import { RegisterPage } from "./pages/Register";
 
+
 function App() {
   const [apiToken, setAPIToken] = useState<string | null>(
     localStorage.getItem("token")

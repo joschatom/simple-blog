@@ -106,8 +106,42 @@ public class UserController(IUserRepository repository, IMapper mapper)
         return Ok(builder.Build());
     }
 
-    [HttpPost("{id}/mute")]
-    public async Task<ActionResult> MuteUser(Guid id)
+
+    [AllowAnonymous]
+    [HttpGet("{id}/posts")]
+    public async Task<ActionResult<PostDTO>> GetPosts(Guid id)
+    {
+        if (!await repository.ExistsAsync(id))
+            return NotFound($"Post with {id} not found.");
+
+        bool loggedIn = await this.CurrentUser() is not null;
+
+        var users = (await repository.GetPosts(id))
+            .Where(p => loggedIn || !p.RegistredUsersOnly)
+            .OrderByDescending(m => m.CreatedAt)
+            .ToList();
+
+        return Ok(mapper.Map<IEnumerable<PostDTO>>(users));
+    }
+
+
+}
+
+[ApiController]
+[Route("/api/muted-users")]
+[Authorize]
+public class MutedUsersController(IUserRepository repository, IMapper mapper): ControllerBase
+{
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<MutedUserDTO>>> GetMutedUsers()
+    {
+        var muted = await repository.GetMutedUsers(this.GetCurrentUserId());
+
+        return Ok(mapper.Map<IEnumerable<MutedUserDTO>>(muted));
+    }
+
+    [HttpPost]
+    public async Task<ActionResult> MuteUser([FromBody] Guid id)
     {
         if (!await repository.ExistsAsync(id))
             return NotFound($"User with ID {id} cannot be found.");
@@ -123,21 +157,27 @@ public class UserController(IUserRepository repository, IMapper mapper)
         return Ok();
     }
 
-    [AllowAnonymous]
-    [HttpGet("{id}/posts")]
-    public async Task<ActionResult<PostDTO>> GetPosts(Guid id)
+    [HttpDelete("{id}")]
+    public async Task<ActionResult> UnmuteUser(Guid id)
     {
         if (!await repository.ExistsAsync(id))
-            return NotFound($"Post with {id} not found.");
+            return NotFound($"User with ID {id} cannot be found.");
 
-        bool loggedIn = await this.CurrentUser() is not null;
+        var currentUser = await this.CurrentUser();
 
-        var users = (await repository.GetPosts(id))
-            .Where(p => loggedIn || !p.RegistredUsersOnly)
-            .ToList();
-        
-        return Ok(mapper.Map<IEnumerable<PostDTO>>(users));
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        if (!await repository.UnmuteUser(currentUser!.Id, id))
+            return Problem(
+                title: "User not muted",
+                detail: $"The user with the ID {id} is not muted by {currentUser}",
+                statusCode: StatusCodes.Status400BadRequest,
+                type: "Invalid Request"
+            );
+
+        await repository.SaveChangesAsync();
+
+        return Ok();
     }
 }
-
-

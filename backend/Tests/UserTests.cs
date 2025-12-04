@@ -2,6 +2,8 @@
 using AutoMapper.Configuration.Annotations;
 using AutoMapper.Internal;
 using backend.DTOs.Post.Response;
+using backend.DTOs.User.Response;
+using backend.Models;
 using Microsoft.VisualBasic;
 using NUnit.Framework;
 using NUnit.Framework.Constraints;
@@ -64,6 +66,98 @@ class Other: BackendTests
         }
     }
 
+    [Test]
+    public async Task GetMutedUsers()
+    {
+        var user = UserFaker.Generate();
+        var otherUsers = UserFaker.Generate(4);
+
+        await DataContext.SaveChangesAsync();
+
+        await Reload(user);
+        await Reload(otherUsers.ToArray());
+        
+        foreach (var otherUser in otherUsers)
+            await UserRepository.MuteUser(user.Id, otherUser.Id);
+
+        await DataContext.SaveChangesAsync();
+
+        var client = Authenticated(_factory.CreateClient(), user);
+
+        var resp = await client.GetAsync($"/api/muted-users");
+
+        Assert.That(resp.IsSuccessStatusCode, Is.True);
+
+        var result = await resp.Content.ReadFromJsonAsync<MutedUserDTO[]>();
+
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result, Has.Length.EqualTo(otherUsers.Count));
+
+        foreach (var (got, expected) in result.Join(otherUsers, p => p.Id, p => p.Id, (a,b) => (a, b)))
+        {
+            Assert.Multiple(() =>
+            {
+                Assert.That(got.Id, Is.EqualTo(expected.Id));
+                Assert.That(got.Username, Is.EqualTo(expected.Username));
+                Assert.That(got.CreatedAt, Is.EqualTo(expected.CreatedAt));
+            });
+        }
+    }
+
+}
+
+[TestFixture]
+class Muting: BackendTests
+{
+    private User actor = null!;
+    private User[] victims = null!;
+
+    const int VICTIM_COUNT = 4;
+
+    protected override async Task CreateData()
+    {
+        actor = UserFaker
+            .RuleFor(p => p.Username, _ => "actor")
+            .Generate();
+
+        victims = UserFaker
+            .RuleFor(p => p.Username, g => $"victim-{g.UniqueIndex}")
+            .Generate(VICTIM_COUNT)
+            .ToArray();
+
+        await DataContext.SaveChangesAsync();
+
+        await Reload(actor); 
+        await Reload(victims);
+    }
+
+    [Test]
+    public async Task GetMutedUsers()
+    {
+        
+        foreach (var victim in victims)
+            await UserRepository.MuteUser(actor.Id, victim.Id);
+
+        await DataContext.SaveChangesAsync();
+
+        var client = Authenticated(_factory.CreateClient(), actor);
+
+        var resp = await client.GetAsync($"/api/muted-users");
+
+        await AssertForeachDTOJoined<MutedUserDTO, User>(
+            victims,
+            resp,
+            (expected, got) => Assert.Multiple(() =>
+            {
+                Assert.That(got.Id, Is.EqualTo(expected.Id));
+                Assert.That(got.Username, Is.EqualTo(expected.Username));
+                Assert.That(got.CreatedAt, Is.EqualTo(expected.CreatedAt));
+            }),
+            nameof(User.Id)
+        );
+    }
+
+    // ...
 }
 
 

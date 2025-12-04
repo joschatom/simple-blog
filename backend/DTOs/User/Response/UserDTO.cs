@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using AutoMapper;
+using backend.Models;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 
 namespace backend.DTOs.User.Response;
@@ -34,3 +36,4 @@ public class UserDTO
     /// </summary>
     public DateTime? UpdatedAt { get; set; }
 }
+
