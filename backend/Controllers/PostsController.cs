@@ -34,6 +34,10 @@ public class PostsController(DataContext context, IPostRepository repository, IU
         return mapper.Map<IEnumerable<PostDTO>>(
             (await repository.GetAllAsync())
             .Where((post) => (currentUser is not null || !post.RegistredUsersOnly))
+            .Where((post) => currentUser is not null 
+                ? !userRepository.IsMutedBlocking(currentUser!, post.UserId)
+                : true
+            )
             .OrderBy(k => k.CreatedAt)
          );
             

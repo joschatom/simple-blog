@@ -1,8 +1,12 @@
 ﻿using backend.Controllers;
+using backend.DTOs.User.Response;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 
 namespace backend.Models;
@@ -11,7 +15,7 @@ namespace backend.Models;
 /// Represents a user on the blogging platform.
 /// </summary>
 [DebuggerDisplay("User: {Username} (ID {Id})")]
-public partial class User: TimedModel
+public partial class User : TimedModel
 {
     // === Primary Key ===
     public Guid Id { get; set; }
@@ -38,6 +42,57 @@ public partial class User: TimedModel
 
     public override string ToString()
         => $"<User named \"{Username}\" (ID {Id})>";
+
+
+    /// <summary>
+    /// Implicit cast from User Object to user ID.
+    /// </summary>
+    /// <param name="user">The User object.</param>
+    public static implicit operator Guid([DisallowNull] User user)
+        => user!.Id;
+
+    /// <summary>
+    /// Implicit cast from User Object to user ID,
+    /// or null if user is null.
+    /// </summary>
+    /// <param name="user">The User object.</param>
+    public static implicit operator Guid?([AllowNull] User? user)
+        => user?.Id;
+}
+
+public struct UserId : IEquatable<UserId>, IEquatable<Guid>
+{
+
+    public UserId(Guid id)
+    {
+        this.Inner = id;
+    }
+
+    internal Guid Inner { get; init; }
+
+    /// <inheritdoc/>
+    public readonly bool Equals(UserId other)
+        => Inner == other.Inner;
+
+    /// <inheritdoc/>
+    public readonly bool Equals(Guid other)
+        => (Guid)this! == other;
+
+    /// <summary>
+    /// Unwrap ID
+    /// </summary>
+    /// <param name="id">Id</param>
+    public static implicit operator Guid?(UserId? id)
+        => id?.Inner;
+
+    /// <summary>
+    /// Wrap GUID.
+    /// </summary>
+    /// <param name="guid">GUID</param>
+    public static implicit operator UserId?(Guid? guid)
+        => guid is null ? null : new UserId((global::System.Guid)guid);
+
+
 }
 
 // Valid Username.

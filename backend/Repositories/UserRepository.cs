@@ -8,7 +8,7 @@ using System.Reflection.Metadata.Ecma335;
 
 namespace backend.Repositories;
 
-public class UserRepository: BaseRepository<User>, IUserRepository
+public class UserRepository : BaseRepository<User>, IUserRepository
 {
     private readonly DataContext context;
 
@@ -78,10 +78,10 @@ public class UserRepository: BaseRepository<User>, IUserRepository
     {
         await context.UserMutes.AddAsync(
             new Models.MuteUser
-        {
-            UserId = muter,
-            MutedUserId = mutee
-        });
+            {
+                UserId = muter,
+                MutedUserId = mutee
+            });
     }
 
     public async Task<IEnumerable<Post>> GetPosts(Guid id)
@@ -116,13 +116,23 @@ public class UserRepository: BaseRepository<User>, IUserRepository
     public async Task<bool> UnmuteUser(Guid muter, Guid mutee)
     {
         var record = await context.UserMutes.FindAsync(muter, mutee);
-        
+
         if (record == null) return false;
 
         context.UserMutes.Remove(record);
 
+
         return true;
     }
+
+    public async Task<bool> IsMuted(Guid muter, Guid mutee)
+        => await context.UserMutes.AnyAsync(m => m.UserId == muter
+        && m.MutedUserId == mutee);
+
+    public  bool IsMutedBlocking(Guid muter, Guid mutee)
+        => context.UserMutes.Any(m => m.UserId == muter
+        && m.MutedUserId == mutee);
 }
+
 
 

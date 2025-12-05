@@ -18,4 +18,8 @@ public interface IUserRepository: IBaseRepository<User>
     /// <returns>A list of object describing the "muted" relationship.</returns>
     public Task<IEnumerable<MuteUser>> GetMutedUsers(Guid id);
 
+    public Task<bool> IsMuted(Guid muter, Guid mutee);
+
+    public bool IsMutedBlocking(Guid muter, Guid mutee);
+
 }

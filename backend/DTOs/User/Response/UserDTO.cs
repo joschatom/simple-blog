@@ -11,7 +11,7 @@ namespace backend.DTOs.User.Response;
 /// <remarks>
 /// This should only be sent to the client where that user is logged in, NO OTHER CLIENTS.
 /// </remarks>
-public class UserDTO
+public class UserDTO : IEquatable<Models.User>
 {
     /// <summary>
     /// The Unique Identifier of the user.
@@ -35,5 +35,13 @@ public class UserDTO
     /// When the account's info was last updated.
     /// </summary>
     public DateTime? UpdatedAt { get; set; }
+
+    public bool Equals(Models.User? other)
+        => Id == other?.Id
+        && Username == other.Username
+        && Email == other.Email
+        && CreatedAt == other.CreatedAt
+        && UpdatedAt == other.UpdatedAt;
+
 }
 

@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace backend.Models;
 
@@ -25,4 +26,12 @@ public class Post: TimedModel
         return $"<Post titled \"{Caption}\" (ID {Id})>";
     }
 
+
+    /// <summary>
+    /// Implicit cast from Post Object to post ID,
+    /// or null if user is null.
+    /// </summary>
+    /// <param name="post">The Post object.</param>
+    public static implicit operator Guid([DisallowNull] Post post)
+        => post.Id;
 }

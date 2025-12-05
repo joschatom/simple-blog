@@ -1,9 +1,15 @@
 ﻿using AutoMapper;
 using AutoMapper.Configuration.Annotations;
 using AutoMapper.Internal;
+using backend.Data;
 using backend.DTOs.Post.Response;
 using backend.DTOs.User.Response;
 using backend.Models;
+using backend.Repositories;
+using DeepEqual.Syntax;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.TestHost;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualBasic;
 using NUnit.Framework;
 using NUnit.Framework.Constraints;
@@ -11,25 +17,26 @@ using System;
 using System.Collections;
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
 namespace backend.Tests.Users;
 
 [TestFixture]
-class Create: BackendTests { }
+class Create : BackendTests { }
 
 [TestFixture]
-class Query: BackendTests { }
+class Query : BackendTests { }
 
 [TestFixture]
-class Delete: BackendTests { }
+class Delete : BackendTests { }
 
 [TestFixture]
-class Update: BackendTests { }
+class Update : BackendTests { }
 
 [TestFixture]
-class Other: BackendTests
+class Other : BackendTests
 {
     [Test]
     public async Task GetPosts_Unauthenticated()
@@ -53,7 +60,7 @@ class Other: BackendTests
 
         foreach (var post in postsDTOs)
         {
-           var gotPost = got!.SingleOrDefault(p => p.Id == post.Id);
+            var gotPost = got!.SingleOrDefault(p => p.Id == post.Id);
 
             Assert.Multiple(() =>
             {
@@ -76,7 +83,7 @@ class Other: BackendTests
 
         await Reload(user);
         await Reload(otherUsers.ToArray());
-        
+
         foreach (var otherUser in otherUsers)
             await UserRepository.MuteUser(user.Id, otherUser.Id);
 
@@ -93,7 +100,7 @@ class Other: BackendTests
         Assert.That(result, Is.Not.Null);
         Assert.That(result, Has.Length.EqualTo(otherUsers.Count));
 
-        foreach (var (got, expected) in result.Join(otherUsers, p => p.Id, p => p.Id, (a,b) => (a, b)))
+        foreach (var (got, expected) in result.Join(otherUsers, p => p.Id, p => p.Id, (a, b) => (a, b)))
         {
             Assert.Multiple(() =>
             {
@@ -107,10 +114,10 @@ class Other: BackendTests
 }
 
 [TestFixture]
-class Muting: BackendTests
+class Muting : BackendTests
 {
     private User actor = null!;
-    private User[] victims = null!;
+    private User[] otherUsers = null!;
 
     const int VICTIM_COUNT = 4;
 
@@ -120,22 +127,49 @@ class Muting: BackendTests
             .RuleFor(p => p.Username, _ => "actor")
             .Generate();
 
-        victims = UserFaker
+        otherUsers = UserFaker
             .RuleFor(p => p.Username, g => $"victim-{g.UniqueIndex}")
             .Generate(VICTIM_COUNT)
             .ToArray();
 
         await DataContext.SaveChangesAsync();
 
-        await Reload(actor); 
-        await Reload(victims);
+        await Reload(actor);
+        await Reload(otherUsers);
+    }
+
+    [Test]
+    public async Task EnsureValidData()
+    {
+        Assert.Multiple(() =>
+        {
+            Assert.That(actor, Is.Not.Null);
+            Assert.That(otherUsers, Is.Not.Null);
+        });
+        Assert.Multiple(() =>
+        {
+            Assert.That(otherUsers, Has.Length.EqualTo(VICTIM_COUNT));
+            Assert.That(actor.Username, Is.EqualTo("actor"));
+        });
+
+        Assert.That(
+            await UserRepository.ExistsAsync(actor.Id), Is.True,
+            $"The actor user, {actor} doesn't exist in database."
+        );
+
+        foreach (var victim in otherUsers)
+            Assert.That(
+                await UserRepository.ExistsAsync(victim.Id),
+                Is.True,
+                $"The victim, {victim} doesn't exist in database."
+            );
     }
 
     [Test]
     public async Task GetMutedUsers()
     {
-        
-        foreach (var victim in victims)
+
+        foreach (var victim in otherUsers)
             await UserRepository.MuteUser(actor.Id, victim.Id);
 
         await DataContext.SaveChangesAsync();
@@ -145,7 +179,7 @@ class Muting: BackendTests
         var resp = await client.GetAsync($"/api/muted-users");
 
         await AssertForeachDTOJoined<MutedUserDTO, User>(
-            victims,
+            otherUsers,
             resp,
             (expected, got) => Assert.Multiple(() =>
             {
@@ -157,11 +191,118 @@ class Muting: BackendTests
         );
     }
 
+    [Test]
+    public async Task MuteUser()
+    {
+        var target = otherUsers.First()!;
+
+        var client = Authenticated(_factory.CreateClient(), actor);
+
+        var resp = await client.PostAsJsonAsync(
+            "/api/muted-users",
+            target.Id
+        );
+
+        Assert.That(resp.StatusCode, Is.InRange(200, 299));
+
+        var muted = (await UserRepository.GetMutedUsers(actor.Id))
+            .Select(u => u.MutedUser.Id)
+            .ToArray();
+
+        Assert.That(muted, Is.Not.Null);
+        Assert.That(muted, Has.Length.EqualTo(1));
+        Assert.That(muted, Does.Contain(target.Id));
+    }
+
+    [Test]
+    public async Task UnmuteUser()
+    {
+        var target = otherUsers.First()!;
+
+        await UserRepository.MuteUser(actor.Id, target.Id);
+
+        await DataContext.SaveChangesAsync();
+
+        var client = Authenticated(_factory.CreateClient(), actor);
+
+        var resp = await client.DeleteAsync($"/api/muted-users/{target.Id}");
+
+        Assert.That(resp.StatusCode, Is.InRange(200, 299));
+
+        Assert.That(
+            await UserRepository.IsMuted(actor, target),
+            Is.False, "Expected target to no longer be muted after API call."
+        );
+    }
+
+    [Test]
+    public async Task IsMuted_Internal()
+    {
+        TestContext.WriteLine((Guid?)UserByName["actor"]);
+
+        await UserRepository.MuteUser(actor, otherUsers[0]);
+
+        await DataContext.SaveChangesAsync();
+
+        Assert.That(
+            await UserRepository.IsMuted(actor, otherUsers[0]),
+            Is.True
+        );
+
+        Assert.That(
+            await UserRepository.IsMuted(actor, otherUsers[1]),
+            Is.False
+        );
+    }
+
+
+    public class ModelAccessorHelper<TModel, TKey>(
+        DataContext context,
+        Func<IQueryable<TModel>, TKey, IQueryable<TModel>> predicate
+    ) where TModel : class
+    {
+
+        public TModel? this[TKey key]
+        {
+            get => predicate(context.Set<TModel>(), key)
+                .FirstOrDefault();
+
+        }
+    }
+
+    ModelAccessorHelper<User, string> UserByName
+        => new(DataContext, (q, k) => q.Where(u => u.Username == k));
+
+
     // ...
 }
 
 
+/// <summary>
+/// Constraint for if a status code is succesfull.
+/// </summary>
+public class SuccessfulStatusCodeConstraint : Constraint
+{
+    /// <inheritdoc/>
+    public override ConstraintResult ApplyTo<TActual>(TActual actual)
+    {
+        ConstraintStatus result;
+        int status;
 
+        if (actual is int n) status = n;
+        else if (actual is HttpResponseMessage msg) status = (int)msg.StatusCode;
+        else return new ConstraintResult(this, actual, ConstraintStatus.Error);
+
+        if (status >= 200 && status < 299) result = ConstraintStatus.Success;
+        else result = ConstraintStatus.Failure;
+
+        Description = "Sucessfull status code.";
+
+
+        return new ConstraintResult(this, status, result);
+    }
+
+}
 /*
 [System.AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
 sealed class IgnoreEqualityAttribute : Attribute;
@@ -201,47 +342,6 @@ public class DeepEqualityComparer<[DynamicallyAccessedMembers(DynamicallyAccesse
 */
 
 
-public class DataTransferObject<TModel> :
-    IEquatable<TModel>, IEquatable<DataTransferObject<TModel>>
+public class DataTransferObject<TModel>
 {
-    bool IEquatable<TModel>.Equals(TModel? other)
-    {
-        var compared = 0;
-
-        foreach (var mem in this.GetType().GetProperties())
-        {
-            var modelProp = typeof(TModel).GetProperty(mem.Name);
-
-            if (modelProp is null)
-                continue;
-
-            compared++;
-
-            if (mem.GetValue(this) != modelProp.GetValue(other))
-                return false;
-        }
-
-        return compared > 0;
-    }
-
-    bool IEquatable<DataTransferObject<TModel>>.Equals(DataTransferObject<TModel>? other)
-    {
-        var compared = 0;
-
-        foreach (var mem in this.GetType().GetProperties())
-        {
-            var prop = typeof(TModel).GetProperty(mem.Name);
-
-            if (prop is null)
-                continue;
-
-            compared++;
-
-            if (mem.GetValue(this) != prop.GetValue(other))
-                return false;
-        }
-
-        return compared > 0;
-    }
 }
-

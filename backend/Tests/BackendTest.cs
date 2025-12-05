@@ -123,6 +123,18 @@ internal class BackendTests<T>
         CreateData();
     }
 
+    protected HttpClient CreateClient(User user)
+    {
+        DataContext.SaveChanges();
+        return Authenticated(_factory.CreateClient(), user);
+    }
+
+    protected HttpClient CreateAnonymouseClient()
+    {
+        DataContext.SaveChanges();
+        return _factory.CreateClient();
+    }
+
     protected virtual Task CreateData() { return Task.CompletedTask; }
 
     [TearDown]

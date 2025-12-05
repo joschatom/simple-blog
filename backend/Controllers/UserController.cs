@@ -10,8 +10,10 @@ using backend.Tests.Posts;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Newtonsoft.Json;
+using System.Net.Mime;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
@@ -143,6 +145,7 @@ public class MutedUsersController(IUserRepository repository, IMapper mapper): C
     [HttpPost]
     public async Task<ActionResult> MuteUser([FromBody] Guid id)
     {
+
         if (!await repository.ExistsAsync(id))
             return NotFound($"User with ID {id} cannot be found.");
 
@@ -176,7 +179,7 @@ public class MutedUsersController(IUserRepository repository, IMapper mapper): C
                 type: "Invalid Request"
             );
 
-        await repository.SaveChangesAsync();
+        await repository.SaveChangesAsync(); 
 
         return Ok();
     }

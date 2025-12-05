@@ -8,7 +8,9 @@ using backend.Helpers;
 using backend.Interfaces;
 using backend.Models;
 using backend.Profiles;
+using backend.Tests;
 using Bogus;
+using DeepEqual.Syntax;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -17,12 +19,14 @@ using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Identity.Client;
 using Microsoft.IdentityModel.Tokens;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 using System.Collections;
 using System.ComponentModel.Design;
 using System.Data.Common;
+using System.Net;
 using System.Net.Http.Headers;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -183,79 +187,78 @@ class Create : BackendTests
 }
 
 [TestFixture]
-class Get : BackendTests<PostsController>
+class Get : BackendTestsWithData
 {
+    protected override int USERS => 2;
+    protected override int POSTS => 6;
+    protected override int OWN_POSTS => 2;
+
     [Test]
     public async Task GetPosts()
     {
-        var users = UserFaker.Generate(3);
-
-        DataContext.SaveChanges();
-
-        var expected = PostFaker(5)
-            .ToArray();
-
-        DataContext.SaveChanges();
-
-
-        var client = _factory.CreateClient();
+        var client = CreateAnonymouseClient();
         
         var resp = await client.GetAsync("/api/posts");
-        var posts = await resp.Content.ReadFromJsonAsync<PostDTO[]>();
 
-        Assert.Multiple(() =>
-        {
-            Assert.That(resp.IsSuccessStatusCode, Is.True);
-            Assert.That(posts, Is.Not.Null);
-        });
-        
-        foreach (var post in expected)
-        {
-           var got = posts!.SingleOrDefault(p => p.Id == post.Id);
-
-            Assert.Multiple(() =>
+        await AssertForeachDTOJoined<PostDTO, Post>(
+            othersPosts,
+            resp,
+            (expected, got) => Assert.Multiple(() =>
             {
                 Assert.That(got, Is.Not.Null);
-                Assert.That(got!.Caption, Is.EqualTo(post.Caption));
-                Assert.That(got!.Content, Is.EqualTo(post.Content));
-                Assert.That(got!.UserId, Is.EqualTo(post.UserId));
-                Assert.That(got!.CreatedAt, Is.EqualTo(post.CreatedAt).Within(1).Seconds);
-            });
-        }
+                Assert.That(got!.Caption, Is.EqualTo(expected.Caption));
+                Assert.That(got!.Content, Is.EqualTo(expected.Content));
+                Assert.That(got!.UserId, Is.EqualTo(expected.UserId));
+                Assert.That(got!.CreatedAt, Is.EqualTo(expected.CreatedAt).Within(1).Seconds);
+            }),
+            nameof(Post.Id)
+        );
+    }
+
+    [Test]
+    public async Task GetPosts_MutedUsers_Removed()
+    {
+        var muter = otherUsers[0];
+
+        await UserRepository.MuteUser(muter, actor);
+
+        var client = CreateClient(muter);
+
+        var resp = await client.GetAsync("/api/posts");
+        Assert.Multiple(async () =>
+        {
+            Assert.That(resp.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+
+            Assert.That(await resp.Content.ReadAsStringAsync(),
+                Does.Not.Contains(actor.Id.ToString()));
+        });
     }
 
     [Test]
     public async Task GetPostById()
     {
-        var user = UserFaker.Generate();
-        var post = PostFaker(1, f => f.RuleFor(p => p.UserId, user.Id)).First();
-        DataContext.SaveChanges();
-        var client = _factory.CreateClient();
-        var resp = await client.GetAsync($"/api/posts/{post.Id}");
+        var client = CreateAnonymouseClient();
+
+        var resp = await client.GetAsync($"/api/posts/{(Guid)othersPosts[0]}");
+
+        Assert.That(resp.StatusCode, Is.EqualTo(HttpStatusCode.OK));
 
         var got = await resp.Content.ReadFromJsonAsync<PostDTO>();
 
-        Assert.Multiple(() =>
-        {
-            Assert.That(resp.IsSuccessStatusCode, Is.True);
-            Assert.That(got, Is.Not.Null);
-            Assert.That(got!.Id, Is.EqualTo(post.Id));
-            Assert.That(got!.Caption, Is.EqualTo(post.Caption));
-            Assert.That(got!.Content, Is.EqualTo(post.Content));
-            Assert.That(got!.UserId, Is.EqualTo(post.UserId));
-            Assert.That(got!.CreatedAt, Is.EqualTo(post.CreatedAt).Within(1).Seconds);
-        });
+        got.WithDeepEqual(othersPosts[0])
+            .IgnoreUnmatchedProperties()
+            .Assert();
     }
 
     [Test]
     public async Task GetPostById_NotFound()
     {
-        var guid = Guid.NewGuid();
-        var client = _factory.CreateClient();
-        var resp = await client.GetAsync($"/api/posts/{guid}");
+        var client = CreateAnonymouseClient();
+
+        var resp = await client.GetAsync($"/api/posts/{Guid.Empty}");
+
         Assert.That(resp.StatusCode, Is.EqualTo(System.Net.HttpStatusCode.NotFound));
     }
-
     [Test]
     public async Task GetPosts_RegistredUsersOnly_Unauthenticated_Fails()
     {
@@ -317,31 +320,110 @@ class Get : BackendTests<PostsController>
     [Test]
     public async Task GetPostById_RegistredUsersOnly_Authenticated_Succeeds()
     {
-        var user = UserFaker.Generate();
         var post = PostFaker(1, f => f
-            .RuleFor(p => p.UserId, user.Id)
+            .RuleFor(p => p.UserId, actor)
             .RuleFor(p => p.RegistredUsersOnly, true))
             .First();
+
         DataContext.SaveChanges();
-        var client = _factory.CreateClient();
-        Authenticated(client, user);
+
+        var client = CreateClient();
         var resp = await client.GetAsync($"/api/posts/{post.Id}");
         var got = await resp.Content.ReadFromJsonAsync<PostDTO>();
-        Assert.Multiple(() =>
-        {
-            Assert.That(resp.IsSuccessStatusCode, Is.True);
-            Assert.That(got, Is.Not.Null);
-            Assert.That(got!.Id, Is.EqualTo(post.Id));
-            Assert.That(got!.Caption, Is.EqualTo(post.Caption));
-            Assert.That(got!.Content, Is.EqualTo(post.Content));
-            Assert.That(got!.UserId, Is.EqualTo(post.UserId));
-            Assert.That(got!.CreatedAt, Is.EqualTo(post.CreatedAt).Within(1).Seconds);
-            Assert.That(got!.RegistredUsersOnly, Is.True);
-        });
+
+        got.WithDeepEqual(post)
+            .IgnoreUnmatchedProperties()
+            .Assert();
     }
 
 
 
+
+}
+
+class BackendTestsWithData: BackendTests
+{
+    protected virtual int USERS { get; } = 1;
+    protected virtual int POSTS { get; } = 0;
+    protected virtual int OWN_POSTS { get; } = 0;
+
+    protected User actor = null!;
+    protected Post[] ownPosts = [];
+
+    protected User[] otherUsers = [];
+    protected Post[] othersPosts = [];
+
+    protected HttpClient CreateClient()
+        => base.CreateClient(actor);
+
+    protected virtual Task OnDataCreated() { return Task.CompletedTask; }
+    protected virtual Task OnDataCreating() { return Task.CompletedTask; }
+
+    [SetUp]
+    public async Task SetupData()
+    {
+        await OnDataCreating();
+    
+        actor = UserFaker
+            .RuleFor(p => p.Username, _ => "actor")
+            .Generate();
+
+        if (USERS > 0) otherUsers = UserFaker
+            .RuleFor(p => p.Username, g => $"user-{g.UniqueIndex}")
+            .Generate(USERS).ToArray();
+
+        await DataContext.SaveChangesAsync();
+
+        if (POSTS > 0) othersPosts = PostFaker(POSTS)
+            .ToArray();
+
+        if (OWN_POSTS > 0) ownPosts = PostFaker(
+            OWN_POSTS,
+            f => f.RuleFor(p => p.UserId, actor)
+        ).ToArray();
+
+        await DataContext.SaveChangesAsync();
+
+        await Reload([actor, .. otherUsers]);
+        await Reload([.. ownPosts, .. othersPosts]);
+        
+        await OnDataCreated();
+    }
+
+    [Test]
+    public async Task EnsureValidData()
+    {
+        Assert.Multiple(() =>
+        {
+            Assert.That(actor, Is.Not.Null);
+            Assert.That(otherUsers, Is.Not.Null);
+            Assert.That(ownPosts, Is.Not.Null);
+        });
+        Assert.Multiple(() =>
+        {
+            Assert.That(otherUsers, Has.Length.AtLeast(USERS));
+            Assert.That(othersPosts, Has.Length.AtLeast(POSTS));
+            Assert.That(ownPosts, Has.Length.AtLeast(OWN_POSTS));
+            Assert.That(actor.Username, Is.EqualTo("actor"));
+        });
+
+        Assert.That(
+            await UserRepository.ExistsAsync(actor), Is.True,
+            $"{actor} doesn't exist in database."
+        );
+
+        foreach (var user in otherUsers)
+            Assert.That(
+                await UserRepository.ExistsAsync(user),
+                Is.True, $"{user} doesn't exist in database."
+            );
+
+        foreach (var post in (IEnumerable<Post>)[..ownPosts, ..othersPosts])
+            Assert.That(
+                await PostRepository.ExistsAsync(post),
+                Is.True, $"{post} doesn't exist in database."
+            );
+    }
 
 }
 

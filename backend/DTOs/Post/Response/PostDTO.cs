@@ -1,6 +1,7 @@
 ﻿using AutoMapper.Configuration.Annotations;
 using backend.DTOs.User.Response;
 using backend.Models;
+using backend.Tests.Users;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters;
 using System.Text.Json.Serialization;
@@ -35,7 +36,7 @@ public class PostDTO
     /// <summary>
     /// When the post was last updated at.
     /// </summary>
-    public required DateTime UpdatedAt { get; set; }
+    public required DateTime? UpdatedAt { get; set; }
 
     /// <summary>
     /// The ID of the user who created the post.
@@ -72,3 +73,4 @@ public class PostDTO
 
     }
 }
+
