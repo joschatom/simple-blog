@@ -11,6 +11,7 @@ import { PostContainer } from "../components/Post";
 
 import "../styles/pages/Profile.css";
 import { NotLoggedIn, PageNotFound } from "./NotFound";
+import { Footer } from "../components/Footer";
 
 export function UserPage() {
   const { id } = useParams();
@@ -99,6 +100,8 @@ export function UserPage() {
           </>
         )}
       </main>
+
+      <Footer />
     </>
   );
 }

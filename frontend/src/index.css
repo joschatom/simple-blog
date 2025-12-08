@@ -13,9 +13,18 @@
   -moz-osx-font-smoothing: grayscale;
   padding: 0px 0px 0px 0px !important;
   margin-right: 0px 0px 0px 0px !important;
-  position: static;
-  top: 0px;
+  width: 100% !important;
+
 }
+
+#root {
+  width: 100% !important;
+  height: 100vh !important;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
 
 a {
   font-weight: 500;
@@ -28,6 +37,7 @@ a:hover {
 
 body {
   margin: 0px;
+  height: 100vh;
 }
 
 h1 {
@@ -87,9 +97,8 @@ form button {
 }
 
 main {
-  padding: 10px;
-    text-align: center;
-
+  text-align: center;
+  margin-top: 120px;
 }
 
 

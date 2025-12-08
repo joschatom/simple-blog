@@ -13,6 +13,7 @@ import { ErrorDisplay } from "../components/Error";
 import { Header } from "../components/Header";
 
 import "../styles/pages/Auth.css";
+import { Footer } from "../components/Footer";
 
 export function LoginPage() {
   const client = useContext(Client);
@@ -90,6 +91,8 @@ export function LoginPage() {
           </button>
         </form>
       </main>
+
+      <Footer />
     </>
   );
 }

@@ -10,19 +10,19 @@ The documentation is located [here](docs/index.md).
 ### Requirements
 
 #### Needed
-- [ ] The user can create an account using their name, email address and password.
-- [ ] The user can log in with their name/email address and password, and then be redirected to their profile.
-- [ ] Both logged-in and guest users can see posts, unless they have been set to 'for registered users only' by the author.
-- [ ] When logged in, users can create posts containing text and captions.
-- [ ] The front end is localised (or can be in the future) and supports theming.
-- [ ] Each user has a profile page where they can see their posts and name.
+- [x] The user can create an account using their name, email address and password.
+- [x] The user can log in with their name/email address and password, and then be redirected to their profile.
+- [x] Both logged-in and guest users can see posts, unless they have been set to 'for registered users only' by the author.
+- [x] When logged in, users can create posts containing text and captions.
+- [ ] The front end is localised (optional) and supports theming.
+- [x] Each user has a profile page where they can see their posts and name.
 - [ ] There is a settings page that allows users to change their theme, delete their account, and change their password, username, and email address. 
 - [ ] In the footer, links are displayed to GitHub, documentation and version information (Git).
 - [ ] There is an 'About' page containing some information about the project.
 - [ ] Errors are displayed in a stylised way that doesn't look out of place.
 - [ ] Posts can also be viewed on a separate page via a URL (`/posts/<post_id>`).
 #### Optional
-- [ ] Logged-in users can click 'Mute' on a post to stop seeing any posts from that user.
+- [x] Logged-in users can click 'Mute' on a post to stop seeing any posts from that user.
 - [ ] A user can also be an admin. If they are, they can delete posts and ban accounts.
 - [ ] In the feed, you can hide posts so that they are not shown again.
 - [ ] Markdown is allowed to format the posts.
@@ -56,6 +56,6 @@ The documentation is located [here](docs/index.md).
 - [`scripts/*`](scripts) Useful scripts
 
 ## Development
-Current Stage: Wireframe
+Current Stage: Indev
 
 Started: 14.11.2025 (DD-MM-YYYY)

@@ -5,6 +5,7 @@ import { Post } from "blog-api/src/post";
 import { PostContainer } from "../components/Post";
 
 import "../styles/pages/Posts.css"
+import { Footer } from "../components/Footer";
 
 export function PostsPage() {
   const client = useContext(Client);
@@ -23,6 +24,7 @@ export function PostsPage() {
           <PostContainer post={p} />
         ))}
       </main>
+      <Footer/>
     </>
   );
 }

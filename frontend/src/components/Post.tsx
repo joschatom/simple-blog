@@ -16,11 +16,9 @@ import { Client } from "../client";
 import { ErrorDisplay } from "./Error";
 import type { CreatePost } from "blog-api/src/schemas/post";
 import { useRefresh } from "../helpers/useRefresh";
-
 import lockOpen from "../assets/lock-open.svg";
 import lockClosed from "../assets/lock-closed.svg";
 import moment from "moment";
-import dayjs from "dayjs";
 import { UsernameDisplay } from "./Username";
 
 function DurationSince({
@@ -33,6 +31,8 @@ function DurationSince({
       to: Date.now()
     })
   );
+
+  
 
   const timeoutMin = (dur2: moment.Duration) => {
   
@@ -217,7 +217,7 @@ export function PostContainer({ post }: { post?: Post }) {
               errorDiag.current?.close();
             }}
           >
-            Okay
+            Okay 
           </button>
         </dialog>
 

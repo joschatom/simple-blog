@@ -3,6 +3,7 @@ import { Header } from "../components/Header";
 
 import "../styles/pages/NotFound.css";
 import type { ReactNode } from "react";
+import { Footer } from "../components/Footer";
 
 function ErrorPageInternal({
   title,
@@ -22,6 +23,8 @@ function ErrorPageInternal({
         <p children={message}></p>
         <div className="error-details" children={children}></div>
       </main>
+
+      <Footer/>
     </>
   );
 }
@@ -59,5 +62,7 @@ export function NotLoggedIn() {
       <NavLink to="/login">Login</NavLink><br/>
       <NavLink to="/">Go back home</NavLink>
     </ErrorPageInternal>
+
+
   );
 }

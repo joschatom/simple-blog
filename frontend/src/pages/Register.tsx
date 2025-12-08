@@ -6,6 +6,7 @@ import { ErrorDisplay } from "../components/Error";
 import { Header } from "../components/Header";
 
 import "../styles/pages/Auth.css";
+import { Footer } from "../components/Footer";
 
 export function RegisterPage() {
   const client = useContext(Client);
@@ -86,6 +87,8 @@ export function RegisterPage() {
           </button>
         </form>
       </main>
+
+      <Footer/>
     </>
   );
 }
