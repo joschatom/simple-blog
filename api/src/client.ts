@@ -1,7 +1,7 @@
 import type { AxiosInstance, Method } from "axios";
 import { handleAPIResponse, parseAPIResponseRaw } from "./error.ts";
 import axios from "axios";
-import { User } from "./user.ts";
+import { Muting, User } from "./user.ts";
 import { UserData } from "./schemas/user.ts";
 import { ZodSchema } from "zod/v3";
 import z, { string, ZodType } from "zod";
@@ -28,6 +28,7 @@ export interface APIClient {
 
   api: AxiosInstance;
   currentUser?: User;
+  muting?: Muting
 }
 
 export type onTokenChangedHandler = (token?: string, newUser?: User) => void;
@@ -42,6 +43,10 @@ export class WebAPIClient {
   token?: string | undefined;
   onTokenChanged?: onTokenChangedHandler;
   currentUser?: User;
+
+  public toString(): string {
+    return `[WebAPI Client ${this.VERSION} (base ${this.API_BASE})]`
+  }
 
   constructor(
     host: string,
@@ -63,6 +68,13 @@ export class WebAPIClient {
       this.currentUser = null;
     }
     this.onTokenChanged = onTokenChanged;
+  }
+
+
+  public get muting(): Muting | undefined {
+    if (!this.isAuthenticated())
+      return undefined;
+    return new Muting(this);
   }
 
   sendRequest<T, R extends ZodType>(

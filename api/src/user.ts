@@ -59,6 +59,8 @@ export class User {
 
     if(updated.updated && sync)
       this.data = (await User.fetchByID(this.#client, this.data.id)).data;
+
+    
     
     return updated.updatedFields as unknown as keyof UpdateUserDTO[];
   }
@@ -70,5 +72,42 @@ export class User {
   async posts(): Promise<Post[]> { 
     return await parseAPIResponse(z.array(PostData), () => this.#client.api.get(`users/${this.data.id}/posts`))
       .then(r => r.map(p => new Post(this.#client, p)))
+  }
+}
+
+export class Muting {
+  #client: APIClient
+
+  constructor(client: APIClient) {
+    console.assert(client.isAuthenticated());
+
+    this.#client = client;
+  }
+
+  async mute(id: string): Promise<void> {
+    await this.#client.sendRequest(
+      "POST",
+      "muted-users",
+      id,
+      z.void().optional()
+    );
+  }
+
+  async unmute(id: string): Promise<void> {
+    await this.#client.sendRequest(
+      "DELETE",
+      `muted-users/${id}`,
+      undefined,
+      z.void().optional()
+    )
+  }
+
+  async getMutedUsers(): Promise<User[]> {
+    return (await this.#client.sendRequest(
+      "GET",
+      "muted-users",
+      undefined,
+      z.array(UserData)
+    )).map(u => new User(this.#client, u));
   }
 }

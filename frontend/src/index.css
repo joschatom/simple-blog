@@ -120,3 +120,33 @@ main {
 *:hover > .tooltip {
   visibility: visible;
 }
+
+.context-menu {
+  position: absolute;
+  margin: 0;
+  padding: 5px;
+  display: flex;
+  flex-direction: column;
+  display: none;
+  border: 1px black;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.212);
+  backdrop-filter: blur(20px);
+  box-shadow: 4px 1px 20px 3px rgba(0,0,0,0.30);
+  -webkit-box-shadow: 4px 1px 20px 3px rgba(0,0,0,0.30);
+  -moz-box-shadow: 4px 1px 20px 3px rgba(0,0,0,0.30);
+  transition: 1s display;
+  gap: 5px;
+}
+
+.context-menu:open {
+  display: flex;
+}
+
+.context-menu button {
+  background-color: transparent;
+}
+
+.context-menu button:hover {
+  background-color: #535bf238;
+}

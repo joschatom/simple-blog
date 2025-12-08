@@ -9,6 +9,8 @@ import { CreatePostPage } from "./pages/CreatePost";
 import { PostsPage } from "./pages/Posts";
 import { PageNotFound } from "./pages/NotFound";
 import { RegisterPage } from "./pages/Register";
+import { MutedUsersPage } from "./pages/MutedUsers";
+import { ContextMenuProvider } from "./components/ContextMenuProvider";
 
 
 function App() {
@@ -36,6 +38,7 @@ function App() {
 
   return (
     <>
+    <ContextMenuProvider>
       <Client.Provider value={client}>
         <Routes>
           <Route path="/" element={<Homepage />} />
@@ -44,9 +47,11 @@ function App() {
           <Route path="/register" element={<RegisterPage/>} />
           <Route path="/posts" element={<PostsPage />} />
           <Route path="/create-post" element={<CreatePostPage />} />
+          <Route path="/muted-users" element={<MutedUsersPage />} />
           <Route path="*" element={<PageNotFound />} />
         </Routes>
       </Client.Provider>
+      </ContextMenuProvider>
     </>
   );
 }

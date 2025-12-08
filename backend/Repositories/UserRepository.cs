@@ -110,7 +110,7 @@ public class UserRepository : BaseRepository<User>, IUserRepository
 
         await posts.LoadAsync();
 
-        return posts;
+        return await posts.ToListAsync();
     }
 
     public async Task<bool> UnmuteUser(Guid muter, Guid mutee)

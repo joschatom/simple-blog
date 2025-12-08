@@ -21,6 +21,7 @@ import lockOpen from "../assets/lock-open.svg";
 import lockClosed from "../assets/lock-closed.svg";
 import moment from "moment";
 import dayjs from "dayjs";
+import { UsernameDisplay } from "./Username";
 
 function DurationSince({
   date,
@@ -189,7 +190,7 @@ export function PostContainer({ post }: { post?: Post }) {
     if (!confirm(`Mute the user with the name ${post!.data.user!.username}?`))
       return;
 
-    // await client.currentUser?.mute(post!.data.userId);
+    await client.muting?.mute(post!.data.userId);
     // TODO: Uncomment. ^
     location.reload();
   };
@@ -238,9 +239,7 @@ export function PostContainer({ post }: { post?: Post }) {
           <div>
             {post && (
               <div>
-                <NavLink to={`/users/${post.data.user!.username}`}>
-                  {post.data.user!.username + (isOwner ? " (You)" : "")}
-                </NavLink>
+                <UsernameDisplay userData={post.data.user}/>
               </div>
             )}
             <img
