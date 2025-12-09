@@ -86,7 +86,7 @@ public class UserController(IUserRepository repository, IMapper mapper)
 
         if (update.Username is not null)
         {
-            if (repository.GetByNameAsync(update.Username) is not null)
+            if (await repository.GetByNameAsync(update.Username) is not null)
                 return Problem(
                     title: "Username already taken",
                     detail: $"Cannot update username to {update.Username} as it is already taken.",

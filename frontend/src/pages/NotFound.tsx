@@ -1,4 +1,4 @@
-import { NavLink, useLocation } from "react-router";
+import { NavLink, useLocation, useSearchParams } from "react-router";
 import { Header } from "../components/Header";
 
 import "../styles/pages/NotFound.css";
@@ -55,7 +55,7 @@ export function EntityNotFound({
   name: string;
   keyval: string;
   keyname: string;
-  listing?: string
+  listing?: string;
 }) {
   return (
     <ErrorPageInternal
@@ -69,28 +69,49 @@ export function EntityNotFound({
       }
     >
       {listing && <NavLink to={listing}>See all {name}s</NavLink>}
-      <br/>
+      <br />
       <NavLink to="/">Go back home</NavLink>
     </ErrorPageInternal>
   );
 }
 
-export function NotLoggedIn() {
+export function NotLoggedIn({ isPage }: { isPage?: true }) {
   const location = useLocation();
+  const [searchParams] = useSearchParams();
+
+  let path = location.pathname;
+
+  let sourceUrl;
+  if (
+    isPage &&
+    (sourceUrl = searchParams.get("source")) &&
+    sourceUrl.length > 3
+  )
+    path = sourceUrl;
+  else sourceUrl = undefined;
 
   return (
     <ErrorPageInternal
       title="Login Required"
       message={
         <>
-          The page at <code>{location.pathname}</code> is only accessable when
-          logged in.
+          {isPage && !sourceUrl ? "This" : "The"} page{" "}
+          {!(isPage && !sourceUrl) && (
+            <>
+              at <code>{path}</code>
+            </>
+          )}{" "}
+          is only accessable when logged in.
         </>
       }
     >
       <NavLink to="/login">Login</NavLink>
       <br />
       <NavLink to="/">Go back home</NavLink>
+      <br />
+      {isPage && sourceUrl && (
+        <NavLink to={sourceUrl}>Go back to original page</NavLink>
+      )}
     </ErrorPageInternal>
   );
 }

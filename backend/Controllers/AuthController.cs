@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.IdentityModel.JsonWebTokens;
 using System.ComponentModel;
 using System.Security.Claims;
 
@@ -125,6 +126,25 @@ public class AuthController(
     public async Task<ActionResult> ChangePassword()
     {
         throw new NotImplementedException();
+    }
+
+    [EndpointDescription("Refresh Token")]
+    [HttpPost, Route("refresh-token")]
+    public async Task<ActionResult<AuthUserDTO>> RefreshToken()
+    {
+        var user = await this.CurrentUser();
+
+        if (user is null) return Unauthorized();
+
+        user.Token = jwtTokenGenerator.GenerateToken(user);
+
+        user = await repository.UpdateAsync(user.Id, user);
+
+        await repository.SaveChangesAsync();
+
+        if (user is null) return StatusCode(StatusCodes.Status500InternalServerError);
+
+        return mapper.Map<AuthUserDTO>(user); 
     }
 
     [EndpointDescription("Logout current user.")]

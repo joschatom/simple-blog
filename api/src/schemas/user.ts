@@ -13,6 +13,7 @@ export const UserData = z.object({
 
 export type UserData = z.infer<typeof UserData>;
 
+
 export const UpdateUserDTO = z.object({
   username: zs.username().optional(),
   email: z.email().max(255).optional()

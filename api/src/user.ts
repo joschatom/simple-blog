@@ -59,8 +59,6 @@ export class User {
 
     if(updated.updated && sync)
       this.data = (await User.fetchByID(this.#client, this.data.id)).data;
-
-    
     
     return updated.updatedFields as unknown as keyof UpdateUserDTO[];
   }

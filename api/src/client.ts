@@ -17,6 +17,7 @@ export interface APIClient {
   login(username: string, password: string): Promise<void>;
   register(username: string, password: string, email: string): Promise<void>;
   logout(track?: boolean): Promise<boolean>;
+  refreshToken(): Promise<void>;
 
   sendRequest<T, R extends ZodType>(
     method: Method,
@@ -103,6 +104,19 @@ export class WebAPIClient {
 
   isAuthenticated(): boolean {
     return this.token !== undefined;
+  }
+
+  async refreshToken() {
+       const { token, ...userData } = await handleAPIResponse<
+      { token: string } & UserData
+    >(() =>
+      //  throws on error
+      this.api.post("/auth/refresh-token")
+    );
+
+    this.token = token;
+    this.currentUser = new User(this, userData);
+    if (this.onTokenChanged) this.onTokenChanged(token, this.currentUser);
   }
 
   async register(

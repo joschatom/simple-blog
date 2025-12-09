@@ -1,0 +1,117 @@
+.settings-container {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  align-self: center;
+  align-items: start;
+  overflow: scroll;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+}
+
+main {
+    padding: 20px;
+}
+
+.settings-container {
+  width: 50vw;
+}
+
+.update-user {
+  display: grid;
+  text-align: start;
+  row-gap: 0.25rem;
+  margin-left: 0px;
+  width: 50vw;
+}
+
+.update-user  > span {
+    display: flex;
+    gap: 5px;
+    justify-content: space-between;
+}
+
+.update-user > span >input, .update-user > span > select, .update-user > span > button {
+    align-self: flex-end;
+}
+
+select {
+  padding: 12px;
+}
+
+.actions {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-self: center;
+  width: 100%;
+}
+
+#save {
+  align-self: flex-end;
+}
+
+.password-reset {
+  width: 50vw;
+  display: flex;
+  background-color: white;
+  --border: 12px;
+  border-radius: var(--border)
+}
+
+
+
+main {
+  margin-top: 52px;
+}
+
+.password-reset > input {
+  background-color: transparent;
+  width: 50vw;
+  align-self: self-start;
+  border-radius: 0px;
+  border-top-left-radius: var(--border);
+  border-bottom-left-radius: var(--border);
+
+}
+
+.password-reset > input:focus {
+  outline: none;
+}
+
+.password-reset:has(> input:focus) {
+  border: solid blue 1px;
+}
+
+.password-reset > button {
+  position: relative;
+  y: 0px;
+  x: 0px;
+  border-radius: 0px;
+  border-top-right-radius: var(--border);
+  border-bottom-right-radius: var(--border);
+  background-color: darkblue;
+  color: white;
+}
+
+hr {
+  width: 50vw;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+#save {
+    width: 20%;
+    align-self: flex-end;
+}
+
+#delete-account, #delete-all-posts {
+    border: 1px red solid;
+    color: red;
+}
+
+#delete-account:hover {
+    background-color: red;
+    color: white;
+}

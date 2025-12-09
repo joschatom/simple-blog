@@ -7,12 +7,13 @@ import { Client } from "./client";
 import { LoginPage } from "./pages/Login";
 import { CreatePostPage } from "./pages/CreatePost";
 import { PostsPage } from "./pages/Posts";
-import { PageNotFound } from "./pages/NotFound";
+import { NotLoggedIn, PageNotFound } from "./pages/NotFound";
 import { RegisterPage } from "./pages/Register";
 import { MutedUsersPage } from "./pages/MutedUsers";
 import { ContextMenuProvider } from "./components/ContextMenuProvider";
 import { AboutPage } from "./pages/About";
 import { PostPage } from "./pages/Post";
+import { SettingsPage } from "./pages/Settings";
 
 
 function App() {
@@ -25,7 +26,6 @@ function App() {
         "http://localhost:5233/api",
         apiToken ? apiToken : undefined,
         (v) => {
-          console.log(v);
           if (v !== undefined) {
             localStorage.setItem("token", v);
             setAPIToken(v);
@@ -52,6 +52,8 @@ function App() {
           <Route path="/create-post" element={<CreatePostPage />} />
           <Route path="/muted-users" element={<MutedUsersPage />} />
           <Route path="/about" element={<AboutPage/>}/> 
+          <Route path="/settings" element={<SettingsPage/>}/>
+          <Route path="/errors/not-logged-in" element={<NotLoggedIn isPage/>}/>
           <Route path="*" element={<PageNotFound />} />
         </Routes>
       </Client.Provider>

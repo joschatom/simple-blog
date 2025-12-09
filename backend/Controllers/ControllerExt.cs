@@ -23,13 +23,17 @@ public static class ControllerExtensions
 
 
         var identity = controller.User.Identity;
-        if (identity is null || !identity.IsAuthenticated || identity.Name is null)
-        {
+        if (identity is null || !identity.IsAuthenticated)
             return null;
-        }
+
+        var userData = controller.User.FindFirstValue(ClaimTypes.UserData);
+
+        if (userData is null) return null;
+
+        var userID = JsonConvert.DeserializeObject<Guid>(userData);
 
         var user = await controller.HttpContext.RequestServices
-            .GetService<IUserRepository>()!.GetByNameAsync(identity.Name);
+            .GetService<IUserRepository>()!.GetByIdAsync(userID);
 
         if (user is null)
         {
