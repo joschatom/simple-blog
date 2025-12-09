@@ -11,6 +11,8 @@ import { PageNotFound } from "./pages/NotFound";
 import { RegisterPage } from "./pages/Register";
 import { MutedUsersPage } from "./pages/MutedUsers";
 import { ContextMenuProvider } from "./components/ContextMenuProvider";
+import { AboutPage } from "./pages/About";
+import { PostPage } from "./pages/Post";
 
 
 function App() {
@@ -45,9 +47,11 @@ function App() {
           <Route path="/users/:id" element={<UserPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage/>} />
+          <Route path="/posts/:id" element={<PostPage/>}/>
           <Route path="/posts" element={<PostsPage />} />
           <Route path="/create-post" element={<CreatePostPage />} />
           <Route path="/muted-users" element={<MutedUsersPage />} />
+          <Route path="/about" element={<AboutPage/>}/> 
           <Route path="*" element={<PageNotFound />} />
         </Routes>
       </Client.Provider>

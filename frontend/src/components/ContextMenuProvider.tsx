@@ -11,15 +11,13 @@ export function ContextMenuProvider({
   children: React.ReactNode;
 }) {
   const [actions, setActions] = useState<ContextMenuActions>({});
-
-  console.log(actions);
-
+  
   const ref = useRef<ComponentRef<"dialog">>(null);
 
   return (
     <>
       <dialog className="context-menu" ref={ref} closedby="any">
-        {Object.entries(actions).map(([key, item], i) => (
+        {Object.entries(actions).map(([key, item], i) => ( // TODO: Handle more complex actions.
           <button
             aria-selected={false}
             onClick={() => {

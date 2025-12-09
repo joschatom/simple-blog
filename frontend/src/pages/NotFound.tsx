@@ -24,7 +24,7 @@ function ErrorPageInternal({
         <div className="error-details" children={children}></div>
       </main>
 
-      <Footer/>
+      <Footer />
     </>
   );
 }
@@ -46,6 +46,34 @@ export function PageNotFound() {
   );
 }
 
+export function EntityNotFound({
+  name,
+  keyval,
+  keyname,
+  listing,
+}: {
+  name: string;
+  keyval: string;
+  keyname: string;
+  listing?: string
+}) {
+  return (
+    <ErrorPageInternal
+      title={<>{name} not found.</>}
+      message={
+        <>
+          <>
+            The {name} with {keyname} of <code>{keyval}</code> not found.
+          </>
+        </>
+      }
+    >
+      {listing && <NavLink to={listing}>See all {name}s</NavLink>}
+      <br/>
+      <NavLink to="/">Go back home</NavLink>
+    </ErrorPageInternal>
+  );
+}
 
 export function NotLoggedIn() {
   const location = useLocation();
@@ -55,14 +83,14 @@ export function NotLoggedIn() {
       title="Login Required"
       message={
         <>
-          The page at <code>{location.pathname}</code> is only accessable when logged in.
+          The page at <code>{location.pathname}</code> is only accessable when
+          logged in.
         </>
       }
     >
-      <NavLink to="/login">Login</NavLink><br/>
+      <NavLink to="/login">Login</NavLink>
+      <br />
       <NavLink to="/">Go back home</NavLink>
     </ErrorPageInternal>
-
-
   );
 }

@@ -1,25 +1,24 @@
 import { Post } from "blog-api/src/post";
 
-import { NavLink, useFetcher, useLocation, useNavigate } from "react-router";
+import { NavLink, useNavigate } from "react-router";
 import {
   type ComponentRef,
   type ComponentProps,
   useContext,
   useEffect,
-  useEffectEvent,
-  useMemo,
   useRef,
   useState,
   useCallback,
+  type Ref,
 } from "react";
 import { Client } from "../client";
 import { ErrorDisplay } from "./Error";
 import type { CreatePost } from "blog-api/src/schemas/post";
-import { useRefresh } from "../helpers/useRefresh";
 import lockOpen from "../assets/lock-open.svg";
 import lockClosed from "../assets/lock-closed.svg";
 import moment from "moment";
 import { UsernameDisplay } from "./Username";
+import { useContextMenu } from "../helpers/useContextMenu";
 
 function DurationSince({
   date,
@@ -28,23 +27,20 @@ function DurationSince({
   const [dur, setDur] = useState<moment.Duration>(
     moment.duration({
       from: date,
-      to: Date.now()
+      to: Date.now(),
     })
   );
 
-  
-
   const timeoutMin = (dur2: moment.Duration) => {
-  
     if (dur2.asSeconds() < 60) return 1000;
-    
+
     return 60 * 1000;
   };
 
   const tick = useCallback(() => {
     const dur = moment.duration({
       from: date,
-      to: moment.utc()
+      to: moment.utc(),
     });
     console.info("tick", timeoutMin(dur));
     setDur(dur);
@@ -71,21 +67,22 @@ function DurationSince({
     formatElem("hour", dur.hours(), dur.asMonths() >= 1),
     formatElem("minute", dur.minutes(), dur.asDays() >= 1),
     formatElem("second", dur.seconds(), dur.asMinutes() >= 10),
-  ].filter((v) => v != undefined).join(", ");
+  ]
+    .filter((v) => v != undefined)
+    .join(", ");
 
   const last = parts.lastIndexOf(",");
-  
-
 
   return (
     <span {...props}>
-      Posted {parts.substring(0, last)}{last && " and"}{parts.substring(last+1)} ago
+      Posted {parts.substring(0, last)}
+      {last && " and"}
+      {parts.substring(last + 1)} ago
     </span>
   );
 }
 
 export function PostContainer({ post }: { post?: Post }) {
-  const refresh = useRefresh();
 
   const client = useContext(Client);
   let isOwner = client.currentUser
@@ -107,6 +104,18 @@ export function PostContainer({ post }: { post?: Post }) {
   const [locked, setLocked] = useState<boolean>(
     post?.data.registredUsersOnly || false
   );
+
+
+  const targetRef = useContextMenu({
+    "Go to author": () =>
+      navigate(
+        `/users/${
+          post!.data.user ? post!.data.user!.username : `:${post!.data.userId}`
+        }`
+      ),
+    "Copy Link": () => navigator.clipboard.writeText(`${location.host}/posts/${post!.data.id}`),
+    "Copy ID": () => navigator.clipboard.writeText(post!.data.id),
+  });
 
   const cancel = () => {
     if (post == undefined) {
@@ -217,11 +226,11 @@ export function PostContainer({ post }: { post?: Post }) {
               errorDiag.current?.close();
             }}
           >
-            Okay 
+            Okay
           </button>
         </dialog>
 
-        <div className="post-container-header">
+        <div className="post-container-header" ref={targetRef as Ref<HTMLDivElement>}>
           <input
             className="post-caption"
             value={caption}
@@ -239,7 +248,7 @@ export function PostContainer({ post }: { post?: Post }) {
           <div>
             {post && (
               <div>
-                <UsernameDisplay userData={post.data.user}/>
+                <UsernameDisplay userData={post.data.user} />
               </div>
             )}
             <img

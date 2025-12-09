@@ -1,6 +1,5 @@
-import { Link, NavLink } from "react-router";
+import { Link } from "react-router";
 import "../styles/components/Footer.css"
-import { useEffect } from "react";
 
 
 export function Footer() {

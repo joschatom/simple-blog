@@ -2,13 +2,11 @@ import {
   useContext,
   useEffect,
   useState,
-  type Ref,
 } from "react";
 import { Client } from "../client";
 import { User } from "blog-api";
 import { ErrorDisplay } from "../components/Error";
 import { Header } from "../components/Header";
-import { useContextMenu } from "../helpers/useContextMenu";
 import { UsernameDisplay } from "../components/Username";
 import { Footer } from "../components/Footer";
 
