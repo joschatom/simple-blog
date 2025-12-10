@@ -16,7 +16,7 @@ The documentation is located [here](docs/index.md).
 - [x] When logged in, users can create posts containing text and captions.
 - [ ] The front end is localised (optional) and supports theming.
 - [x] Each user has a profile page where they can see their posts and name.
-- [-] There is a settings page that allows users to change their theme, delete their account, and change their password, username, and email address. 
+- [x] There is a settings page that allows users to change their theme, delete their account, and change their password, username, and email address. 
 - [x] In the footer, links are displayed to GitHub, (documentation) and version information (Git).
 - [x] There is an 'About' page containing some information about the project.
 - [ ] Errors are displayed in a stylised way that doesn't look out of place.

@@ -27,6 +27,6 @@ public class RegisterUserDTO
     /// The password for the new account.
     /// </summary>
     /// <example>mypassword</example>
-    [MinLength(6), MaxLength(255), Required]
+    [MinLength(Models.User.MIN_PASSWORD_LENGTH), MaxLength(255), Required]
     public required string Password { get; set; }
 }

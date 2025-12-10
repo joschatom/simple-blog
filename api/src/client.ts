@@ -1,5 +1,5 @@
 import type { AxiosInstance, Method } from "axios";
-import { handleAPIResponse, parseAPIResponseRaw } from "./error.ts";
+import { APIError, handleAPIResponse, parseAPIResponseRaw } from "./error.ts";
 import axios from "axios";
 import { Muting, User } from "./user.ts";
 import { UserData } from "./schemas/user.ts";
@@ -18,6 +18,8 @@ export interface APIClient {
   register(username: string, password: string, email: string): Promise<void>;
   logout(track?: boolean): Promise<boolean>;
   refreshToken(): Promise<void>;
+  changePassword(newPassword: string): Promise<void>;
+  deleteAllPosts(): Promise<void>;
 
   sendRequest<T, R extends ZodType>(
     method: Method,
@@ -47,6 +49,17 @@ export class WebAPIClient {
 
   public toString(): string {
     return `[WebAPI Client ${this.VERSION} (base ${this.API_BASE})]`
+  }
+
+  async changePassword(newPassword: string){
+    newPassword = z.parse(z.string().min(6).max(255), newPassword);
+
+    await this.sendRequest(
+      "POST",
+      "auth/change-password",
+      { password: newPassword },
+      z.void().optional()
+    )
   }
 
   constructor(
@@ -194,11 +207,22 @@ export class WebAPIClient {
 
   async logout(_track?: boolean): Promise<boolean> {
     if (!this.isAuthenticated()) return false;
-    await handleAPIResponse(() => this.api.post("/auth/logout"));
+    if (_track && _track) await handleAPIResponse(() => this.api.post("/auth/logout"));
 
     this.token = undefined;
     this.currentUser = undefined;
     if (this.onTokenChanged) this.onTokenChanged(undefined, undefined);
     return true;
+  }
+
+  async deleteAllPosts(): Promise<void> {
+    if(!this.isAuthenticated()) throw new APIError("generic", {
+      type: "Client Error",
+      status: 403,
+      title: "Not logged in",
+      detail: "Cannot delete all of the user's post as no user is logged in."
+    })
+
+    await this.sendRequest("DELETE", "posts/all", undefined, z.void().optional());
   }
 }

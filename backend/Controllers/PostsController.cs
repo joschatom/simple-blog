@@ -123,6 +123,20 @@ public class PostsController(DataContext context, IPostRepository repository, IU
     }
 
     // DELETE api/posts/1A577ADE-B695-406A-83ED-FA161EDD02A9
+    [HttpDelete("all")]
+    public async Task<ActionResult> DeleteAllPosts()
+    {
+        var user = this.GetCurrentUserId();
+
+        if (!await userRepository.ExistsAsync(user))
+            return BadRequest("User given in token doesn't exist.");
+
+        await repository.DeleteAllPosts(user);
+        await repository.SaveChangesAsync();
+
+        return Ok();
+    }
+
     [HttpDelete("{id}")]
     public async Task<ActionResult> Delete(Guid id)
     {
@@ -142,4 +156,5 @@ public class PostsController(DataContext context, IPostRepository repository, IU
 
         return Ok(new { success = true });
     }
+
 }

@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Newtonsoft.Json;
+using NUnit.Framework;
 using System.Net.Mime;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -68,7 +69,7 @@ public class UserController(IUserRepository repository, IMapper mapper)
         await repository.DeleteAsync(id);
         await repository.SaveChangesAsync();
 
-        return SignOut();
+        return Ok();
     }
 
     [HttpPut("{id}")]

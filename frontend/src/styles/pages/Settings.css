@@ -10,11 +10,11 @@
 }
 
 main {
-    padding: 20px;
+  padding: 20px;
 }
 
 .settings-container {
-  width: 50vw;
+  width: 75vw;
 }
 
 .update-user {
@@ -22,7 +22,7 @@ main {
   text-align: start;
   row-gap: 0.25rem;
   margin-left: 0px;
-  width: 50vw;
+  width: 75vw;
 }
 
 .update-user  > span {
@@ -33,6 +33,10 @@ main {
 
 .update-user > span >input, .update-user > span > select, .update-user > span > button {
     align-self: flex-end;
+}
+
+.password-reset-container {
+  margin-top: 32px;
 }
 
 select {
@@ -53,11 +57,11 @@ select {
 }
 
 .password-reset {
-  width: 50vw;
   display: flex;
   background-color: white;
   --border: 12px;
-  border-radius: var(--border)
+  border-radius: var(--border);
+  flex-grow: 0.1;
 }
 
 
@@ -68,12 +72,11 @@ main {
 
 .password-reset > input {
   background-color: transparent;
-  width: 50vw;
   align-self: self-start;
   border-radius: 0px;
   border-top-left-radius: var(--border);
   border-bottom-left-radius: var(--border);
-
+  flex-grow: 1
 }
 
 .password-reset > input:focus {
@@ -96,7 +99,7 @@ main {
 }
 
 hr {
-  width: 50vw;
+  width: 75vw;
   margin-top: 20px;
   margin-bottom: 20px;
 }

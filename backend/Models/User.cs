@@ -35,6 +35,10 @@ public partial class User : TimedModel
     public virtual ICollection<Post> Posts { get; set; } = [];
     public virtual ICollection<MuteUser> MutedUsers { get; set; } = [];
 
+    /// <summary>
+    /// Minimum lenght of passsword
+    /// </summary>
+    public const int MIN_PASSWORD_LENGTH = 6;
 
     [GeneratedRegex(@"^[a-zA-Z0-9-]+$")]
     public static partial Regex ValidUsername();

@@ -10,6 +10,8 @@ import { Header } from "../components/Header";
 import { UsernameDisplay } from "../components/Username";
 import { Footer } from "../components/Footer";
 
+import "../styles/pages/Homepage.css"
+
 export function Homepage() {
   const client = useContext(Client);
 

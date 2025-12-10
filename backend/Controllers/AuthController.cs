@@ -123,9 +123,20 @@ public class AuthController(
 
     [EndpointDescription("Changes the password for the authenticated user.")]
     [HttpPost, Route("change-password")]
-    public async Task<ActionResult> ChangePassword()
+    public async Task<ActionResult> ChangePassword(ChangePasswordDTO request)
     {
-        throw new NotImplementedException();
+        var user = await this.CurrentUser();
+
+        if (user is null) return Unauthorized();
+
+        var passwordHash = PasswordHasher.HashPassword(request.Password);
+
+        user.PasswordHash = passwordHash;
+
+        await repository.UpdateAsync(user.Id, user);
+        await repository.SaveChangesAsync();
+
+        return Ok();
     }
 
     [EndpointDescription("Refresh Token")]
