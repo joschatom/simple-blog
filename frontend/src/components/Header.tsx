@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { Client } from "../client";
+import { Client } from "../contexts";
 
 import account from "../assets/account.png";
 

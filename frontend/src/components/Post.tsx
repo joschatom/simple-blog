@@ -11,7 +11,7 @@ import {
   useCallback,
   type Ref,
 } from "react";
-import { Client } from "../client";
+import { Client } from "../contexts";
 import { ErrorDisplay } from "./Error";
 import type { CreatePost } from "blog-api/src/schemas/post";
 import lockOpen from "../assets/lock-open.svg";

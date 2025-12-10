@@ -3,7 +3,7 @@ import { Homepage } from "./pages/Homepage";
 import { UserPage } from "./pages/User";
 import { WebAPIClient } from "blog-api";
 import { useMemo, useState } from "react";
-import { Client } from "./client";
+import { Client } from "./contexts";
 import { LoginPage } from "./pages/Login";
 import { CreatePostPage } from "./pages/CreatePost";
 import { PostsPage } from "./pages/Posts";

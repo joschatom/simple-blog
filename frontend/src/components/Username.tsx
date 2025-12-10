@@ -1,6 +1,6 @@
 import { useContext, type Ref } from "react";
 import { NavLink, useNavigate } from "react-router";
-import { Client } from "../client";
+import { Client } from "../contexts";
 import type { User } from "blog-api";
 import { useContextMenu } from "../helpers/useContextMenu";
 import type { UserData } from "blog-api/src/schemas/user";

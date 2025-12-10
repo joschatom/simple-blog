@@ -1,7 +1,7 @@
 import { APIError, User } from "blog-api";
 import { useContext, useEffect, useState, useTransition } from "react";
 import { useNavigate, useParams } from "react-router";
-import { Client } from "../client";
+import { Client } from "../contexts";
 import { ErrorDisplay } from "../components/Error";
 import { Header } from "../components/Header";
 import profileImage from "../assets/account.png";

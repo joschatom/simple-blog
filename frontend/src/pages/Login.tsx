@@ -6,9 +6,9 @@ import {
   useTransition,
   type ComponentRef,
 } from "react";
-import { Client } from "../client";
+import { Client } from "../contexts";
 import { APIError } from "blog-api";
-import { NavLink, useNavigate } from "react-router";
+import { NavLink, useFetcher, useLocation, useNavigate } from "react-router";
 import { ErrorDisplay } from "../components/Error";
 import { Header } from "../components/Header";
 
@@ -51,6 +51,10 @@ export function LoginPage() {
   return (
     <>
       <Header />
+
+
+       
+
 
       <main>
         <dialog className="error" ref={errorDiag}>

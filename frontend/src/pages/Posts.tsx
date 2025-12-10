@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { Client } from "../client";
+import { Client } from "../contexts";
 import { Header } from "../components/Header";
 import { Post } from "blog-api/src/post";
 import { PostContainer } from "../components/Post";

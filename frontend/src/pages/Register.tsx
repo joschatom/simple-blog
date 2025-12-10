@@ -1,5 +1,5 @@
 import { useContext, useEffect, useRef, useState, useTransition, type ComponentRef } from "react";
-import { Client } from "../client";
+import { Client } from "../contexts";
 import { APIError } from "blog-api";
 import { NavLink, useNavigate } from "react-router";
 import { ErrorDisplay } from "../components/Error";

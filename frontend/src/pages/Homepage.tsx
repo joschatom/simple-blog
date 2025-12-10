@@ -3,7 +3,7 @@ import {
   useEffect,
   useState,
 } from "react";
-import { Client } from "../client";
+import { Client } from "../contexts";
 import { User } from "blog-api";
 import { ErrorDisplay } from "../components/Error";
 import { Header } from "../components/Header";
@@ -11,6 +11,7 @@ import { UsernameDisplay } from "../components/Username";
 import { Footer } from "../components/Footer";
 
 import "../styles/pages/Homepage.css"
+
 
 export function Homepage() {
   const client = useContext(Client);
@@ -33,7 +34,7 @@ export function Homepage() {
   return (
     <>
       <Header />
-
+      
       <main>
         {error !== undefined && <ErrorDisplay error={error} />}
         {users &&

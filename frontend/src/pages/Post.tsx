@@ -1,7 +1,7 @@
 import { Post } from "blog-api/src/post";
 import { useContext, useEffect, useState, useTransition } from "react";
 import { useParams } from "react-router";
-import { Client } from "../client";
+import { Client } from "../contexts";
 import { EntityNotFound, NotLoggedIn, PageNotFound } from "./NotFound";
 import { Header } from "../components/Header";
 import { PostContainer } from "../components/Post";

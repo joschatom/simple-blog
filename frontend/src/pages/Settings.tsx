@@ -10,7 +10,7 @@ import { Footer } from "../components/Footer";
 import { Header } from "../components/Header";
 
 import "../styles/pages/Settings.css";
-import { Client } from "../client";
+import { Client } from "../contexts";
 import { NotLoggedIn } from "./NotFound";
 import { APIError } from "blog-api";
 import { useNavigate } from "react-router";

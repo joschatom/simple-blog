@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState, useTransition } from "react";
 import { Header } from "../components/Header";
-import { Client } from "../client";
+import { Client } from "../contexts";
 import { NotLoggedIn } from "./NotFound";
 import { User } from "blog-api";
 import { UsernameDisplay } from "../components/Username";
