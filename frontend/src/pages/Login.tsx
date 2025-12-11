@@ -14,6 +14,14 @@ import { Header } from "../components/Header";
 
 import "../styles/pages/Auth.css";
 import { Footer } from "../components/Footer";
+import { Close, Password, PasswordOutlined } from "@mui/icons-material";
+
+import {
+  unstable_PasswordToggleField as PasswordToggleField,
+  Form
+} from "radix-ui";
+import { EyeClosedIcon, EyeOpenIcon } from "@radix-ui/react-icons";
+import { useUserNotify } from "../helpers/useUserNotify";
 
 export function LoginPage() {
   const client = useContext(Client);
@@ -48,13 +56,21 @@ export function LoginPage() {
     if (error != undefined) errorDiag.current?.showModal();
   }, [error]);
 
+  //const [open, setOpen] = useState(true);
+  const notify = useUserNotify();
+
+  useEffect(() => {
+    console.log("notify");
+    notify({
+      type: "general",
+      text: `Hello there: ${crypto.randomUUID()}`,
+      detail: "SOme more text....",
+    });
+  }, []);
+
   return (
     <>
       <Header />
-
-
-       
-
 
       <main>
         <dialog className="error" ref={errorDiag}>
@@ -69,31 +85,22 @@ export function LoginPage() {
           </button>
         </dialog>
 
-        <form action={login} className="auth-form">
-          <div>
-            Login to continue sharing your own posts. <br />
-            Don't have a account yet? <NavLink to="/register">Sign Up</NavLink>
-          </div>
-
-          <div>
-            <label htmlFor="username">Username </label>
-            <input id="username" name="username" required />
-          </div>
-          <div>
-            <label htmlFor="password">Password </label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              required
-              minLength={6}
-            />
-          </div>
-          <hr className={isPending ? "loading" : ""} />
-          <button type="submit" id="login-button">
-            Login
-          </button>
-        </form>
+        <Form.Root className="from-root">
+          <Form.Field className="from-field" name="username">
+            <div>
+              <Form.Label className="from-label">Username</Form.Label>
+              <Form.Message className="form-message" />
+            </div>
+            <Form.Control asChild>
+              <input className="form-input" type="text" required max={255} />
+            </Form.Control>
+          </Form.Field>
+          <Form.Submit asChild>
+            <button className="submit" style={{ marginTop: 10 }}>
+              Login
+            </button>
+          </Form.Submit>
+        </Form.Root>
       </main>
 
       <Footer />
