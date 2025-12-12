@@ -52,10 +52,6 @@ export function LoginPage() {
     <>
       <Header />
 
-
-       
-
-
       <main>
         <dialog className="error" ref={errorDiag}>
           <ErrorDisplay error={error} />

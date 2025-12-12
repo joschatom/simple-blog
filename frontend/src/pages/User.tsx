@@ -4,7 +4,6 @@ import { useNavigate, useParams } from "react-router";
 import { Client } from "../contexts";
 import { ErrorDisplay } from "../components/Error";
 import { Header } from "../components/Header";
-import profileImage from "../assets/account.png";
 import dayjs from "dayjs";
 import { Post } from "blog-api/src/post";
 import { PostContainer } from "../components/Post";
@@ -12,6 +11,8 @@ import { PostContainer } from "../components/Post";
 import "../styles/pages/Profile.css";
 import { NotLoggedIn, PageNotFound } from "./NotFound";
 import { Footer } from "../components/Footer";
+
+import profileImage from "../assets/user.png";
 
 export function UserPage() {
   const { id } = useParams();

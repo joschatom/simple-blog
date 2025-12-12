@@ -1,0 +1,142 @@
+@media (prefers-color-scheme: dark) {
+  :root {
+    --text-50: rgb(15, 14, 11);
+    --text-100: rgb(29, 28, 22);
+    --text-200: rgb(59, 56, 43);
+    --text-300: rgb(88, 85, 65);
+    --text-400: rgb(117, 113, 87);
+    --text-500: rgb(147, 141, 108);
+    --text-600: rgb(168, 164, 138);
+    --text-700: rgb(190, 187, 167);
+    --text-800: rgb(212, 209, 196);
+    --text-900: rgb(233, 232, 226);
+    --text-950: rgb(244, 244, 240);
+
+    --background-50: rgb(14, 14, 11);
+    --background-100: rgb(29, 29, 22);
+    --background-200: rgb(58, 58, 44);
+    --background-300: rgb(86, 86, 67);
+    --background-400: rgb(115, 115, 89);
+    --background-500: rgb(144, 144, 111);
+    --background-600: rgb(166, 166, 140);
+    --background-700: rgb(188, 188, 169);
+    --background-800: rgb(211, 211, 197);
+    --background-900: rgb(233, 233, 226);
+    --background-950: rgb(244, 244, 241);
+
+    --primary-50: rgb(15, 14, 11);
+    --primary-100: rgb(30, 28, 21);
+    --primary-200: rgb(59, 56, 43);
+    --primary-300: rgb(89, 84, 64);
+    --primary-400: rgb(118, 112, 86);
+    --primary-500: rgb(148, 140, 107);
+    --primary-600: rgb(169, 163, 137);
+    --primary-700: rgb(191, 186, 166);
+    --primary-800: rgb(212, 209, 196);
+    --primary-900: rgb(234, 232, 225);
+    --primary-950: rgb(244, 244, 240);
+
+    --secondary-50: rgb(11, 15, 13);
+    --secondary-100: rgb(21, 30, 26);
+    --secondary-200: rgb(43, 59, 52);
+    --secondary-300: rgb(64, 89, 77);
+    --secondary-400: rgb(86, 118, 103);
+    --secondary-500: rgb(107, 148, 129);
+    --secondary-600: rgb(137, 169, 154);
+    --secondary-700: rgb(166, 191, 179);
+    --secondary-800: rgb(196, 212, 205);
+    --secondary-900: rgb(225, 234, 230);
+    --secondary-950: rgb(240, 244, 242);
+
+    --accent-50: rgb(11, 14, 15);
+    --accent-100: rgb(21, 28, 30);
+    --accent-200: rgb(43, 56, 59);
+    --accent-300: rgb(64, 85, 89);
+    --accent-400: rgb(86, 113, 118);
+    --accent-500: rgb(107, 141, 148);
+    --accent-600: rgb(137, 164, 169);
+    --accent-700: rgb(166, 187, 191);
+    --accent-800: rgb(196, 209, 212);
+    --accent-900: rgb(225, 232, 234);
+    --accent-950: rgb(240, 244, 244);
+  }
+}
+@media (prefers-color-scheme: light) {
+  :root {
+    --text-50: oklch(94.12% 0.026 290.74);
+    --text-100: oklch(88.01% 0.054 291.14);
+    --text-200: oklch(76.11% 0.108 288.99);
+    --text-300: oklch(64.23% 0.167 286.26);
+    --text-400: oklch(53.11% 0.222 281);
+    --text-500: oklch(44.42% 0.26 273.01);
+    --text-600: oklch(37.92% 0.22 273.5);
+    --text-700: oklch(31.2% 0.174 274.81);
+    --text-800: oklch(24.11% 0.126 276.54);
+    --text-900: oklch(16.51% 0.075 280.78);
+    --text-950: oklch(12.01% 0.045 284.57);
+
+    --background-50: oklch(94.45% 0.02 286.01);
+    --background-100: oklch(88.58% 0.042 285.5);
+    --background-200: oklch(77% 0.088 284.14);
+    --background-300: oklch(65.61% 0.134 282.07);
+    --background-400: oklch(54.28% 0.183 278.42);
+    --background-500: oklch(44.19% 0.226 272.28);
+    --background-600: oklch(37.85% 0.188 272.81);
+    --background-700: oklch(31.27% 0.149 273.65);
+    --background-800: oklch(24.23% 0.109 274.59);
+    --background-900: oklch(16.9% 0.062 277.54);
+    --background-950: oklch(12.66% 0.035 280.16);
+
+    --primary-50: oklch(94.21% 0.023 285.95);
+    --primary-100: oklch(88.25% 0.048 287.99);
+    --primary-200: oklch(76.39% 0.1 286.4);
+    --primary-300: oklch(64.6% 0.153 283.82);
+    --primary-400: oklch(53.46% 0.203 279.26);
+    --primary-500: oklch(43.95% 0.246 271.85);
+    --primary-600: oklch(37.63% 0.205 272.65);
+    --primary-700: oklch(30.98% 0.165 273.51);
+    --primary-800: oklch(24.01% 0.12 275.06);
+    --primary-900: oklch(16.65% 0.068 278.65);
+    --primary-950: oklch(12.34% 0.04 282.66);
+
+    --secondary-50: oklch(93.13% 0.035 289.23);
+    --secondary-100: oklch(86.45% 0.07 287.52);
+    --secondary-200: oklch(72.96% 0.146 284.41);
+    --secondary-300: oklch(60.36% 0.22 279.87);
+    --secondary-400: oklch(50.22% 0.28 271.99);
+    --secondary-500: oklch(45.38% 0.312 264.92);
+    --secondary-600: oklch(38.4% 0.263 265.13);
+    --secondary-700: oklch(31.11% 0.212 265.68);
+    --secondary-800: oklch(23.33% 0.158 266.47);
+    --secondary-900: oklch(14.9% 0.098 269.63);
+    --secondary-950: oklch(10.12% 0.066 269.98);
+
+    --accent-50: oklch(93.05% 0.035 287.46);
+    --accent-100: oklch(86.37% 0.07 286.62);
+    --accent-200: oklch(72.81% 0.146 283.49);
+    --accent-300: oklch(60.15% 0.22 278.91);
+    --accent-400: oklch(50.06% 0.281 271.32);
+    --accent-500: oklch(45.31% 0.312 264.58);
+    --accent-600: oklch(38.34% 0.264 264.81);
+    --accent-700: oklch(31.02% 0.213 265.08);
+    --accent-800: oklch(23.22% 0.159 265.52);
+    --accent-900: oklch(14.78% 0.099 267.86);
+    --accent-950: oklch(10.12% 0.066 269.98);
+  }
+}
+
+:root {
+  --success-400: oklch(77.68% 0.158 149.88);
+  --success-500: oklch(73.19% 0.189 148.04);
+  --success-600: oklch(62.04% 0.158 148.12);
+
+  --error-400: oklch(64.44% 0.224 22.2);
+  --error-500: oklch(61.38% 0.248 27.17);
+  --error-600: oklch(51.99% 0.209 26.91);
+
+  --info-400: rgb(79, 86, 227);
+  --info-500: rgb(34, 44, 221);
+  --info-600: rgb(28, 35, 176);
+
+  transition: 1s all;
+}

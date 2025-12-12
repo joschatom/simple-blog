@@ -1,28 +1,23 @@
+
 .settings-container {
   display: flex;
   flex-direction: column;
   flex-grow: 1;
-  align-self: center;
   align-items: start;
-  overflow: scroll;
+  overflow-y: scroll;
   overflow-x: hidden;
   scrollbar-width: thin;
 }
 
 main {
-  padding: 20px;
-}
-
-.settings-container {
-  width: 75vw;
+  padding: 10px;
 }
 
 .update-user {
   display: grid;
   text-align: start;
   row-gap: 0.25rem;
-  margin-left: 0px;
-  width: 75vw;
+  width:100%;
 }
 
 .update-user  > span {
@@ -58,21 +53,16 @@ select {
 
 .password-reset {
   display: flex;
-  background-color: white;
+  background-color: var(--background-100);
   --border: 12px;
   border-radius: var(--border);
+  border-color: transparent;
   flex-grow: 0.1;
 }
 
 
-
-main {
-  margin-top: 52px;
-}
-
 .password-reset > input {
-  background-color: transparent;
-  align-self: self-start;
+  align-self: center;
   border-radius: 0px;
   border-top-left-radius: var(--border);
   border-bottom-left-radius: var(--border);
@@ -84,7 +74,7 @@ main {
 }
 
 .password-reset:has(> input:focus) {
-  border: solid blue 1px;
+  border: solid var(--accent-500) 1px;
 }
 
 .password-reset > button {
@@ -94,14 +84,13 @@ main {
   border-radius: 0px;
   border-top-right-radius: var(--border);
   border-bottom-right-radius: var(--border);
-  background-color: darkblue;
-  color: white;
+  background-color: var(--primary-500);
+  color: var(--text-50);
 }
 
 hr {
-  width: 75vw;
-  margin-top: 20px;
-  margin-bottom: 20px;
+  margin-top: 12px;
+  margin-bottom: 12px;
 }
 
 #save {
@@ -111,7 +100,6 @@ hr {
 
 #delete-account, #delete-all-posts {
     border: 1px red solid;
-    color: red;
 }
 
 #delete-account:hover {

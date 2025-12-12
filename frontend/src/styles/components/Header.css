@@ -12,7 +12,8 @@
   border-bottom: solid;
   justify-content: space-between;
 
-  background-color: rgba(196, 194, 194, 0.5);
+  background-color: var(--secondary-100);
+
   backdrop-filter: blur(20px);
 }
 
@@ -30,7 +31,7 @@
 }
 
 .header-placeholder {
-  height: 0px;
+  min-height: 70px;
 }
 
 .header-profile-image {
@@ -40,7 +41,7 @@
   left: 0px;
 
   outline-offset: -2px;
-  outline-color: red;
+  outline-color: var(--accent-600);
   outline-width: 0px;
   outline-style: solid;
   border-radius: 50%;
@@ -67,9 +68,9 @@
   z-index: 5;
   top: 60px;
   right: 1rem;
-  background-color: rgba(0, 0, 0, 0.8);
+  background-color: var(--background-500);
   user-select: none;
-  color: white;
+  color: var(--text-500);
   backdrop-filter: blur(20px);
   width: fit-content;
   font-size: 24px;
@@ -79,20 +80,36 @@
   flex-direction: column;
 }
 
-.profile-navigation > button {
+.profile-navigation button {
   border-radius: 0px;
+  background-color: var(--background-100);
+  color: var(--text-500);
+  align-items: center;
+  display: flex;
+  gap: 5px;
 }
 
-.profile-navigation >:last-child {
-    background-color: black;
-    color: white;
+.profile-navigation button:hover {
+  border-radius: 0px;
+  background-color: var(--background-200);
+  color: var(--primary-800);
+}
+.profile-navigation > :last-child {
+  background-color: var(--background-400);
+  color: var(--primary-100);
 }
 
-.profile-navigation >:last-child:hover {
-    background-color: rgb(41, 41, 41);
-    color: white;
+.profile-navigation > :last-child:hover {
+  background-color: var(--primary-200);
+  color: var(--primary-900);
 }
 
 .profile-image-container:hover > .profile-navigation {
   visibility: visible;
+}
+
+
+.login-button {
+  width: fit-content;
+  height: 60px;
 }

@@ -97,9 +97,12 @@ export function SettingsPage() {
       <Header />
 
       <main className="settings-container">
-        <h2 className="page-title">Settings</h2>
 
         <div className="update-user">
+          <span>
+            <h2 className="page-title">Settings</h2>
+            <button onClick={() => navigate("/muted-users")}>Muted Users</button>
+          </span>
           <span>
             <label htmlFor="username">Username</label>
             <input
@@ -116,6 +119,7 @@ export function SettingsPage() {
               id="email"
               type="email"
               value={email}
+              onChange={e => setEmail(e.target.value)}
               placeholder={email ? "Enter an email address" : "Loading..."}
               disabled={email == undefined}
             />
@@ -153,13 +157,16 @@ export function SettingsPage() {
           </span>
         </div>
 
-        <div className="actions"></div>
+        <div className="actions">
+          
+        </div>
         <hr />
 
         <div className="actions">
           <button id="delete-account" onClick={deleteAccount}>
             Delete Account
           </button>
+          
           <button id="delete-all-posts" onClick={deleteAllPosts}>
             Delete all Posts
           </button>

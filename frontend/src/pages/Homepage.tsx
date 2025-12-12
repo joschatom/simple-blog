@@ -1,8 +1,4 @@
-import {
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import { useContext, useEffect, useState } from "react";
 import { Client } from "../contexts";
 import { User } from "blog-api";
 import { ErrorDisplay } from "../components/Error";
@@ -10,7 +6,7 @@ import { Header } from "../components/Header";
 import { UsernameDisplay } from "../components/Username";
 import { Footer } from "../components/Footer";
 
-import "../styles/pages/Homepage.css"
+import "../styles/pages/Homepage.css";
 
 
 export function Homepage() {
@@ -34,13 +30,10 @@ export function Homepage() {
   return (
     <>
       <Header />
-      
+
       <main>
         {error !== undefined && <ErrorDisplay error={error} />}
-        {users &&
-          users.map((u) => (
-            <UsernameDisplay user={u}/>
-          ))}
+        {users && users.map((u) => <UsernameDisplay user={u} />)}
       </main>
 
       <Footer />

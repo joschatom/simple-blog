@@ -4,6 +4,7 @@
     align-self: center;
     width: 100px;
     height: 100px;
+    border-radius: 50%;
 }
 
 
@@ -31,7 +32,7 @@
     align-items: center;
     display: flex;
     flex-direction: column;
-    width: 100vw;
+    width: 100%;
 }
 
 .profile-joined-at{

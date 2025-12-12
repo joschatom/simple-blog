@@ -19,7 +19,7 @@ export function PostsPage() {
   return (
     <>
       <Header />
-      <main>
+      <main className="posts-containers">
         {posts.map((p) => (
           <PostContainer post={p} />
         ))}

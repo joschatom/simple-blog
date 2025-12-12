@@ -10,15 +10,25 @@ import {
   useState,
   useCallback,
   type Ref,
+  Component,
+  type FunctionComponent,
+  createElement,
 } from "react";
 import { Client } from "../contexts";
 import { ErrorDisplay } from "./Error";
 import type { CreatePost } from "blog-api/src/schemas/post";
-import lockOpen from "../assets/lock-open.svg";
-import lockClosed from "../assets/lock-closed.svg";
 import moment from "moment";
 import { UsernameDisplay } from "./Username";
 import { useContextMenu } from "../helpers/useContextMenu";
+
+import lockOpen from "../assets/icons/lockOpen.svg?react";
+import LockClosed from "../assets/icons/lockClosed.svg?react";
+import Edit from "../assets/icons/Edit.svg?react";
+import MuteIcon from "../assets/icons/mute.svg?react";
+import Close from "../assets/icons/close.svg?react";
+import Delete from "../assets/icons/delete.svg?react";
+import Done from "../assets/icons/done.svg?react";
+import CreatePostIcon from "../assets/icons/createPost.svg?react";
 
 function DurationSince({
   date,
@@ -82,8 +92,18 @@ function DurationSince({
   );
 }
 
-export function PostContainer({ post }: { post?: Post }) {
 
+
+export function Select<TrueProps extends object, FalseProps extends object>({ cond, trueComponent, falseComponent, ...props}: {
+  cond: boolean,
+  trueComponent: FunctionComponent<TrueProps>,
+  falseComponent: FunctionComponent<FalseProps>
+} & (TrueProps | FalseProps)) {
+  if (cond) return createElement(trueComponent, props as TrueProps)
+  else return createElement(falseComponent, props as FalseProps);
+}
+
+export function PostContainer({ post }: { post?: Post }) {
   const client = useContext(Client);
   let isOwner = client.currentUser
     ? client.currentUser.data.id === post?.data.userId
@@ -105,7 +125,6 @@ export function PostContainer({ post }: { post?: Post }) {
     post?.data.registredUsersOnly || false
   );
 
-
   const targetRef = useContextMenu({
     "Go to author": () =>
       navigate(
@@ -113,7 +132,8 @@ export function PostContainer({ post }: { post?: Post }) {
           post!.data.user ? post!.data.user!.username : `:${post!.data.userId}`
         }`
       ),
-    "Copy Link": () => navigator.clipboard.writeText(`${location.host}/posts/${post!.data.id}`),
+    "Copy Link": () =>
+      navigator.clipboard.writeText(`${location.host}/posts/${post!.data.id}`),
     "Copy ID": () => navigator.clipboard.writeText(post!.data.id),
   });
 
@@ -213,6 +233,8 @@ export function PostContainer({ post }: { post?: Post }) {
   else
     return (
       <div
+                  ref={targetRef as Ref<HTMLDivElement>}
+
         className="post-container"
         style={{
           width: post && "90%",
@@ -230,7 +252,7 @@ export function PostContainer({ post }: { post?: Post }) {
           </button>
         </dialog>
 
-        <div className="post-container-header" ref={targetRef as Ref<HTMLDivElement>}>
+        <div className="post-container-header">
           <input
             className="post-caption"
             value={caption}
@@ -251,8 +273,10 @@ export function PostContainer({ post }: { post?: Post }) {
                 <UsernameDisplay userData={post.data.user} />
               </div>
             )}
-            <img
-              src={locked ? lockClosed : lockOpen}
+            <Select
+              trueComponent={LockClosed}
+              falseComponent={lockOpen}
+              cond={locked}
               className="post-locked-icon"
               onClick={editMode ? () => setLocked((v) => !v) : () => {}}
             />
@@ -277,15 +301,14 @@ export function PostContainer({ post }: { post?: Post }) {
               client.currentUser ? (
                 <>
                   <button className="mute-button" onClick={mute}>
-                    Mute
+                    <MuteIcon/>Mute
                   </button>
-                  <button className="hide-post-button">Hide Post</button>
                 </>
               ) : (
                 <>
                   <NavLink
                     to="/login"
-                    aria-description="Redircts to login page inorder to access POST actions."
+                    aria-description="login in order to access POST actions."
                   >
                     <em>
                       Post actions are only available for logged in users.
@@ -299,19 +322,19 @@ export function PostContainer({ post }: { post?: Post }) {
                   className="post-save-button"
                   onClick={post ? update : createNew}
                 >
-                  {!post ? "Create Post" : "Save"}
+                  {!post ? <><CreatePostIcon/>Create Post</> : <><Done/>Save</>}
                 </button>
                 <button className="post-cancel-button" onClick={cancel}>
-                  Cancel
+                  <Close/>Cancel
                 </button>
               </>
             ) : (
               <>
                 <button className="delete-post-button" onClick={delete_}>
-                  Delete
+                  <Delete/>Delete
                 </button>
                 <button className="edit-post-button" onClick={edit}>
-                  Edit
+                  <Edit/>Edit
                 </button>
               </>
             )}
