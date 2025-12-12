@@ -29,6 +29,7 @@ import Close from "../assets/icons/close.svg?react";
 import Delete from "../assets/icons/delete.svg?react";
 import Done from "../assets/icons/done.svg?react";
 import CreatePostIcon from "../assets/icons/createPost.svg?react";
+import Button from "./Button";
 
 function DurationSince({
   date,
@@ -92,14 +93,17 @@ function DurationSince({
   );
 }
 
-
-
-export function Select<TrueProps extends object, FalseProps extends object>({ cond, trueComponent, falseComponent, ...props}: {
-  cond: boolean,
-  trueComponent: FunctionComponent<TrueProps>,
-  falseComponent: FunctionComponent<FalseProps>
+export function Select<TrueProps extends object, FalseProps extends object>({
+  cond,
+  trueComponent,
+  falseComponent,
+  ...props
+}: {
+  cond: boolean;
+  trueComponent: FunctionComponent<TrueProps>;
+  falseComponent: FunctionComponent<FalseProps>;
 } & (TrueProps | FalseProps)) {
-  if (cond) return createElement(trueComponent, props as TrueProps)
+  if (cond) return createElement(trueComponent, props as TrueProps);
   else return createElement(falseComponent, props as FalseProps);
 }
 
@@ -233,8 +237,7 @@ export function PostContainer({ post }: { post?: Post }) {
   else
     return (
       <div
-                  ref={targetRef as Ref<HTMLDivElement>}
-
+        ref={targetRef as Ref<HTMLDivElement>}
         className="post-container"
         style={{
           width: post && "90%",
@@ -299,43 +302,45 @@ export function PostContainer({ post }: { post?: Post }) {
           <div className="end-actions">
             {!isOwner ? (
               client.currentUser ? (
-                <>
-                  <button className="mute-button" onClick={mute}>
-                    <MuteIcon/>Mute
-                  </button>
-                </>
+                <Button className="mute-button" onClick={mute} level="neutral">
+                  <MuteIcon />
+                  Mute
+                </Button>
               ) : (
-                <>
-                  <NavLink
-                    to="/login"
-                    aria-description="login in order to access POST actions."
-                  >
-                    <em>
-                      Post actions are only available for logged in users.
-                    </em>
-                  </NavLink>
-                </>
+                <NavLink to="/login">
+                  <i>Post actions are only available for logged in users.</i>
+                </NavLink>
               )
             ) : editMode ? (
               <>
-                <button
-                  className="post-save-button"
-                  onClick={post ? update : createNew}
-                >
-                  {!post ? <><CreatePostIcon/>Create Post</> : <><Done/>Save</>}
-                </button>
-                <button className="post-cancel-button" onClick={cancel}>
-                  <Close/>Cancel
-                </button>
+                <Button level="success" onClick={post ? update : createNew}>
+                  {!post ? (
+                    <>
+                      <CreatePostIcon />
+                      Create Post
+                    </>
+                  ) : (
+                    <>
+                      <Done />
+                      Save
+                    </>
+                  )}
+                </Button>
+                <Button level="milder-danger" onClick={cancel}>
+                  <Close />
+                  Cancel
+                </Button>
               </>
             ) : (
               <>
-                <button className="delete-post-button" onClick={delete_}>
-                  <Delete/>Delete
-                </button>
-                <button className="edit-post-button" onClick={edit}>
-                  <Edit/>Edit
-                </button>
+                <Button level="danger" onClick={delete_}>
+                  <Delete />
+                  Delete
+                </Button>
+                <Button level="notice" onClick={edit}>
+                  <Edit />
+                  Edit
+                </Button>
               </>
             )}
           </div>

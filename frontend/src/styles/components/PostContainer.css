@@ -1,5 +1,5 @@
 .post-container {
-  background-color: var(--secondary-200);
+  background-color: var(--background-bg);
   display: flex;
   flex-direction: column;
   gap: 5px;
@@ -15,7 +15,7 @@
 .post-container-header {
   width: 65vw;
   display: flex;
-  background-color: var(--secondary-200);
+  background-color: var(--background-bg);
   height: max-content;
   justify-content: space-between;
   width: 100%;
@@ -26,8 +26,6 @@
 
 .post-container-content {
   border: none !important;
-  border-top: 2px solid var(--accent-800) !important;
-  border-bottom: 2px solid var(--accent-800) !important;
   font-size: 18px;
   padding: 0px;
   resize: vertical;
@@ -36,21 +34,20 @@
 
 .post-caption {
   border-radius: 0px;
+  font-size: 32px;
   border: none;
   outline: 0px;
   width: max-content;
   flex-grow: 1;
-  background-color: var(--secondary-200);
-  color: var(--text-500);
+  background-color: var(--background-bg);
+  color: var(--background-text-contrast);
   border-bottom: 2px solid transparent;
 }
 
-.post-caption:invalid {
-  border-bottom: 2px solid var(--error-400);
-}
-
-.post-caption:is(input):focus {
-  border-bottom: 2px solid var(--secondary-200);
+.post-caption {
+  border-top: none !important;
+  border-left: none !important;
+  border-right: none !important;
 }
 
 .post-locked-icon {
@@ -58,30 +55,14 @@
   align-self: center;
   align-self: flex-end;
   width: max-content;
-  fill: var(--text-700);
-}
-
-.post-locked {
-  align-self: flex-end;
-  stroke: var(--text-500);
-}
-
-form {
-  background-color: var(--secondary-200);
-  outline-color: var(--accent-800);
-  border-radius: 12px;
-}
-
-fieldset {
-  border-color: groove;
-  margin: 0px;
+  fill: var(--background-text);
 }
 
 .post-container-footer {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  color: var(--text-500);
+  color: var(--background-text);
 }
 
 button {
@@ -95,15 +76,11 @@ button {
 }
 
 .post-container-content {
-  background-color: var(--secondary-200);
-  box-shadow: 0 0px 1px 1px var(--accent-800);
-  color: var(--text-500);
+  font-size: 24px;
+  background-color: var(--background-bg-hover);
+  box-shadow: 0 0px 1px 1px var(--background-border);
+  color: var(--background-text);
   border: groove;
-}
-
-.delete-post-button {
-  background-color: var(--error-500);
-  color: var(--text-50);
 }
 
 textarea:disabled {
@@ -124,5 +101,9 @@ textarea:disabled {
 }
 
 .end-actions svg {
-    fill: var(--text-50);
+  fill: var(--background-text);
+}
+
+.end-actions *:hover svg {
+  fill: var(--background-text-contrast);
 }

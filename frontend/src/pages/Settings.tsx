@@ -9,11 +9,15 @@ import {
 import { Footer } from "../components/Footer";
 import { Header } from "../components/Header";
 
-import "../styles/pages/Settings.css";
 import { Client } from "../contexts";
 import { NotLoggedIn } from "./NotFound";
 import { APIError } from "blog-api";
-import { useNavigate } from "react-router";
+import { useNavigate, useViewTransitionState } from "react-router";
+
+import {  Progress } from "radix-ui"
+
+import "../styles/pages/Settings.css";
+import Button from "../components/Button";
 
 export function SettingsPage() {
   const client = useContext(Client);
@@ -96,12 +100,15 @@ export function SettingsPage() {
     <>
       <Header />
 
-      <main className="settings-container">
+      <progress/>
 
+      <main className="settings-container">
         <div className="update-user">
           <span>
             <h2 className="page-title">Settings</h2>
-            <button onClick={() => navigate("/muted-users")}>Muted Users</button>
+            <Button onClick={() => navigate("/muted-users")}>
+              Muted Users
+            </Button>
           </span>
           <span>
             <label htmlFor="username">Username</label>
@@ -109,7 +116,9 @@ export function SettingsPage() {
               id="username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              placeholder={username ? "Enter a username" : "Loading..."}
+              placeholder={
+                username != undefined ? "Enter a username" : "Loading..."
+              }
               disabled={username == undefined}
             />
           </span>
@@ -119,8 +128,10 @@ export function SettingsPage() {
               id="email"
               type="email"
               value={email}
-              onChange={e => setEmail(e.target.value)}
-              placeholder={email ? "Enter an email address" : "Loading..."}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder={
+                email != undefined ? "Enter an email address" : "Loading..."
+              }
               disabled={email == undefined}
             />
           </span>
@@ -140,9 +151,9 @@ export function SettingsPage() {
             </button>
           </span>
 
-          <hr/>
+          <hr />
 
-          <span className="password-reset-container">
+          <span className="dark password-reset-container">
             {" "}
             <label htmlFor="newpassword">New Password</label>
             <span className="password-reset">
@@ -152,24 +163,22 @@ export function SettingsPage() {
                 type="password"
                 placeholder="Enter a new password."
               />
-              <button onClick={changePassword}>Update</button>
+              <Button onClick={changePassword}>Update</Button>
             </span>
           </span>
         </div>
 
-        <div className="actions">
-          
-        </div>
+        <div className="actions"></div>
         <hr />
 
         <div className="actions">
-          <button id="delete-account" onClick={deleteAccount}>
+          <Button level="danger" id="delete-account" onClick={deleteAccount}>
             Delete Account
-          </button>
-          
-          <button id="delete-all-posts" onClick={deleteAllPosts}>
+          </Button>
+
+          <Button level="milder-danger" onClick={deleteAllPosts}>
             Delete all Posts
-          </button>
+          </Button>
         </div>
       </main>
 

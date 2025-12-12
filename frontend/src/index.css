@@ -1,4 +1,5 @@
 @import "styles/theme.css";
+@import "styles/components/Button.css";
 
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
@@ -6,8 +7,9 @@
   font-weight: 400;
   font-size: xx-large;
   color-scheme: light dark;
-  color: var(--text-900);
-  background-color: var(--background-50);
+
+  color: var(--background-text);
+  background-color: var(--background-base);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -29,11 +31,11 @@
 
 a {
   font-weight: 500;
-  color: var(--text-700);
+  color: var(--accent-text);
   text-decoration: inherit;
 }
 a:hover {
-  color: var(--accent-400);
+  color: var(--accent-solid);
 }
 
 body {
@@ -46,44 +48,33 @@ h1 {
   line-height: 1.1;
 }
 
-button {
-  background-color: var(--secondary-500);
-  color: var(--text-100);
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-
 svg {
-  fill: var(--text-700);
+  fill: var(--accent-solid);
 }
 svg:hover {
-  fill: var(--text-500);
+  fill: var(--accent-solid-hover);
 }
 
 input {
   border-radius: 8px;
-  border: none;
-  outline: groove;
   padding: 0.1em;
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
   transition: outline-color 0.25s;
+  background-color: var(--background-bg);
+  border: solid 1px var(--background-border);
+  color: var(--background-text);
+
+  outline: none;
 }
-input:hover {
-  outline-color: var(--accent-200);
-}
-input:focus {
-  outline-color: var(--accent-600);
+
+input:focus-within {
+  border: solid var(--accent-border-hover) 1px;
+  outline: 0px;
 }
 input:invalid {
-  outline: 1px solid var(--error-400) !important;
+  outline: 1px solid var(--danger-border) !important;
 }
 
 form > * {
@@ -111,21 +102,6 @@ form button {
 
 main {
   text-align: center;
-}
-
-.toast {
-  position: absolute;
-  align-self: unset;
-  top: 4rem;
-  right: 0.1rem;
-  left: auto;
-  text-align: end;
-  padding: 5px;
-  background-color: var(--error-600);
-  color: white;
-  border: none;
-  backdrop-filter: blur(5px);
-  z-index: 8;
 }
 
 /* Tooltip text */
@@ -162,9 +138,9 @@ main {
   display: flex;
   flex-direction: column;
   display: none;
-  border: 1px black;
+  border: 1px solid var(--accent-border);
   border-radius: 12px;
-  background: var(--secondary-800);
+  background: rgb(from var(--background-base) r g b / 75%);
   backdrop-filter: blur(20px);
   box-shadow: 4px 1px 20px 3px rgba(0, 0, 0, 0.3);
   -webkit-box-shadow: 4px 1px 20px 3px rgba(0, 0, 0, 0.3);
@@ -179,8 +155,14 @@ main {
 
 .context-menu button {
   background-color: transparent;
+  border: solid 2px transparent;
+  border-radius: 0px;
+}
+
+.context-menu button:not(:last-child) {
+  border-color: transparent transparent var(--background-solid) transparent;
 }
 
 .context-menu button:hover {
-  background-color: var(--accent-800)
+  background-color: var(--background-bg-hover);
 }

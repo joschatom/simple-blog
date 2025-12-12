@@ -9,6 +9,7 @@ import Person from "../assets/icons/person.svg?react";
 
 import "../styles/components/Header.css";
 import { NavLink, useNavigate } from "react-router";
+import Button from "./Button";
 
 export function Header() {
   const client = useContext(Client);
@@ -23,7 +24,10 @@ export function Header() {
           <NavLink to="/posts" className={"header-posts"}>
             Posts
           </NavLink>
+
         </div>
+
+
 
         {!client.isAuthenticated() ? (
           
@@ -32,20 +36,23 @@ export function Header() {
           <div className="profile-image-container">
             <img src={account} className="header-profile-image" />
             <div className="profile-navigation">
-              <button onClick={() => navigate("/users/me")}><Person/>Profile</button>
-              <button onClick={() => navigate("/settings")}><Settings/>Settings</button>
-              <button
+              <Button onClick={() => navigate("/users/me")}><Person/>Profile</Button>
+              <Button onClick={() => navigate("/settings")}><Settings/>Settings</Button>
+              <Button
+                level="notice"
                 onClick={async () => {
                   await client.logout();
                   navigate("/");
                 }}
               >
                 <Logout/>Log Out
-              </button>
+              </Button>
             </div>
           </div>
         )}
       </header>
+                        <progress/>
+
       <div className="header-placeholder" />
     </>
   );

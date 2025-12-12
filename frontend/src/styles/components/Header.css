@@ -12,7 +12,9 @@
   border-bottom: solid;
   justify-content: space-between;
 
-  background-color: var(--secondary-100);
+  background-color: var(--background-bg);
+  color: var(--background-text);
+
 
   backdrop-filter: blur(20px);
 }
@@ -41,12 +43,10 @@
   left: 0px;
 
   outline-offset: -2px;
-  outline-color: var(--accent-600);
   outline-width: 0px;
   outline-style: solid;
   border-radius: 50%;
 
-  transition: outline-width 1s;
 }
 
 .header-profile-image:hover {
@@ -68,10 +68,7 @@
   z-index: 5;
   top: 60px;
   right: 1rem;
-  background-color: var(--background-500);
   user-select: none;
-  color: var(--text-500);
-  backdrop-filter: blur(20px);
   width: fit-content;
   font-size: 24px;
   visibility: hidden;
@@ -82,26 +79,9 @@
 
 .profile-navigation button {
   border-radius: 0px;
-  background-color: var(--background-100);
-  color: var(--text-500);
   align-items: center;
   display: flex;
   gap: 5px;
-}
-
-.profile-navigation button:hover {
-  border-radius: 0px;
-  background-color: var(--background-200);
-  color: var(--primary-800);
-}
-.profile-navigation > :last-child {
-  background-color: var(--background-400);
-  color: var(--primary-100);
-}
-
-.profile-navigation > :last-child:hover {
-  background-color: var(--primary-200);
-  color: var(--primary-900);
 }
 
 .profile-image-container:hover > .profile-navigation {
@@ -113,3 +93,4 @@
   width: fit-content;
   height: 60px;
 }
+
