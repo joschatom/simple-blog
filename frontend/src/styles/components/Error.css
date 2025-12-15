@@ -1,0 +1,19 @@
+dialog {
+    background-color: var(--danger-bg);
+    border: 2px solid var(--danger-border);
+    padding: 12px;
+    color: var(--danger-text);
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    right: auto;
+}
+
+dialog > svg {
+    fill: var(--danger-solid);
+    margin-left: 10px;
+}
+
+dialog > svg:hover{
+    fill: var(--danger-solid-hover);
+}

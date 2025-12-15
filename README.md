@@ -14,12 +14,12 @@ The documentation is located [here](docs/index.md).
 - [x] The user can log in with their name/email address and password, and then be redirected to their profile.
 - [x] Both logged-in and guest users can see posts, unless they have been set to 'for registered users only' by the author.
 - [x] When logged in, users can create posts containing text and captions.
-- [ ] The front end is localised (optional) and supports theming.
+- [x] The front end is localised (optional) and supports theming.
 - [x] Each user has a profile page where they can see their posts and name.
 - [x] There is a settings page that allows users to change their theme, delete their account, and change their password, username, and email address. 
 - [x] In the footer, links are displayed to GitHub, (documentation) and version information (Git).
 - [x] There is an 'About' page containing some information about the project.
-- [ ] Errors are displayed in a stylised way that doesn't look out of place.
+- [-] Errors are displayed in a stylised way that doesn't look out of place.
 - [x] Posts can also be viewed on a separate page via a URL (`/posts/<post_id>`).
 #### Optional
 - [x] Logged-in users can click 'Mute' on a post to stop seeing any posts from that user.

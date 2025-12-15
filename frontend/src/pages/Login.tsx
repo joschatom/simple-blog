@@ -14,12 +14,19 @@ import { Header } from "../components/Header";
 
 import "../styles/pages/Auth.css";
 import { Footer } from "../components/Footer";
+import { useUserNotify } from "../helpers/useUserNotify";
+import { ZodAny, ZodError } from "zod";
 
 export function LoginPage() {
+  const navigate = useNavigate();
+  const notify = useUserNotify();
+
   const client = useContext(Client);
   const [error, setError] = useState<APIError>();
-  const navigate = useNavigate();
   const [isPending, startTransition] = useTransition();
+
+  const [username, setUsername] = useState<string>();
+  const [password, setPassword] = useState<string>();
 
   const login = (data: FormData) =>
     startTransition(async () => {
@@ -30,41 +37,26 @@ export function LoginPage() {
         );
         await navigate("/users/me");
       } catch (e) {
-        if (e instanceof APIError) setError(e);
-        else
-          setError(
-            new APIError("generic", {
-              type: "Unknown Error",
-              title: "An unknown error occoured",
-              detail: JSON.stringify(e),
-            })
-          );
+        let err;
+        if ((err = APIError.asDowncast(e, "generic")))
+          notify({
+            type: "error",
+            text: err.title,
+            detail: err.detail,
+          });
+        else if (e instanceof ZodError)
+          notify({
+            type: "error",
+            text: e.name,
+          })
       }
     });
-
-  const errorDiag = useRef<ComponentRef<"dialog">>(null);
-
-  useEffect(() => {
-    if (error != undefined) errorDiag.current?.showModal();
-  }, [error]);
 
   return (
     <>
       <Header />
 
       <main>
-        <dialog className="error" ref={errorDiag}>
-          <ErrorDisplay error={error} />
-          <button
-            onClick={() => {
-              setError(undefined);
-              errorDiag.current?.close();
-            }}
-          >
-            Okay
-          </button>
-        </dialog>
-
         <form action={login} className="auth-form">
           <div>
             Login to continue sharing your own posts. <br />
@@ -86,9 +78,7 @@ export function LoginPage() {
             />
           </div>
           <hr className={isPending ? "loading" : ""} />
-          <button type="submit" id="login-button">
-            Login
-          </button>
+          <button id="login-button">Login</button>
         </form>
       </main>
 

@@ -5,6 +5,7 @@
 
   display: flex;
   flex-direction: row;
+  align-items: center;
 
   min-width: 100%;
   width: 100%;
@@ -17,11 +18,11 @@
 
 
   backdrop-filter: blur(20px);
+
+  padding: 12px 0px 12px 0px;
 }
 
-.blog-header > * {
-  margin: 10px;
-}
+
 
 .blog-header:nth-child(1) {
   align-self: flex-start;
@@ -33,17 +34,28 @@
 }
 
 .header-placeholder {
-  min-height: 70px;
+  min-height: 84px;
+}
+
+
+.actions-container {
+  align-self: flex-end;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-content: center;
+  margin-right: 12px;
 }
 
 .header-profile-image {
-  align-self: flex-end;
-  height: 64px;
-  top: 0px;
-  left: 0px;
+  align-self: center;
+  padding: 5px;
+  height: 58px;
+  width: 60px;
+
 
   outline-offset: -2px;
-  outline-width: 0px;
+  outline-width: 0cqh;
   outline-style: solid;
   border-radius: 50%;
 
@@ -72,9 +84,10 @@
   width: fit-content;
   font-size: 24px;
   visibility: hidden;
-
+  
   display: flex;
   flex-direction: column;
+  padding: 0px;
 }
 
 .profile-navigation button {
@@ -94,3 +107,15 @@
   height: 60px;
 }
 
+.actions-container > svg {
+  align-self: flex-end;
+  margin: 10px 0%;
+  height: 60px;
+  scale: 0.75;
+
+  border: 2px solid var(--background-solid);
+  border-radius: 12px;
+  padding: 5px;
+  width: max-content;
+  margin: 0px;
+}

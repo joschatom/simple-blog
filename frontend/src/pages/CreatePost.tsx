@@ -1,49 +1,31 @@
 
 import "../styles/components/PostContainer.css";
+import "../styles/pages/CreatePost.css"
 
 import { PostContainer } from "../components/Post";
+import { Footer } from "../components/Footer";
+import { Header } from "../components/Header";
+import { useUserNotify } from "../helpers/useUserNotify";
+
+
 
 export function CreatePostPage() {
 
+  const notify = useUserNotify();
 
-/*  return (
-    <>
-      <ErrorDisplay error={error} />
-
-      
-        <fieldset className="post-container">
-          <legend>Create Post</legend>
-          <div className="post-container-header">
-            <input
-              max={255}
-              placeholder="Caption your Post..."
-              className="post-caption"
-              onChange={(e) => setCaption(e.target.value)}
-              value={caption}
-              min={1}
-            />
-
-            <img src={lockOpen} className="post-locked-icon" />
-          </div>
-          <textarea
-            maxLength={100000}
-            name="content"
-            className="post-container-content"
-            onChange={(e) => setContent(e.target.value)}
-            value={content}
-          />
-          <div className="post-container-footer">
-            <button className="create-post-submit" onClick={async () => await createPost()}>Post</button>
-          </div>
-        </fieldset>
-    </>
-  );*/
+  notify({
+    type: "error",
+    text: "Test",
+    detail: "This is more detail"
+  });
 
   return <>
-    <h1>
-      Create Post
-    </h1>
+    <Header/>
 
-    <PostContainer post={undefined}/>
+    <main>
+    <PostContainer  post={undefined}/>
+    </main>
+
+    <Footer/>
   </>
 }

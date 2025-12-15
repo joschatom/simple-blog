@@ -30,6 +30,10 @@ import Delete from "../assets/icons/delete.svg?react";
 import Done from "../assets/icons/done.svg?react";
 import CreatePostIcon from "../assets/icons/createPost.svg?react";
 import Button from "./Button";
+import { APIError } from "blog-api";
+import z, { json, ZodError } from "zod";
+import { useUserNotify } from "../helpers/useUserNotify";
+import { fa } from "zod/locales";
 
 function DurationSince({
   date,
@@ -116,6 +120,7 @@ export function PostContainer({ post }: { post?: Post }) {
   if (post === undefined) isOwner = true;
 
   const navigate = useNavigate();
+  const notify = useUserNotify();
 
   const [editMode, setEditMode] = useState(post === undefined);
   const [deleted, setDeleted] = useState(false);
@@ -143,7 +148,7 @@ export function PostContainer({ post }: { post?: Post }) {
 
   const cancel = () => {
     if (post == undefined) {
-      navigate("/users/me");
+      navigate(-1);
       return;
     }
 
@@ -154,6 +159,20 @@ export function PostContainer({ post }: { post?: Post }) {
     setLocked(post!.data.registredUsersOnly);
 
     setEditMode(false);
+  };
+
+  const validate = () => {
+    if (caption.length == 0 || !caption) {
+      notify({
+        type: "error",
+        text: "A post must have a caption.",
+      });
+    }
+    if (content.length == 0 || !content)
+      notify({
+        type: "error",
+        text: "A post must have some content in it.",
+      });
   };
 
   const edit = () => {
@@ -180,11 +199,24 @@ export function PostContainer({ post }: { post?: Post }) {
       await post.delete();
       setDeleted(true);
     } catch (e) {
-      setError(e);
+      let err;
+      if ((err = APIError.asDowncast(e, "generic")))
+        notify({
+          type: "error",
+          text: err.title,
+          detail: err.detail,
+        });
+      else if (e instanceof ZodError)
+        notify({
+          type: "error",
+          text: e.name,
+        });
     }
   };
 
   const createNew = async () => {
+    validate();
+
     const post: CreatePost = {
       caption: caption!,
       content: content!,
@@ -194,7 +226,26 @@ export function PostContainer({ post }: { post?: Post }) {
     try {
       await Post.createPost(client, post);
     } catch (e) {
-      setError(e);
+      let err;
+      if ((err = APIError.asDowncast(e, "generic")))
+        notify({
+          type: "error",
+          text: err.title,
+          detail: err.detail,
+        });
+      else if (e instanceof ZodError && (err = JSON.parse(e.message)[0])) {
+        console.log(err);
+        notify({
+          type: "error",
+          text: "Invalid Input",
+          detail: z.prettifyError(e),
+        });
+      }
+    }
+
+    if (post == undefined) {
+      navigate(-1);
+      return;
     }
   };
 
@@ -236,24 +287,8 @@ export function PostContainer({ post }: { post?: Post }) {
     return <div id="deleted-post" data-id={post.data.id} />;
   else
     return (
-      <div
-        ref={targetRef as Ref<HTMLDivElement>}
-        className="post-container"
-        style={{
-          width: post && "90%",
-        }}
-      >
-        <dialog className="error" ref={errorDiag}>
-          <ErrorDisplay error={error} />
-          <button
-            onClick={() => {
-              setError(undefined);
-              errorDiag.current?.close();
-            }}
-          >
-            Okay
-          </button>
-        </dialog>
+      <div ref={targetRef as Ref<HTMLDivElement>} className="post-container">
+        <ErrorDisplay error={error} />
 
         <div className="post-container-header">
           <input

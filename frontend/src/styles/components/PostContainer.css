@@ -4,9 +4,6 @@
   flex-direction: column;
   gap: 5px;
   border-radius: 12px;
-
-  width: fit-content;
-  height: min-content;
   margin: 20px;
   padding: 10px;
   text-align: start;
@@ -28,8 +25,11 @@
   border: none !important;
   font-size: 18px;
   padding: 0px;
-  resize: vertical;
+  resize: both;
   padding: 5px;
+  max-width: calc(100% - 60px);
+  min-width: calc(100% - 10px);
+  min-height: calc(100% - 125px);
 }
 
 .post-caption {

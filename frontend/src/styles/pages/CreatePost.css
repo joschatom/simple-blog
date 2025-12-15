@@ -1,0 +1,7 @@
+
+
+.post-container {
+    width: calc(100vw - 60px) !important;
+    height: calc(100vh - 400px) !important;
+
+}

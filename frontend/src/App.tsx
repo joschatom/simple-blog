@@ -16,7 +16,7 @@ import { PostPage } from "./pages/Post";
 import { SettingsPage } from "./pages/Settings";
 
 import "./styles/theme.css";
-import { Progress } from "radix-ui";
+import { NotificationProvider } from "./components/NotificationProvider";
 
 function App() {
   const [apiToken, setAPIToken] = useState<string | null>(
@@ -44,37 +44,28 @@ function App() {
 
   return (
     <>
-      <hr
-        style={{
-          margin: 0,
-          height: 2,
-          zIndex: 4,
-          width: "50vw",
-          background: "var(--accent-solid)",
-          color: "var(--accent-solid)",
-        }}
-      />
-
       <ContextMenuProvider>
-        <Client.Provider value={client}>
-          <Routes>
-            <Route path="/" element={<Homepage />} />
-            <Route path="/users/:id" element={<UserPage />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
-            <Route path="/posts/:id" element={<PostPage />} />
-            <Route path="/posts" element={<PostsPage />} />
-            <Route path="/create-post" element={<CreatePostPage />} />
-            <Route path="/muted-users" element={<MutedUsersPage />} />
-            <Route path="/about" element={<AboutPage />} />
-            <Route path="/settings" element={<SettingsPage />} />
-            <Route
-              path="/errors/not-logged-in"
-              element={<NotLoggedIn isPage />}
-            />
-            <Route path="*" element={<PageNotFound />} />
-          </Routes>
-        </Client.Provider>
+        <NotificationProvider>
+          <Client.Provider value={client}>
+            <Routes>
+              <Route path="/" element={<Homepage />} />
+              <Route path="/users/:id" element={<UserPage />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/register" element={<RegisterPage />} />
+              <Route path="/posts/:id" element={<PostPage />} />
+              <Route path="/posts" element={<PostsPage />} />
+              <Route path="/create-post" element={<CreatePostPage />} />
+              <Route path="/muted-users" element={<MutedUsersPage />} />
+              <Route path="/about" element={<AboutPage />} />
+              <Route path="/settings" element={<SettingsPage />} />
+              <Route
+                path="/errors/not-logged-in"
+                element={<NotLoggedIn isPage />}
+              />
+              <Route path="*" element={<PageNotFound />} />
+            </Routes>
+          </Client.Provider>
+        </NotificationProvider>
       </ContextMenuProvider>
     </>
   );

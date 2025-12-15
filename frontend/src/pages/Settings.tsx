@@ -12,9 +12,7 @@ import { Header } from "../components/Header";
 import { Client } from "../contexts";
 import { NotLoggedIn } from "./NotFound";
 import { APIError } from "blog-api";
-import { useNavigate, useViewTransitionState } from "react-router";
-
-import {  Progress } from "radix-ui"
+import { useNavigate } from "react-router";
 
 import "../styles/pages/Settings.css";
 import Button from "../components/Button";
@@ -99,8 +97,6 @@ export function SettingsPage() {
   return (
     <>
       <Header />
-
-      <progress/>
 
       <main className="settings-container">
         <div className="update-user">

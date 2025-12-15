@@ -38,7 +38,7 @@ public class PostsController(DataContext context, IPostRepository repository, IU
                 ? !userRepository.IsMutedBlocking(currentUser!, post.UserId)
                 : true
             )
-            .OrderBy(k => k.CreatedAt)
+            .OrderByDescending(k => k.CreatedAt)
          );
             
     }

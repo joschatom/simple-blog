@@ -9,6 +9,14 @@ main {
     background-color: inherit;
     display: flex;
     flex-direction: column;
-    position: absolute;
-    top: 25%;
+}
+
+hr { width: 100%; }
+
+.error-alert {
+    background-color: var(--danger-bg);
+    color: var(--background-text-contrast);
+    border: 1px solid var(--danger-solid);
+    padding: 20px;
+    border-radius: 12px;
 }

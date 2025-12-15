@@ -10,7 +10,7 @@ export function AboutPage() {
 
       <main id="about-main">
         <h2>About Simple Blog</h2>
-        <h3>General</h3>A simple blog that allows the user to sign into an
+        A simple blog that allows the user to sign into an
         account a view posts by other users and make posts themselves.
         <h3>Development</h3>
         This is a fullstack application that uses `ASP.NET` for the backend and

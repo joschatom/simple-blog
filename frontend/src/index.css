@@ -73,7 +73,8 @@ input:focus-within {
   border: solid var(--accent-border-hover) 1px;
   outline: 0px;
 }
-input:invalid {
+input
+:invalid {
   outline: 1px solid var(--danger-border) !important;
 }
 

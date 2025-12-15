@@ -2,7 +2,6 @@ import { useContext, useEffect, useRef, useState, useTransition, type ComponentR
 import { Client } from "../contexts";
 import { APIError } from "blog-api";
 import { NavLink, useNavigate } from "react-router";
-import { ErrorDisplay } from "../components/Error";
 import { Header } from "../components/Header";
 
 import "../styles/pages/Auth.css";
@@ -46,17 +45,9 @@ export function RegisterPage() {
       <Header />
 
       <main>
-        <dialog className="error" ref={errorDiag}>
-          <ErrorDisplay error={error} />
-          <button
-            onClick={() => {
-              setError(undefined);
-              errorDiag.current?.close();
-            }}
-          >
-            Okay
-          </button>
-        </dialog>
+              {error &&  <span className="error-alert">
+          {error.downcast("generic")?.detail}.
+        </span>}
         <form action={register} className="auth-form">
           <div>
             Register to share your own posts with others,

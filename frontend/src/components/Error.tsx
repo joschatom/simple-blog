@@ -1,6 +1,15 @@
 import { APIError } from "blog-api";
+import { ComponentRef, useRef } from "react";
+import Button from "./Button";
+
+import CloseIcon from "../assets/icons/close.svg?react";
+
+import "../styles/components/Error.css";
+import { ZodError } from "zod";
 
 export function ErrorDisplay({ error }: { error: unknown; marker?: string }) {
+  const ref = useRef<ComponentRef<"dialog">>(null);
+
   if (error == undefined) return <></>;
 
   const formatInner = () => {
@@ -42,25 +51,28 @@ export function ErrorDisplay({ error }: { error: unknown; marker?: string }) {
           <code>Trace ID: {err.traceId}</code>
         </>
       );
-    else
+    else if (error instanceof ZodError) {
+      return <>{JSON.parse(error.message)[0].message}</>;
+    } else
       return (
         <>
-          <h2>
-            Error
-            <br />
-          </h2>
-          <h4>{typeof(error) === "object" ?  JSON.stringify(error, null, 2) : error.toString()}</h4>
+          {typeof error === "object"
+            ? JSON.stringify(error, null, 2)
+            : error.toString()}
         </>
       );
   };
 
   return (
-    <div
+    <dialog
+      open
+      ref={ref}
       style={{
         margin: 40,
       }}
     >
       {formatInner()}
-    </div>
+      <CloseIcon onClick={() => ref.current?.close()} />
+    </dialog>
   );
 }
