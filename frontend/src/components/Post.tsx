@@ -34,6 +34,7 @@ import { APIError } from "blog-api";
 import z, { json, ZodError } from "zod";
 import { useUserNotify } from "../helpers/useUserNotify";
 import { fa } from "zod/locales";
+import Markdown from "react-markdown";
 
 function DurationSince({
   date,
@@ -287,7 +288,11 @@ export function PostContainer({ post }: { post?: Post }) {
     return <div id="deleted-post" data-id={post.data.id} />;
   else
     return (
-      <div ref={targetRef as Ref<HTMLDivElement>} className="post-container">
+      <div
+        ref={targetRef as Ref<HTMLDivElement>}
+        className="post-container"
+        id={`post-${post?.data.id || "new"}`}
+      >
         <ErrorDisplay error={error} />
 
         <div className="post-container-header">
@@ -320,16 +325,31 @@ export function PostContainer({ post }: { post?: Post }) {
             />
           </div>
         </div>
-        <textarea
+
+        <span
           className="post-container-content"
-          value={content}
-          disabled={!editMode}
-          onChange={(e) =>
-            editMode
-              ? setContent(e.target.value)
-              : console.error("tried to edit outside of edit mode.")
+          data-no-scroll={
+            post?.data.content.startsWith("<noscroll/>") ? "on" : undefined
           }
-        />
+        >
+          {editMode ? (
+            <textarea
+              className="post-container-content"
+              value={content}
+              disabled={!editMode}
+              onChange={(e) =>
+                editMode
+                  ? setContent(e.target.value)
+                  : console.error("tried to edit outside of edit mode.")
+              }
+            />
+          ) : (
+            <Markdown skipHtml={false}>
+              {content}
+            </Markdown>
+          )}
+        </span>
+
         <div className="post-container-footer">
           <div className="start-actions">
             {post && !editMode && <DurationSince date={post.data.createdAt} />}

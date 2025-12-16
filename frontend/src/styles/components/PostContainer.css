@@ -1,5 +1,6 @@
 .post-container {
   background-color: var(--background-bg);
+  border: 5px solid var(--background-border);
   display: flex;
   flex-direction: column;
   gap: 5px;
@@ -22,14 +23,84 @@
 }
 
 .post-container-content {
-  border: none !important;
-  font-size: 18px;
+  border: solid;
+  border-color: var(--background-border);
+  font-size: 15px;
   padding: 0px;
-  resize: both;
-  padding: 5px;
+  resize: none;
+  width: fit-content;
+  height: fit-content;
   max-width: calc(100% - 60px);
   min-width: calc(100% - 10px);
   min-height: calc(100% - 125px);
+  max-height: calc(100% - 20px);
+  --current-w: calc(width);
+  --current-h: calc(height);
+  overflow: hidden;
+}
+
+.post-container-content:hover:not(:has(*[href="$attr-noscroll"])) {
+  animation: 100s 500ms running delayedScroll;
+  animation-iteration-count: infinite;
+}
+
+
+.post-container-content:has(*[href="$attr-image"]) * {
+  width: 100%;
+  height: 100%;
+}
+
+.post-container-content:has(*[href="$attr-nopad"]) * {
+  padding: 0px;
+  margin: 0px;
+}
+
+.post-container-content *[href |= "$attr"] {
+  display: none;
+}
+
+@keyframes delayedScroll {
+  0% {
+    overflow: scroll;
+    border: 2px red solid;
+  }
+  100% {
+    border: 2px red solid;
+    overflow: scroll;
+    user-select: none;
+  }
+}
+
+.post-container-content textarea {
+  border: none !important;
+  outline: none;
+  margin: 0;
+  padding: 0;
+  font-size: 15px;
+  padding: 0px;
+  resize: none;
+  max-width: calc(100% - 60px);
+  min-width: calc(100%);
+  min-height: calc(100%);
+  max-height: calc(100%);
+  padding: 5px;
+}
+
+.post-container-content > :first-child {
+  margin-top: 0px !important;
+}
+
+.post-container-content h1 {
+  font-size: 42px;
+}
+.post-container-content h2 {
+  font-size: 32px;
+}
+.post-container-content h3 {
+  font-size: 26px;
+}
+.post-container-content h4 {
+  font-size: 20px;
 }
 
 .post-caption {

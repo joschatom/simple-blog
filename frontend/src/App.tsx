@@ -2,7 +2,7 @@ import { Route, Routes } from "react-router";
 import { Homepage } from "./pages/Homepage";
 import { UserPage } from "./pages/User";
 import { WebAPIClient } from "blog-api";
-import { Fragment, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Client } from "./contexts";
 import { LoginPage } from "./pages/Login";
 import { CreatePostPage } from "./pages/CreatePost";
@@ -40,7 +40,7 @@ function App() {
     [apiToken]
   );
 
-  document.documentElement.classList.add("dark");
+  document.documentElement.classList.add("light");
 
   return (
     <>
