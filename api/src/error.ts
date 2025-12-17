@@ -51,23 +51,21 @@ function handleAPIErrorThrowing(err: AxiosError) {
 
   var object;
 
-  try {
-    object = JSON.parse(resp.data as string);
-  } catch (e) {
+  if (typeof resp.data == "string")
     throw new APIError("generic", {
       status: resp.status,
       type: "Generic API Error",
       title: resp.statusText,
       detail: resp.data?.toString(),
     });
-  }
 
   try {
-    const error = z.parse(ValidationErrors, JSON.parse(resp.data as string));
+    const error = z.parse(ValidationErrors, resp.data);
     throw new APIError("validation", error);
+    return;
   } catch (e) {
     console.log(e);
-    if (!(e instanceof ZodError)) throw e;
+    if (e instanceof APIError) throw e;
   }
 
   try {
@@ -76,17 +74,15 @@ function handleAPIErrorThrowing(err: AxiosError) {
       z.parse(ProblemDetailsError, JSON.parse(resp.data as string))
     );
   } catch (e) {
-    if (!(e instanceof ZodError)) throw e;
+    if (e instanceof APIError) throw e;
+    console.log(e);
   }
 
   throw new APIError("generic", {
     status: resp.status,
     type: "Generic API Error",
     title: resp.statusText,
-    detail:
-      typeof resp.data == "object"
-        ? JSON.stringify(resp.data)
-        : resp.data?.toString(),
+    detail: resp.data?.toString(),
   });
 }
 
@@ -112,7 +108,11 @@ export async function parseAPIResponseRaw<T extends z.ZodType>(
     const resp = await req();
     var data = await resp.json();
 
-    if (resp.ok) return z.parse(schema, transformer !== undefined ? transformer(data) : data);
+    if (resp.ok)
+      return z.parse(
+        schema,
+        transformer !== undefined ? transformer(data) : data
+      );
 
     const err = await resp.json();
 
@@ -134,7 +134,7 @@ export async function parseAPIResponseRaw<T extends z.ZodType>(
       status: resp.status,
       type: "Generic API Error",
       title: resp.statusText,
-      detail: typeof err == "object" ? JSON.stringify(err) : err.toString(),
+      detail: err.toString(),
     });
   } catch (e) {
     throw new APIError("axios", {

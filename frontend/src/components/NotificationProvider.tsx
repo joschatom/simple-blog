@@ -37,14 +37,14 @@ function NotificationToast({
       <Toast.Title
         className="notification-title"
         onClick={() => setDetail(!detail)}
+        children={notification.text}
       >
-        {notification.text}
       </Toast.Title>
       <Toast.Description
         hidden={!detail || notification.detail == undefined}
         className="notification-desc"
+        children={notification.detail}
       >
-        {notification.detail}
       </Toast.Description>
       <Toast.Action
         onClick={undefined}

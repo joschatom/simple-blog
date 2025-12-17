@@ -1,13 +1,13 @@
 import { type APIClient, WebAPIClient } from "blog-api";
-import { createContext } from "react";
+import { createContext, type ReactNode } from "react";
 import { type Dispatch, type SetStateAction } from "react";
 
 export const Client = createContext<APIClient>(new WebAPIClient(""));
 
 export type Notification = {
   type: "error" | "info" | "general";
-  text: string;
-  detail?: string;
+  text: ReactNode;
+  detail?: ReactNode;
 };
 
 export const Notifications = createContext<Notification[]>([]);

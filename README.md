@@ -25,7 +25,7 @@ The documentation is located [here](docs/index.md).
 - [x] Logged-in users can click 'Mute' on a post to stop seeing any posts from that user.
 - [ ] A user can also be an admin. If they are, they can delete posts and ban accounts.
 - [ ] In the feed, you can hide posts so that they are not shown again.
-- [ ] Markdown is allowed to format the posts.
+- [x] Markdown is allowed to format the posts.
 
 #### Errors
 - Login

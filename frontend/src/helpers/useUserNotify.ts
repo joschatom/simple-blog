@@ -9,3 +9,11 @@ export function useUserNotify() {
       console.error("notification send outside of provider", n);
   else return (n: Notification) => setter((ns) => [...ns, n]);
 }
+
+export function useNotifyReset() {
+  const setter = useContext(SetNotification);
+
+  if (setter == null)
+    return () => console.error("notifications reset outside of provider");
+  else return () => setter(() => []);
+}

@@ -40,7 +40,7 @@ function App() {
     [apiToken]
   );
 
-  document.documentElement.classList.add("light");
+  document.documentElement.classList.add("dark");
 
   return (
     <>

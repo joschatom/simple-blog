@@ -1,4 +1,11 @@
-import { useContext, useEffect, useRef, useState, useTransition, type ComponentRef } from "react";
+import {
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+  useTransition,
+  type ComponentRef,
+} from "react";
 import { Client } from "../contexts";
 import { APIError } from "blog-api";
 import { NavLink, useNavigate } from "react-router";
@@ -6,49 +13,74 @@ import { Header } from "../components/Header";
 
 import "../styles/pages/Auth.css";
 import { Footer } from "../components/Footer";
+import { useNotifyReset, useUserNotify } from "../helpers/useUserNotify";
+import { ZodError } from "zod";
 
 export function RegisterPage() {
   const client = useContext(Client);
-  const [error, setError] = useState<APIError>();
+
   const navigate = useNavigate();
+  const notify = useUserNotify();
+  const reset = useNotifyReset();
+
   const [isPending, startTransition] = useTransition();
+
+  const [username, setUsername] = useState<string>();
+  const [email, setEmail] = useState<string>();
+  const [password, setPassword] = useState<string>();
 
   const register = (data: FormData) =>
     startTransition(async () => {
+      reset();
+
       try {
-        await client.register(
-          data.get("username")!.toString(),
-          data.get("password")!.toString(),
-          data.get("email")!.toString()
-        );
+        await client.register(username || "", password || "", email || "");
         await navigate("/users/me");
       } catch (e) {
-        if (e instanceof APIError) setError(e);
-        else
-          setError(
-            new APIError("generic", {
-              type: "Unknown Error",
-              title: "An unknown error occoured",
-              detail: JSON.stringify(e),
-            })
-          );
+        let err;
+        if ((err = APIError.asDowncast(e, "generic"))) {
+          notify({
+            type: "error",
+            text: err?.title,
+            detail: err?.detail,
+          });
+        }
+        if ((err = APIError.asDowncast(e, "validation"))) {
+          console.log(err);
+
+          Object.entries(err.errors).forEach(([key, errors]) => {
+            notify({
+              type: "error",
+              text: (
+                <>
+                  <a href={`#${key.toLowerCase()}`}>{key.toLowerCase()}</a>{" "}
+                  {errors[0].split(" ").slice(3).join(" ")}
+                </>
+              ),
+            });
+          });
+        } else if (e instanceof ZodError) {
+          notify({
+            type: "error",
+            text: e.name,
+            detail: e.message,
+          });
+        } else {
+          notify({
+            type: "error",
+            text: "Unknown Error",
+            detail: JSON.stringify(e, null, 2),
+          });
+        }
       }
     });
-  const errorDiag = useRef<ComponentRef<"dialog">>(null);
-
-  useEffect(() => {
-    if (error != undefined) errorDiag.current?.showModal();
-  }, [error]);
 
   return (
     <>
       <Header />
 
       <main>
-              {error &&  <span className="error-alert">
-          {error.downcast("generic")?.detail}.
-        </span>}
-        <form action={register} className="auth-form">
+        <form action={register} className="auth-form" noValidate>
           <div>
             Register to share your own posts with others,
             <br />
@@ -56,11 +88,16 @@ export function RegisterPage() {
           </div>
           <div>
             <label htmlFor="username">Username </label>
-            <input id="username" max={255} name="username" required />
+            <input
+              id="username"
+              name="username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+            />
           </div>
           <div>
             <label htmlFor="email">Email </label>
-            <input id="email" max={255} name="email" type="email" required />
+            <input id="email" name="email" type="email" value={email} onChange={e => setEmail(e.target.value)} />
           </div>
           <div>
             <label htmlFor="password">Password </label>
@@ -68,8 +105,8 @@ export function RegisterPage() {
               id="password"
               name="password"
               type="password"
-              required
-              minLength={6}
+              value={password}
+              onChange={e => setPassword(e.target.value)}
             />
           </div>
           <hr className={isPending ? "loading" : ""} />
@@ -79,7 +116,7 @@ export function RegisterPage() {
         </form>
       </main>
 
-      <Footer/>
+      <Footer />
     </>
   );
 }
