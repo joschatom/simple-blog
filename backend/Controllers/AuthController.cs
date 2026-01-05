@@ -30,6 +30,11 @@ public class AuthController(
     [HttpGet("validate")]
     public ActionResult<bool> Validate() => Ok(true);
 
+    /// <summary>
+    /// Log into an account with the given credentials.
+    /// </summary>
+    /// <param name="login">Username and password for login.</param>
+    /// <returns>User data and a new token if successful.</returns>
     [EndpointDescription("Logs in a user and returns the user info and JWT token.")]
     [AllowAnonymous] // This will allow the user to access this method without being authenticated (without JWT Token)
     [HttpPost, Route("login")]
@@ -121,6 +126,11 @@ public class AuthController(
         }
     }
 
+    /// <summary>
+    /// Change the password of the current user.
+    /// </summary>
+    /// <param name="request">The new password for the user.</param>
+    /// <returns>HTTP 200 if successful.</returns>
     [EndpointDescription("Changes the password for the authenticated user.")]
     [HttpPost, Route("change-password")]
     public async Task<ActionResult> ChangePassword(ChangePasswordDTO request)
@@ -139,6 +149,10 @@ public class AuthController(
         return Ok();
     }
 
+    /// <summary>
+    /// Get a new token for the currently logged in user.
+    /// </summary>
+    /// <returns>Return user data and a new token for the current user.</returns>
     [EndpointDescription("Refresh Token")]
     [HttpPost, Route("refresh-token")]
     public async Task<ActionResult<AuthUserDTO>> RefreshToken()
@@ -158,6 +172,10 @@ public class AuthController(
         return mapper.Map<AuthUserDTO>(user); 
     }
 
+    /// <summary>
+    /// Logout the current user
+    /// </summary>
+    /// <returns>HTTP 200 if successful.</returns>
     [EndpointDescription("Logout current user.")]
     [HttpPost, Route("logout")]
     public async Task<ActionResult> Logout()

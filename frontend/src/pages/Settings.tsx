@@ -16,11 +16,13 @@ import { useNavigate } from "react-router";
 
 import "../styles/pages/Settings.css";
 import Button from "../components/Button";
+import { useUserNotify } from "../helpers/useUserNotify";
 
 export function SettingsPage() {
   const client = useContext(Client);
 
   const navigate = useNavigate();
+  const notify = useUserNotify();
 
   const [username, setUsername] = useState(client.currentUser?.data.username);
   const [email, setEmail] = useState(client.currentUser?.data.email);
@@ -52,6 +54,11 @@ export function SettingsPage() {
     });
 
     reload();
+
+    notify({
+      type: "success",
+      text: "Successfully updated email and/or username.",
+    });
   };
 
   const changePassword = async () => {
@@ -60,6 +67,11 @@ export function SettingsPage() {
     if (client.isAuthenticated())
       await client.changePassword(passwordInput.current?.value);
     else console.warn("tried to change password while loggen out.");
+
+    notify({
+      type: "success",
+      text: "Password was successfully updated.",
+    });
   };
 
   const deleteAccount = async () => {
@@ -87,7 +99,10 @@ export function SettingsPage() {
       return;
     if (client.isAuthenticated()) {
       await client.deleteAllPosts();
-      navigate("/users/me");
+      notify({
+        type: "success",
+        text: "All your post where successfully deleted.",
+      });
     } else console.warn("tried to delete all posts while logged out.");
   };
 
@@ -142,9 +157,14 @@ export function SettingsPage() {
             <span>
               <i>Set your username, email address and theme</i>
             </span>
-            <button id="save" disabled={!username || !email} onClick={save}>
+            <Button
+              id="save"
+              level="success"
+              disabled={!username || !email}
+              onClick={save}
+            >
               Save
-            </button>
+            </Button>
           </span>
 
           <hr />
@@ -159,7 +179,9 @@ export function SettingsPage() {
                 type="password"
                 placeholder="Enter a new password."
               />
-              <Button onClick={changePassword}>Update</Button>
+              <Button onClick={changePassword} level="notice">
+                Update
+              </Button>
             </span>
           </span>
         </div>

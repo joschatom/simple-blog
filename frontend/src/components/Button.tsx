@@ -9,7 +9,7 @@ type ButtonLevel =
   | "success"
   | "neutral";
 
-export const Button = ({ level, ...props }: { level?: ButtonLevel } & ButtonHTMLAttributes<HTMLButtonElement>) =>
-  <button data-level={level} {...props}/>
+export const Button = ({ level, className, ...props }: { level?: ButtonLevel } & ButtonHTMLAttributes<HTMLButtonElement>) =>
+  <button className={`leveled ${className}`} data-level={level} {...props}/>
 
 export default Button;

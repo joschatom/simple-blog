@@ -7,10 +7,6 @@ using backend.DTOs.User.Response;
 using backend.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using NUnit.Framework.Constraints;
-using System.ComponentModel;
-using System.Diagnostics;
-
 
 namespace backend.Controllers;
 
@@ -42,7 +38,12 @@ public class PostsController(DataContext context, IPostRepository repository, IU
          );
             
     }
-
+    
+    /// <summary>
+    /// Endpoint to get the post with the given id.
+    /// </summary>
+    /// <param name="id">The ID of the post.</param>
+    /// <returns>If the post exist return the post data and if not an error.</returns>
     // GET api/posts/1A577ADE-B695-406A-83ED-FA161EDD02A9
     [HttpGet("{id}")]
     [AllowAnonymous]
@@ -63,6 +64,11 @@ public class PostsController(DataContext context, IPostRepository repository, IU
         return map;
     }
 
+    /// <summary>
+    /// Creates a new post.
+    /// </summary>
+    /// <param name="createPost">Information about the post to create.</param>
+    /// <returns>If sucessful the data for the newly created Post (including the ID).</returns>
     // POST api/posts
     [HttpPost]
     public async Task<ActionResult<PostDTO>> Post([FromBody] CreatePostDTO createPost)
@@ -81,6 +87,12 @@ public class PostsController(DataContext context, IPostRepository repository, IU
         return CreatedAtAction(nameof(GetPostById), new { id = postToReturn.Id }, postToReturn);
     }
 
+    /// <summary>
+    /// Updates a post.
+    /// </summary>
+    /// <param name="id">The ID of the post to update</param>
+    /// <param name="update">New values for field or null if not updated (per field).</param>
+    /// <returns>If successful returns the fields that where updated.</returns>
     // PUT api/posts/1A577ADE-B695-406A-83ED-FA161EDD02A9
     [HttpPut("{id}")]
     public async Task<ActionResult<UpdatedDTO>> Put(Guid id, [FromBody] UpdatePostDTO update)
@@ -122,6 +134,10 @@ public class PostsController(DataContext context, IPostRepository repository, IU
         return Ok(builder.Build());
     }
 
+    /// <summary>
+    /// Deletes all post created by the current user.
+    /// </summary>
+    /// <returns>If successful an HTTP 200 and an empty body.</returns>
     // DELETE api/posts/1A577ADE-B695-406A-83ED-FA161EDD02A9
     [HttpDelete("all")]
     public async Task<ActionResult> DeleteAllPosts()
@@ -137,6 +153,11 @@ public class PostsController(DataContext context, IPostRepository repository, IU
         return Ok();
     }
 
+    /// <summary>
+    /// Delete a post.
+    /// </summary>
+    /// <param name="id">ID of the post to delete.</param>
+    /// <returns>HTTP 200 if successfull.</returns>
     [HttpDelete("{id}")]
     public async Task<ActionResult> Delete(Guid id)
     {

@@ -156,6 +156,7 @@ main {
 
 .context-menu button {
   background-color: transparent;
+  color: var(--background-text-contrast);
   border: solid 2px transparent;
   border-radius: 0px;
 }

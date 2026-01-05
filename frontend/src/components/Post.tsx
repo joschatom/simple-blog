@@ -10,7 +10,6 @@ import {
   useState,
   useCallback,
   type Ref,
-  Component,
   type FunctionComponent,
   createElement,
 } from "react";
@@ -31,9 +30,8 @@ import Done from "../assets/icons/done.svg?react";
 import CreatePostIcon from "../assets/icons/createPost.svg?react";
 import Button from "./Button";
 import { APIError } from "blog-api";
-import z, { json, ZodError } from "zod";
+import z, { ZodError } from "zod";
 import { useUserNotify } from "../helpers/useUserNotify";
-import { fa } from "zod/locales";
 import Markdown from "react-markdown";
 
 function DurationSince({
@@ -199,6 +197,10 @@ export function PostContainer({ post }: { post?: Post }) {
     try {
       await post.delete();
       setDeleted(true);
+      notify({
+        type: "success",
+        text: "Post deleted successfully."
+      })
     } catch (e) {
       let err;
       if ((err = APIError.asDowncast(e, "generic")))
@@ -226,6 +228,7 @@ export function PostContainer({ post }: { post?: Post }) {
 
     try {
       await Post.createPost(client, post);
+      navigate("/users/me");
     } catch (e) {
       let err;
       if ((err = APIError.asDowncast(e, "generic")))

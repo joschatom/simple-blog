@@ -7,6 +7,7 @@ import { UsernameDisplay } from "../components/Username";
 import { Footer } from "../components/Footer";
 
 import "../styles/pages/Homepage.css";
+import { useUserNotify } from "../helpers/useUserNotify";
 
 
 export function Homepage() {
@@ -14,6 +15,13 @@ export function Homepage() {
 
   const [error, setError] = useState<unknown>();
   const [users, setUsers] = useState<User[]>();
+
+  const notify = useUserNotify();
+
+  notify({
+    type: "info",
+    text: "INFO"
+  })
 
   useEffect(() => {
     const load = async () => {

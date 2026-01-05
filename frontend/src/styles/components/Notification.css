@@ -29,6 +29,8 @@
   column-gap: 15px;
   align-items: center;
 }
+
+
 .notification[data-state="open"] {
   animation: slideIn 150ms cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -99,11 +101,13 @@
 }
 
 .notification-dismiss > svg {
-  fill: var(--danger-solid);
+  fill: var(background-color);
+  border: none !important;
+  background-color: transparent !important;
 }
 
 .notification-dismiss:hover > svg {
-  fill: var(--danger-solid-hover);
+  fill: var(background-color);
 }
 
 .notification-dismiss {
@@ -119,6 +123,4 @@
   border: none;
 }
 
-.notification-dismiss:hover {
-  color: var(--danger-solid-hover);
-}
+

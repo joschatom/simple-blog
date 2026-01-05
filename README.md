@@ -19,7 +19,7 @@ The documentation is located [here](docs/index.md).
 - [x] There is a settings page that allows users to change their theme, delete their account, and change their password, username, and email address. 
 - [x] In the footer, links are displayed to GitHub, (documentation) and version information (Git).
 - [x] There is an 'About' page containing some information about the project.
-- [-] Errors are displayed in a stylised way that doesn't look out of place.
+- [x] Errors are displayed in a stylised way that doesn't look out of place.
 - [x] Posts can also be viewed on a separate page via a URL (`/posts/<post_id>`).
 #### Optional
 - [x] Logged-in users can click 'Mute' on a post to stop seeing any posts from that user.

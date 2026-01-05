@@ -1,7 +1,10 @@
-button {
+.leveled {
   background-color: var(--background-bg);
   color: var(--background-text);
   border: 1px solid var(--background-border);
+}
+
+button {
   border-radius: 8px;
   padding: 0.6em 1.2em;
   font-size: 1em;
@@ -11,78 +14,78 @@ button {
   transition: border-color 0.25s;
 }
 
-button:disabled {
+.leveled:disabled {
   cursor: not-allowed;
 }
 
-button:hover:not(:disabled) {
+.leveled:hover:not(:disabled) {
   background-color: var(--background-bg-hover);
   border-color: var(--background-border-hover);
   color: var(--background-text-contrast);
 }
 
-button[data-level="milder-danger"] {
+.leveled[data-level="milder-danger"] {
   background-color: var(--background-bg);
   color: var(--danger-text);
   border: 1px solid var(--danger-border);
 }
 
-button[data-level="milder-danger"]:hover:not(:disabled) {
+.leveled[data-level="milder-danger"]:hover:not(:disabled) {
   background-color: var(--danger-bg-hover);
   color: var(--danger-text-contrast);
   border: 1px solid var(--danger-border-hover);
 }
 
 
-button[data-level="danger"] {
+.leveled[data-level="danger"] {
   background-color: var(--danger-bg);
   color: var(--danger-text);
   border: 1px solid var(--danger-border);
 }
 
-button[data-level="danger"]:hover:not(:disabled) {
+.leveled[data-level="danger"]:hover:not(:disabled) {
   background-color: var(--danger-bg-hover);
   color: var(--danger-text-contrast);
   border: 1px solid var(--danger-border-hover);
 }
 
-button[data-level="warning"] {
+.leveled[data-level="warning"] {
   background-color: var(--warning-bg);
   color: var(--warning-text);
   border: 1px solid var(--warning-border);
 }
 
-button[data-level="warning"]:hover:not(:disabled) {
+.leveled[data-level="warning"]:hover:not(:disabled) {
   background-color: var(--warning-bg-hover);
   color: var(--warning-text-contrast);
   border: 1px solid var(--warning-border-hover);
 }
 
-button[data-level="notice"] {
+.leveled[data-level="notice"] {
   background-color: var(--accent-bg);
   color: var(--accent-text);
   border: 1px solid var(--accent-border);
 }
 
-button[data-level="notice"]:hover:not(:disabled) {
+.leveled[data-level="notice"]:hover:not(:disabled) {
   background-color: var(--accent-bg-hover);
   color: var(--accent-text-contrast);
   border: 1px solid var(--accent-border-hover);
 }
 
-button[data-level="success"] {
+.leveled[data-level="success"] {
   background-color: var(--success-bg);
   color: var(--success-text);
   border: 1px solid var(--success-border);
 }
 
-button[data-level="success"]:hover:not(:disabled) {
+.leveled[data-level="success"]:hover:not(:disabled) {
   background-color: var(--success-bg-hover);
   color: var(--success-text-contrast);
   border: 1px solid var(--success-border-hover);
 }
 
-button:disabled {
+.leveled:disabled {
   filter: grayscale(100%);
 }
 

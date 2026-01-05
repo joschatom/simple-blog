@@ -1,26 +1,17 @@
 import {
-  Component,
   useContext,
-  useEffect,
-  useRef,
   useState,
   useTransition,
-  type ComponentClass,
-  type ComponentRef,
-  type FunctionComponent,
-  type JSXElementConstructor,
-  type ReactNode,
 } from "react";
 import { Client } from "../contexts";
 import { APIError } from "blog-api";
-import { NavLink, useFetcher, useLocation, useNavigate } from "react-router";
-import { ErrorDisplay } from "../components/Error";
+import { NavLink, useNavigate } from "react-router";
 import { Header } from "../components/Header";
 
 import "../styles/pages/Auth.css";
 import { Footer } from "../components/Footer";
 import { useNotifyReset, useUserNotify } from "../helpers/useUserNotify";
-import z, { ZodAny, ZodError, ZodType } from "zod";
+import { ZodError } from "zod";
 import Button from "../components/Button";
 
 export function LoginPage() {
@@ -34,14 +25,14 @@ export function LoginPage() {
   const [username, setUsername] = useState<string>();
   const [password, setPassword] = useState<string>();
 
-  const login = (data: FormData) =>
+  const login = () =>
     startTransition(async () => {
       reset();
 
       try {
         await client.login(
-          username,
-          password
+          username || "",
+          password || "",
         );
         await navigate("/users/me");
       } catch (e) {
@@ -97,8 +88,7 @@ export function LoginPage() {
             <input
               id="password"
               name="password"
-              type="password"
-         
+              type="password" 
               value={password} onChange={e => setPassword(e.target.value)}
             />
           </div>

@@ -13,6 +13,7 @@ import { NotLoggedIn, PageNotFound } from "./NotFound";
 import { Footer } from "../components/Footer";
 
 import profileImage from "../assets/user.png";
+import Button from "../components/Button";
 
 export function UserPage() {
   const { id } = useParams();
@@ -88,7 +89,7 @@ export function UserPage() {
             </div>
             <div>
               {user.data.id === client.currentUser?.data.id && (
-                <button onClick={() => navigate("/create-post")}>Create Post</button>
+                <Button onClick={() => navigate("/create-post")}>Create Post</Button>
               )}
             </div>
             <div

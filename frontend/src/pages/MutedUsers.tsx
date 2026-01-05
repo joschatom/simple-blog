@@ -5,6 +5,7 @@ import { NotLoggedIn } from "./NotFound";
 import { User } from "blog-api";
 import { UsernameDisplay } from "../components/Username";
 import { Footer } from "../components/Footer";
+import Button from "../components/Button";
 
 function MutedUser({
   user,
@@ -16,7 +17,7 @@ function MutedUser({
   return (
     <div>
       <UsernameDisplay user={user} noMute={true} />
-      <button onClick={async () => await unmute()}>Unmute</button>
+      <Button level="success" onClick={async () => await unmute()}>Unmute</Button>
     </div>
   );
 }
@@ -47,7 +48,7 @@ export function MutedUsersPage() {
     <>
       <Header />
 
-      <main>
+      <main className="muted-users-container">
         <h1>Muted Users</h1>
 
         {isPending && <i>Loading</i>}

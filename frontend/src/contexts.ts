@@ -5,7 +5,7 @@ import { type Dispatch, type SetStateAction } from "react";
 export const Client = createContext<APIClient>(new WebAPIClient(""));
 
 export type Notification = {
-  type: "error" | "info" | "general";
+  type: "error" | "info" | "general" | "success";
   text: ReactNode;
   detail?: ReactNode;
 };

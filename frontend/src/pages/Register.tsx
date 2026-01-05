@@ -1,11 +1,4 @@
-import {
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-  useTransition,
-  type ComponentRef,
-} from "react";
+import { useContext, useState, useTransition } from "react";
 import { Client } from "../contexts";
 import { APIError } from "blog-api";
 import { NavLink, useNavigate } from "react-router";
@@ -15,6 +8,7 @@ import "../styles/pages/Auth.css";
 import { Footer } from "../components/Footer";
 import { useNotifyReset, useUserNotify } from "../helpers/useUserNotify";
 import { ZodError } from "zod";
+import Button from "../components/Button";
 
 export function RegisterPage() {
   const client = useContext(Client);
@@ -29,7 +23,7 @@ export function RegisterPage() {
   const [email, setEmail] = useState<string>();
   const [password, setPassword] = useState<string>();
 
-  const register = (data: FormData) =>
+  const register = () =>
     startTransition(async () => {
       reset();
 
@@ -87,7 +81,7 @@ export function RegisterPage() {
             already have an account? <NavLink to="/login">Login</NavLink>
           </div>
           <div>
-            <label htmlFor="username">Username </label>
+            <label htmlFor="username">Username</label>
             <input
               id="username"
               name="username"
@@ -97,22 +91,28 @@ export function RegisterPage() {
           </div>
           <div>
             <label htmlFor="email">Email </label>
-            <input id="email" name="email" type="email" value={email} onChange={e => setEmail(e.target.value)} />
+            <input
+              id="email"
+              name="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
           </div>
           <div>
-            <label htmlFor="password">Password </label>
+            <label htmlFor="password">Password</label>
             <input
               id="password"
               name="password"
               type="password"
               value={password}
-              onChange={e => setPassword(e.target.value)}
+              onChange={(e) => setPassword(e.target.value)}
             />
           </div>
           <hr className={isPending ? "loading" : ""} />
-          <button type="submit" id="register-button">
+          <Button type="submit" id="register-button">
             Register
-          </button>
+          </Button>
         </form>
       </main>
 

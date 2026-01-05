@@ -25,10 +25,24 @@ function NotificationToast({
 }) {
   const [detail, setDetail] = useState(false);
 
+  let level = "neutral";
+  switch (notification.type) {
+    case "error":
+      level = "danger";
+      break;
+    case "info":
+      level = "notice";
+      break;    
+    case "success":
+      level = "success";
+      break;
+  };
+
   return (
     <Toast.Root
       onClick={() => setDetail(!detail)}
-      className="notification"
+      className="notification leveled"
+      data-level={level}
       open={true}
       onOpenChange={() =>
         setNotifications((ns) => ns.filter((_, i) => i !== index))
@@ -53,7 +67,7 @@ function NotificationToast({
         altText="Dismiss notification"
       >
         <button className="notification-dismiss">
-          <Close />
+          <Close className="leveled" data-level={level}/>
         </button>
       </Toast.Action>
     </Toast.Root>
